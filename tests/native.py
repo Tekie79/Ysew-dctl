@@ -30,6 +30,10 @@ extern "C" float scalar(int op,float x,float a,float b,float c) {
     if(op==13) return ys_logc4_encode(x);
     if(op==14) return ys_slog3_encode(x);
     if(op==15) return ys_log3g10_encode(x);
+    if(op==16) return ys_target_occupancy(make_float3(x,a,b),(int)c);
+    if(op==17) return ys_target_headroom(make_float3(x,a,b));
+    if(op==18) return ys_cal_target_value((int)x,(int)a);
+    if(op==19) return ys_neutral_xy_error(make_float3(x,a,b));
     return -999.0f;
 }
 extern "C" void vector(int op,float r,float g,float b,float a,float c,float d,float* out) {
@@ -43,6 +47,8 @@ extern "C" void vector(int op,float r,float g,float b,float a,float c,float d,fl
     else if(op==10) v=ys_sgamut3_xyz(v); else if(op==11) v=ys_rwg_xyz(v);
     else if(op==12) v=ys_cat02_wb(v,a,c); else if(op==13) v=ys_input(v,(int)a);
     else if(op==14) v=ys_cct_xy(a);
+    else if(op==15) v=ys_xyz_p3d65(v); else if(op==16) v=ys_xyz_2020(v);
+    else if(op==17) v=ys_target_rgb(v,(int)a); else if(op==18) v=ys_target_pre(v,(int)a,c);
     out[0]=v.x; out[1]=v.y; out[2]=v.z;
 }
 '''

@@ -515,13 +515,7 @@
       "D_BEFORE",
       "D_DIFF",
       "D_STAGE",
-      "D_INVALID",
-      "D_TARGET_GAMUT",
-      "D_GAMUT_OCC",
-      "D_RGB_HEADROOM",
-      "D_CAL_EV",
-      "D_CAL_NEUTRAL",
-      "D_CAL_COMBINED"
+      "D_INVALID"
     ],
     "choices": [
       "Off",
@@ -550,13 +544,7 @@
       "Before After",
       "Difference",
       "Stage View",
-      "Invalid Input",
-      "Target Gamut",
-      "Gamut Occupancy",
-      "RGB Headroom",
-      "Cal Exposure",
-      "Cal Neutral",
-      "Cal Combined"
+      "Invalid Input"
     ]
   },
   {
@@ -1627,95 +1615,5 @@
       "Lens",
       "Combined"
     ]
-  },
-  {
-    "name": "diag_gamut",
-    "label": "Diag Gamut",
-    "kind": "DCTLUI_COMBO_BOX",
-    "values": [
-      "0"
-    ],
-    "enums": [
-      "DG_709",
-      "DG_P3D65",
-      "DG_2020"
-    ],
-    "choices": [
-      "Rec709",
-      "P3 D65",
-      "Rec2020"
-    ]
-  },
-  {
-    "name": "gamut_margin",
-    "label": "Gamut Margin x1k",
-    "kind": "DCTLUI_SLIDER_INT",
-    "values": [
-      "20",
-      "1",
-      "250",
-      "1"
-    ],
-    "enums": [],
-    "choices": []
-  },
-  {
-    "name": "cal_profile",
-    "label": "Cal Profile",
-    "kind": "DCTLUI_COMBO_BOX",
-    "values": [
-      "0"
-    ],
-    "enums": [
-      "CAL_GRAY18",
-      "CAL_WHITE90",
-      "CAL_BLACK02",
-      "CAL_CUSTOM"
-    ],
-    "choices": [
-      "18 Gray",
-      "90 White",
-      "2 Black",
-      "Custom"
-    ]
-  },
-  {
-    "name": "cal_target",
-    "label": "Cal Target x1k",
-    "kind": "DCTLUI_SLIDER_INT",
-    "values": [
-      "180",
-      "1",
-      "4000",
-      "1"
-    ],
-    "enums": [],
-    "choices": []
-  },
-  {
-    "name": "cal_tol",
-    "label": "Cal Tol x100",
-    "kind": "DCTLUI_SLIDER_INT",
-    "values": [
-      "15",
-      "1",
-      "200",
-      "1"
-    ],
-    "enums": [],
-    "choices": []
-  },
-  {
-    "name": "cal_neutral",
-    "label": "Cal Neutral x1k",
-    "kind": "DCTLUI_SLIDER_INT",
-    "values": [
-      "10",
-      "1",
-      "200",
-      "1"
-    ],
-    "enums": [],
-    "choices": []
   }
 ]

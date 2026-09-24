@@ -1,4 +1,4 @@
-// Yekermo Sew Film Lab 0.5.0-alpha.1 - M5 temporal grain, film texture and lens softness.
+// Yekermo Sew Film Lab 0.6.0-alpha.1 - M6 advanced gamut, volume and scene-calibration diagnostics.
 // Original parametric creative models, NOT measured film-stock emulations.
 // Input must already be decoded RGB with the selected scene encoding.
 // See docs/RESOLVE_SETUP.md and docs/DIAGNOSTICS.md before installation.
@@ -42,7 +42,7 @@ DEFINE_UI_PARAMS(vignette_y, Vig Y, DCTLUI_SLIDER_FLOAT, 0.0, -1.0, 1.0, 0.01)
 DEFINE_UI_PARAMS(output_gray, Output Gray, DCTLUI_SLIDER_FLOAT, 0.42, 0.25, 0.65, 0.005)
 DEFINE_UI_PARAMS(gamut_on, Gamut Map, DCTLUI_CHECK_BOX, 1)
 DEFINE_UI_PARAMS(gamut_knee, Gamut Knee, DCTLUI_SLIDER_FLOAT, 0.8, 0.1, 0.95, 0.01)
-DEFINE_UI_PARAMS(diag_mode, Diagnostics, DCTLUI_COMBO_BOX, 0, {D_OFF, D_FALSE, D_EVGRAY, D_ZONE, D_EVMATTE, D_EVOVER, D_RGBEV, D_YPRIME, D_YFALSE, D_LIN_Y, D_HUE, D_SAT, D_CHROMA, D_COLMATTE, D_COLISO, D_SKIN, D_SKINEV, D_NEUTRAL, D_LOW, D_HIGH, D_CHROMATICITY, D_VOLUME, D_COMPRESSION, D_BEFORE, D_DIFF, D_STAGE, D_INVALID}, {Off, Scene False Color, Scene EV Gray, Scene Zones, EV Matte, EV Overlay, Scene RGB EV, Output Y Prime, Output Luma Color, Output Linear Y, Hue Map, HSV Saturation, RGB Chroma, Color Matte, Color Isolate, Skin Matte, Skin EV, Neutral Bias, Nonpositive RGB, Pre Gamut Limits, 709 Chromaticity, SDR Volume, Gamut Amount, Before After, Difference, Stage View, Invalid Input})
+DEFINE_UI_PARAMS(diag_mode, Diagnostics, DCTLUI_COMBO_BOX, 0, {D_OFF, D_FALSE, D_EVGRAY, D_ZONE, D_EVMATTE, D_EVOVER, D_RGBEV, D_YPRIME, D_YFALSE, D_LIN_Y, D_HUE, D_SAT, D_CHROMA, D_COLMATTE, D_COLISO, D_SKIN, D_SKINEV, D_NEUTRAL, D_LOW, D_HIGH, D_CHROMATICITY, D_VOLUME, D_COMPRESSION, D_BEFORE, D_DIFF, D_STAGE, D_INVALID, D_TARGET_GAMUT, D_GAMUT_OCC, D_RGB_HEADROOM, D_CAL_EV, D_CAL_NEUTRAL, D_CAL_COMBINED}, {Off, Scene False Color, Scene EV Gray, Scene Zones, EV Matte, EV Overlay, Scene RGB EV, Output Y Prime, Output Luma Color, Output Linear Y, Hue Map, HSV Saturation, RGB Chroma, Color Matte, Color Isolate, Skin Matte, Skin EV, Neutral Bias, Nonpositive RGB, Pre Gamut Limits, 709 Chromaticity, SDR Volume, Gamut Amount, Before After, Difference, Stage View, Invalid Input, Target Gamut, Gamut Occupancy, RGB Headroom, Cal Exposure, Cal Neutral, Cal Combined})
 DEFINE_UI_PARAMS(diag_tap, Measure, DCTLUI_COMBO_BOX, 0, {TAP_SOURCE, TAP_BALANCE}, {Source, Balanced})
 DEFINE_UI_PARAMS(inspect_stage, Stage, DCTLUI_COMBO_BOX, 0, {ST_SOURCE, ST_BALANCE, ST_NEG, ST_LOOK, ST_PRINT, ST_LENS, ST_PRE, ST_OUT}, {Source, Balance, Negative, Look, Print, Vignette, Pre Gamut, Final})
 DEFINE_UI_PARAMS(reference_gray, Ref Gray, DCTLUI_SLIDER_FLOAT, 0.18, 0.01, 0.5, 0.005)
@@ -132,6 +132,14 @@ DEFINE_UI_PARAMS(lens_radius, Lens Radius, DCTLUI_SLIDER_INT, 3, 1, 24, 1)
 DEFINE_UI_PARAMS(micro_soft, Micro Soft, DCTLUI_SLIDER_INT, 0, 0, 100, 1)
 DEFINE_UI_PARAMS(texture_view, Texture View, DCTLUI_COMBO_BOX, 0, {TV_OFF, TV_GRAIN, TV_WEIGHT, TV_LENS, TV_COMBINED}, {Off, Grain, Weight, Lens, Combined})
 
+// M6 diagnostic target and scene-calibration controls. They never alter normal output.
+DEFINE_UI_PARAMS(diag_gamut, Diag Gamut, DCTLUI_COMBO_BOX, 0, {DG_709, DG_P3D65, DG_2020}, {Rec709, P3 D65, Rec2020})
+DEFINE_UI_PARAMS(gamut_margin, Gamut Margin x1k, DCTLUI_SLIDER_INT, 20, 1, 250, 1)
+DEFINE_UI_PARAMS(cal_profile, Cal Profile, DCTLUI_COMBO_BOX, 0, {CAL_GRAY18, CAL_WHITE90, CAL_BLACK02, CAL_CUSTOM}, {18 Gray, 90 White, 2 Black, Custom})
+DEFINE_UI_PARAMS(cal_target, Cal Target x1k, DCTLUI_SLIDER_INT, 180, 1, 4000, 1)
+DEFINE_UI_PARAMS(cal_tol, Cal Tol x100, DCTLUI_SLIDER_INT, 15, 1, 200, 1)
+DEFINE_UI_PARAMS(cal_neutral, Cal Neutral x1k, DCTLUI_SLIDER_INT, 10, 1, 200, 1)
+
 DEFINE_UI_TOOLTIP(Input, "RGB encoding arriving at this node. Camera log choices require the decoder or upstream converter to output that exact gamut and curve. ProRes RAW is not auto-detected.")
 DEFINE_UI_TOOLTIP(Output, "DWG choices return working RGB for one external output transform. 709 Gamma 2.4 performs internal SDR rendering. Never apply a second output conversion.")
 DEFINE_UI_TOOLTIP(Exposure, "Photographic exposure adjustment in stops. Plus one doubles scene-linear RGB.")
@@ -214,6 +222,12 @@ DEFINE_UI_TOOLTIP(Lens Soft, "Broadband local RGB softness before the negative, 
 DEFINE_UI_TOOLTIP(Lens Radius, "Lens-softness radius in reference pixels at 2160 image lines.")
 DEFINE_UI_TOOLTIP(Micro Soft, "Reduces local luminance microcontrast while retaining more chroma, percent.")
 DEFINE_UI_TOOLTIP(Texture View, "M5 diagnostic for signed grain, exposure weight, lens-softness difference, or combined contribution. Internal Rec709 only.")
+DEFINE_UI_TOOLTIP(Diag Gamut, "Destination-gamut target for M6 diagnostics only. This does not change normal output or add a P3/2020 delivery transform.")
+DEFINE_UI_TOOLTIP(Gamut Margin x1k, "Near-boundary margin in target linear RGB. 20 means 0.020 from a cube face.")
+DEFINE_UI_TOOLTIP(Cal Profile, "Scene reference used by M6 calibration diagnostics: 18 percent gray, 90 percent diffuse white, 2 percent black, or Custom.")
+DEFINE_UI_TOOLTIP(Cal Target x1k, "Custom scene-linear luminance reference. 180 means 0.180. Used only when Cal Profile is Custom.")
+DEFINE_UI_TOOLTIP(Cal Tol x100, "Exposure tolerance in hundredths of a stop. 15 means plus or minus 0.15 stop.")
+DEFINE_UI_TOOLTIP(Cal Neutral x1k, "D65 xy chromaticity-distance tolerance in thousandths. 10 means 0.010 xy distance.")
 
 // Pure helpers: never refer to UI variables outside transform().
 __DEVICE__ float ys_clamp(float x, float a, float b) { return _fminf(_fmaxf(x, a), b); }
@@ -274,6 +288,81 @@ __DEVICE__ float3 ys_709_xyz(float3 v) {
 }
 __DEVICE__ float3 ys_to709(float3 v) { return ys_xyz_709(ys_dwg_xyz(v)); }
 __DEVICE__ float3 ys_from709(float3 v) { return ys_xyz_dwg(ys_709_xyz(v)); }
+
+
+// M6 destination-gamut diagnostics. Matrices are D65 linear RGB transforms derived
+// from standardized P3-D65 and Rec.2020 primaries. These do not create new delivery outputs.
+__DEVICE__ float3 ys_xyz_p3d65(float3 v) {
+    return make_float3(
+         2.493496911941425f*v.x - 0.931383617919124f*v.y - 0.402710784450717f*v.z,
+        -0.829488969561575f*v.x + 1.762664060318346f*v.y + 0.023624685841944f*v.z,
+         0.035845830243784f*v.x - 0.076172389268041f*v.y + 0.956884524007687f*v.z);
+}
+__DEVICE__ float3 ys_xyz_2020(float3 v) {
+    return make_float3(
+         1.716651187971268f*v.x - 0.355670783776392f*v.y - 0.253366281373660f*v.z,
+        -0.666684351832489f*v.x + 1.616481236634939f*v.y + 0.015768545813911f*v.z,
+         0.017639857445311f*v.x - 0.042770613257809f*v.y + 0.942103121235474f*v.z);
+}
+__DEVICE__ float3 ys_target_rgb(float3 dwg,int target_kind) {
+    float3 xyz=ys_dwg_xyz(dwg);
+    if (target_kind == 1) return ys_xyz_p3d65(xyz);
+    if (target_kind == 2) return ys_xyz_2020(xyz);
+    return ys_xyz_709(xyz);
+}
+__DEVICE__ float ys_target_y(float3 rgb,int target_kind) {
+    if (target_kind == 1) return 0.228974564069749f*rgb.x + 0.691738521836506f*rgb.y + 0.079286914093745f*rgb.z;
+    if (target_kind == 2) return 0.262700212011267f*rgb.x + 0.677998071518871f*rgb.y + 0.059301716469862f*rgb.z;
+    return ys_Y709(rgb);
+}
+__DEVICE__ float3 ys_target_pre(float3 dwg,int target_kind,float gray_code) {
+    float3 rgb=ys_target_rgb(dwg,target_kind);
+    float y=ys_target_y(rgb,target_kind);
+    if (y <= 1.0e-20f) return ys_gray(0.0f);
+    return ys_scale(rgb,ys_tone(y,gray_code)/y);
+}
+__DEVICE__ float ys_target_occupancy(float3 rgb,int target_kind) {
+    float y=ys_clamp(ys_target_y(rgb,target_kind),0.0f,1.0f);
+    float up=_fmaxf(1.0f-y,1.0e-8f), down=_fmaxf(y,1.0e-8f);
+    return _fmaxf((ys_max(rgb)-y)/up,(y-ys_min(rgb))/down);
+}
+__DEVICE__ float ys_target_headroom(float3 rgb) {
+    float low=ys_min(rgb), high=1.0f-ys_max(rgb);
+    return _fminf(low,high);
+}
+__DEVICE__ float3 ys_target_status(float3 rgb,float margin) {
+    float h=ys_target_headroom(rgb);
+    if (h < 0.0f) return make_float3(1.0f,0.05f,0.10f);
+    if (h < margin) return make_float3(1.0f,0.75f,0.0f);
+    return make_float3(0.10f,0.65f,0.20f);
+}
+__DEVICE__ float ys_cal_target_value(int profile_kind,int custom_x1000) {
+    if (profile_kind == 0) return 0.18f;
+    if (profile_kind == 1) return 0.90f;
+    if (profile_kind == 2) return 0.02f;
+    return _fmaxf((float)custom_x1000*0.001f,0.001f);
+}
+__DEVICE__ float ys_neutral_xy_error(float3 scene) {
+    float3 xyz=ys_dwg_xyz(scene);
+    float sum=xyz.x+xyz.y+xyz.z;
+    if (sum <= 1.0e-12f) return 1.0f;
+    float x=xyz.x/sum, y=xyz.y/sum;
+    float dx=x-0.3127f, dy=y-0.3290f;
+    return _sqrtf(dx*dx+dy*dy);
+}
+__DEVICE__ float3 ys_cal_ev_color(float err,float tol) {
+    float a=_fabs(err);
+    if (a <= tol) return make_float3(0.10f,0.75f,0.20f);
+    float t=ys_sat((a-tol)/_fmaxf(4.0f*tol,0.05f));
+    if (err < 0.0f) return ys_mix(make_float3(0.0f,0.55f,0.95f),make_float3(0.05f,0.10f,0.80f),t);
+    return ys_mix(make_float3(1.0f,0.75f,0.0f),make_float3(0.95f,0.05f,0.15f),t);
+}
+__DEVICE__ float3 ys_cal_neutral_color(float err,float tol) {
+    if (err <= tol) return make_float3(0.10f,0.75f,0.20f);
+    if (err <= 2.0f*tol) return make_float3(1.0f,0.75f,0.0f);
+    return make_float3(0.95f,0.05f,0.15f);
+}
+
 
 // M2 camera input transforms. Each published camera gamut is converted through CIE XYZ D65
 // into scene-linear DaVinci Wide Gamut. These are technical decoders, not RAW debayering.
@@ -834,6 +923,8 @@ typedef struct {
     float hue; float width; float soft; float smin; float smax; float ymin; float ymax;
     float skinh; float skinw; float skinsmin; float skinsmax;
     float neutral; float gain; float opacity; float split;
+    int target_kind; float gamut_margin;
+    int cal_kind; float cal_target_value; float cal_tol_ev; float cal_neutral_xy;
 } YSDiag;
 __DEVICE__ float ys_quantize(float ev,int step) {
     if (step == 0) return ev;
@@ -976,6 +1067,43 @@ __DEVICE__ float3 ys_diagnostic(YSStages s,YSDiag d,float gray_code,int compress
         result = d.stage == 7 ? rgb : (d.stage == 6 ? ys_gamma24(s.pre) : ys_view(v,gray_code,compress,knee));
     }
     else if (d.mode == 26) result = ys_gray(0.0f); // Unsafe inputs exit before any transforms.
+    else if (d.mode == 27) {
+        float3 target=ys_target_pre(s.lens,d.target_kind,gray_code);
+        result=ys_target_status(target,d.gamut_margin);
+    }
+    else if (d.mode == 28) {
+        float3 target=ys_target_pre(s.lens,d.target_kind,gray_code);
+        float occ=ys_target_occupancy(target,d.target_kind);
+        result=occ > 1.0f ? make_float3(1.0f,0.0f,0.65f) : ys_heat(ys_sat(occ));
+    }
+    else if (d.mode == 29) {
+        float3 target=ys_target_pre(s.lens,d.target_kind,gray_code);
+        float head=ys_target_headroom(target);
+        if (head < 0.0f) result=make_float3(1.0f,0.05f,0.10f);
+        else {
+            float safe=ys_sat(head/_fmaxf(5.0f*d.gamut_margin,1.0e-5f));
+            result=ys_mix(make_float3(1.0f,0.75f,0.0f),make_float3(0.10f,0.65f,0.20f),safe);
+        }
+    }
+    else if (d.mode == 30) {
+        float target=_fmaxf(d.cal_target_value,1.0e-6f);
+        float err=ys_stops(ys_Y(tap),target);
+        result=ys_cal_ev_color(err,d.cal_tol_ev);
+    }
+    else if (d.mode == 31) {
+        result=ys_cal_neutral_color(ys_neutral_xy_error(tap),d.cal_neutral_xy);
+    }
+    else if (d.mode == 32) {
+        float target=_fmaxf(d.cal_target_value,1.0e-6f);
+        float err=ys_stops(ys_Y(tap),target);
+        float ne=ys_neutral_xy_error(tap);
+        int ev_ok=_fabs(err) <= d.cal_tol_ev;
+        int n_ok=ne <= d.cal_neutral_xy;
+        if (ev_ok && n_ok) result=make_float3(0.10f,0.75f,0.20f);
+        else if (!ev_ok && !n_ok) result=make_float3(0.95f,0.05f,0.15f);
+        else if (!ev_ok) result=ys_cal_ev_color(err,d.cal_tol_ev);
+        else result=make_float3(0.80f,0.15f,0.85f);
+    }
     return ys_legend(result,w,h,x,y,d);
 }
 
@@ -1425,6 +1553,9 @@ __DEVICE__ float3 transform(int p_Width,int p_Height,int p_X,int p_Y,
     d.hue=range_center; d.width=range_width; d.soft=range_soft; d.smin=range_smin; d.smax=range_smax; d.ymin=range_ymin; d.ymax=range_ymax;
     d.skinh=skin_center; d.skinw=skin_width; d.skinsmin=skin_sat_min; d.skinsmax=skin_sat_max;
     d.neutral=neutral_tol; d.gain=diag_gain; d.opacity=diag_overlay; d.split=split_pos;
+    d.target_kind=diag_gamut; d.gamut_margin=(float)gamut_margin*0.001f;
+    d.cal_kind=cal_profile; d.cal_target_value=ys_cal_target_value(cal_profile,cal_target);
+    d.cal_tol_ev=(float)cal_tol*0.01f; d.cal_neutral_xy=(float)cal_neutral*0.001f;
     float3 result = diag_mode == 0 ? s.output : ys_diagnostic(s,d,output_gray,gamut_on,gamut_knee,p_Width,p_Height,p_X,p_Y);
     if (optics_view != 0) {
         float3 c=s.halation;
