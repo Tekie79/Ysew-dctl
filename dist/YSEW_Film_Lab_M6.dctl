@@ -923,7 +923,7 @@ typedef struct {
     float hue; float width; float soft; float smin; float smax; float ymin; float ymax;
     float skinh; float skinw; float skinsmin; float skinsmax;
     float neutral; float gain; float opacity; float split;
-    int target_kind; float gamut_margin;
+    int target_kind; float target_margin;
     int cal_kind; float cal_target_value; float cal_tol_ev; float cal_neutral_xy;
 } YSDiag;
 __DEVICE__ float ys_quantize(float ev,int step) {
@@ -1069,7 +1069,7 @@ __DEVICE__ float3 ys_diagnostic(YSStages s,YSDiag d,float gray_code,int compress
     else if (d.mode == 26) result = ys_gray(0.0f); // Unsafe inputs exit before any transforms.
     else if (d.mode == 27) {
         float3 target=ys_target_pre(s.lens,d.target_kind,gray_code);
-        result=ys_target_status(target,d.gamut_margin);
+        result=ys_target_status(target,d.target_margin);
     }
     else if (d.mode == 28) {
         float3 target=ys_target_pre(s.lens,d.target_kind,gray_code);
@@ -1081,7 +1081,7 @@ __DEVICE__ float3 ys_diagnostic(YSStages s,YSDiag d,float gray_code,int compress
         float head=ys_target_headroom(target);
         if (head < 0.0f) result=make_float3(1.0f,0.05f,0.10f);
         else {
-            float safe=ys_sat(head/_fmaxf(5.0f*d.gamut_margin,1.0e-5f));
+            float safe=ys_sat(head/_fmaxf(5.0f*d.target_margin,1.0e-5f));
             result=ys_mix(make_float3(1.0f,0.75f,0.0f),make_float3(0.10f,0.65f,0.20f),safe);
         }
     }
@@ -1553,7 +1553,7 @@ __DEVICE__ float3 transform(int p_Width,int p_Height,int p_X,int p_Y,
     d.hue=range_center; d.width=range_width; d.soft=range_soft; d.smin=range_smin; d.smax=range_smax; d.ymin=range_ymin; d.ymax=range_ymax;
     d.skinh=skin_center; d.skinw=skin_width; d.skinsmin=skin_sat_min; d.skinsmax=skin_sat_max;
     d.neutral=neutral_tol; d.gain=diag_gain; d.opacity=diag_overlay; d.split=split_pos;
-    d.target_kind=diag_gamut; d.gamut_margin=(float)gamut_margin*0.001f;
+    d.target_kind=diag_gamut; d.target_margin=(float)gamut_margin*0.001f;
     d.cal_kind=cal_profile; d.cal_target_value=ys_cal_target_value(cal_profile,cal_target);
     d.cal_tol_ev=(float)cal_tol*0.01f; d.cal_neutral_xy=(float)cal_neutral*0.001f;
     float3 result = diag_mode == 0 ? s.output : ys_diagnostic(s,d,output_gray,gamut_on,gamut_knee,p_Width,p_Height,p_X,p_Y);
