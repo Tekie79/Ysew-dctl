@@ -59,3 +59,14 @@ that `TIMELINE_FRAME_INDEX` can be used as a seed for temporally deterministic e
 systems. M5 uses those facilities for grain phase generation. The CPU test shim deliberately
 uses its own deterministic RAND surrogate; tests assert behavior rather than Blackmagic's
 private generator sequence.
+
+**S10 - W3C CSS Color 4, Display-P3 conversion reference.**
+https://www.w3.org/TR/css-color-4/#color-conversion-code
+Used as a public D65 P3 conversion reference for M6 matrix validation.
+
+**S11 - ITU-R BT.2020: UHDTV parameter values.**
+https://www.itu.int/rec/R-REC-BT.2020
+Reference for Rec.2020 primaries and D65 white used by the M6 diagnostic target matrix.
+
+M6 uses these gamuts only for linear target-space diagnostics. No P3 or Rec.2020 delivery
+transfer function, container metadata, mastering-display metadata or HDR behavior is claimed.

@@ -44,3 +44,8 @@ Alpha.1 failed control loading in the user-reported Studio 21.1 environment. Alp
 20. Grain must remain deterministic for the same frame and seed, and temporal mode must use timeline-frame state rather than wall-clock randomness. The host RAND sequence does not need to match the CPU shim; behavioral invariants do.
 21. Grain is applied as a multiplicative density-style perturbation after print, not as display-code additive noise. Texture defaults Off and the first 99 M4 controls remain frozen.
 22. Comprehensive Resolve validation must test timeline seeks, render cache, re-render reproducibility, project reopen, frame-rate changes, resolution scaling, grain aliasing, performance and delivery renders.
+
+23. M6 P3-D65/Rec.2020 are diagnostic target gamuts only. Do not describe them as qualified delivery outputs; additional display mastering remains an M8 task.
+24. Gamut Occupancy and RGB Headroom are target-RGB cube metrics, not perceptual Delta E or a full color-volume histogram. Scene neutral error is CIE-xy distance from D65, also not Delta E.
+25. Combo-box compatibility is append-only: prior enum/value ordering must remain an exact prefix even when later phases add choices.
+26. Do not implement fake global scopes or reference-frame statistics inside a stateless per-pixel DCTL. Use the M6 companion architecture for frame reductions, persistent references and matching statistics.

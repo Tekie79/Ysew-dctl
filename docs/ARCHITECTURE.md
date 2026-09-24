@@ -96,3 +96,29 @@ timeline frame index. The seed remains user-controlled. Resolution scaling is no
 Texture View is a terminal Rec.709 diagnostic. Grain shows a signed 0.5-centered signal,
 Weight shows the exposure multiplier, Lens shows the absolute softness contribution, and
 Combined shows absolute grain/lens changes.
+
+## M6 diagnostics and analysis boundary
+
+M6 adds target-space diagnostics without changing normal output. A working-space pixel is
+converted through XYZ to Rec.709, P3-D65 or Rec.2020, then passed through the same neutral
+tone-rendering curve used by the internal SDR preview. The diagnostic intentionally inspects
+the **uncompressed target RGB cube** so out-of-gamut status remains visible before a gamut
+mapper could hide it.
+
+`Target Gamut` reports outside / near-boundary / inside. `Gamut Occupancy` measures the
+current chroma excursion from the neutral axis relative to the available target-cube boundary:
+0 is neutral, 1 is the chromatic boundary, and values above 1 are outside. `RGB Headroom`
+uses the minimum distance to any 0/1 target RGB cube face. A small 1e-5 numerical tolerance
+prevents matrix round-trip noise at exact standardized primaries from being reported as
+physically outside.
+
+Scene calibration is measurement-only. The Source/Balanced diagnostic tap is compared with
+0.18, 0.90, 0.02 or a user custom scene-linear luminance target. Exposure error is reported
+in stops. Neutrality uses Euclidean distance in CIE xy from D65 (0.3127, 0.3290); this is
+**not Delta E**, not a white-balance estimator, and does not identify whether an object should
+actually be neutral.
+
+A DCTL transform has no persistent reference-frame store and no general frame-reduction output.
+Therefore waveform density, histogram counts, vectorscope density, 3D point clouds, percentile
+statistics and reference-frame matching belong in the proposed OFX companion rather than being
+represented by misleading per-pixel approximations.

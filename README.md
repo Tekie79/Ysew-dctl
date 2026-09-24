@@ -2,7 +2,7 @@
 
 Custom DCTL development for the **Yekermo Sew** television series.
 
-**Version:** `0.5.0-alpha.1` | **Development branch:** `develop` | **Milestone:** M5 film texture
+**Version:** `0.6.0-alpha.1` | **Development branch:** `develop` | **Milestone:** M6 advanced diagnostics
 
 This is executable source, not a look LUT or a finished film-stock emulator. The first vertical slice implements scene transforms, balancing, original parametric negative/print responses, provisional seasonal looks, vignette, SDR rendering, and 26 diagnostic modes. Alpha.1 failed the user's first Resolve control-load test. Alpha.2 repairs the declarations and adds optional graphical aids; its 76 CPU/source tests pass, but **Resolve retesting is pending. Do not use it as a production master grade yet.**
 
@@ -74,3 +74,14 @@ Optics defaults Off. See [M4 spatial optics](docs/M4_SPATIAL_OPTICS.md).
 gauge/size/roughness/color controls, exposure-dependent grain strength, pre-negative lens
 softness and luminance micro-softness. Grain can be Static, Every Frame, Hold 2 or Hold 3.
 All M5 processing defaults Off. See [M5 film texture](docs/M5_FILM_TEXTURE.md).
+
+## M6 advanced diagnostics
+
+M6 extends Diagnostics with Rec.709/P3-D65/Rec.2020 target-gamut status, normalized gamut
+occupancy, RGB cube headroom, and scene calibration views for 18% gray, 90% white, 2% black
+or a custom scene-linear reference. These are diagnostic targets only; normal mastering output
+remains unchanged. See [M6 advanced diagnostics](docs/M6_ADVANCED_DIAGNOSTICS.md).
+
+Frame-wide waveform/vectorscope/histogram/3D-cloud and persistent reference-frame comparison
+are intentionally **not** faked inside the DCTL. Their proposed OFX/shared-core architecture is
+defined in [M6 scope companion](docs/M6_SCOPE_COMPANION.md).

@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.6.0-alpha.1 - 2026-09-24
+
+M6 advanced-diagnostics implementation on `develop`.
+
+- Appended Target Gamut, Gamut Occupancy, RGB Headroom, Cal Exposure, Cal Neutral and Cal Combined diagnostic modes.
+- Added diagnostic Rec.709, P3-D65 and Rec.2020 destination targets without changing normal output.
+- Added 18% gray, 90% white, 2% black and Custom scene-calibration profiles.
+- Added configurable gamut margin, exposure tolerance and D65 CIE-xy neutrality tolerance.
+- Added standardized target matrices and CPU reference tests.
+- Defined an OFX/shared-core architecture for real scopes, frame statistics and persistent reference-frame analysis instead of pretending a DCTL can provide those reductions.
+- Frozen the first 114 M5 controls; existing combo selections remain compatible by unchanged prefix/index.
+- Final M6 CI passes 149 tests with both Clang and GCC.
+
 ## 0.5.0-alpha.1 - 2026-09-24
 
 M5 temporal film-texture implementation on `develop`.

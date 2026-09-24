@@ -120,3 +120,23 @@ The actual Resolve RAND sequence is not required to match the CPU surrogate. Fin
 must instead verify deterministic behavior for the same timeline frame/seed, temporal changes
 after seeks, caching and renders, reproducibility after reopening, Metal performance, and the
 absence of objectionable temporal crawling/aliasing at actual delivery resolutions.
+
+## M6 technical implementation
+
+Version `0.6.0-alpha.1` completed automated validation in GitHub Actions run
+`36052510299`. The final native suite executed **149 tests with GCC** and **149 tests with
+Clang**, both with `OK`, and reproducible packaging passed.
+
+New coverage includes published/derived P3-D65 and Rec.2020 XYZ matrices; D65-neutral
+preservation across all diagnostic targets; common neutral tone-render equivalence; analytical
+gamut occupancy/headroom geometry; calibration profile targets; D65 xy-neutrality error;
+P3-red versus Rec.709 and Rec.2020-green versus P3 boundary classification; exact/under/over
+calibration exposure; neutral and combined calibration views; M6 normal-output inertness; and
+randomized finite/bounded execution for all new modes.
+
+Compatibility tests now explicitly treat a combo-box as append-compatible when all earlier enum
+and display-choice entries remain an unchanged prefix. This permits adding diagnostic modes
+without renumbering any existing saved selection.
+
+Resolve/Metal host compilation, UI population, display-monitor interpretation and visual review
+remain deferred to the comprehensive final test requested for the project.

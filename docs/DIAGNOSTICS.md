@@ -61,3 +61,38 @@ To preview the actual candidate mask used by the show-look protection, set the s
 ## Not yet available
 
 Spatial skin-uniformity measurement, distributions/histograms, a true waveform/parade/vectorscope, scene noise-floor estimation, reference-frame comparisons, persistent shot-match statistics, floating-point pixel readouts, arbitrary 3D gamut clouds, camera-calibrated clipping thresholds and automatic export checks require additional implementation and/or a companion host architecture. Do not infer these capabilities from the number of visualization modes.
+
+## M6 diagnostic modes
+
+M6 appends modes 27-32; all prior diagnostic indices remain unchanged.
+
+| ID | Mode | Meaning |
+|---|---|---|
+| 27 | Target Gamut | Green is inside the selected target cube, amber is within `Gamut Margin x1k` of a cube face, red is outside. |
+| 28 | Gamut Occupancy | Heat map of chroma occupancy relative to the target neutral-axis boundary; magenta marks occupancy materially above 1. |
+| 29 | RGB Headroom | Green indicates more target-cube face distance, amber approaches the configured margin, red is materially outside. |
+| 30 | Cal Exposure | Compares the selected Source/Balanced tap to the calibration luminance target. Green is within tolerance, blue is under, yellow/red is over. |
+| 31 | Cal Neutral | D65 CIE-xy distance diagnostic. Green is within `Cal Neutral x1k`, amber is within 2x tolerance, red is farther away. |
+| 32 | Cal Combined | Green means exposure and D65-neutrality both pass; red means both fail; exposure-only failures retain the Cal Exposure color; neutral-only failures are magenta. |
+
+### Destination gamut controls
+
+`Diag Gamut` selects Rec.709, P3-D65 or Rec.2020. These are **diagnostic destinations**,
+not new output modes. M8 remains responsible for qualifying additional delivery/display
+rendering. The M6 matrices are linear D65 transforms derived from the published primaries.
+
+`Gamut Margin x1k = 20` means 0.020 target-linear RGB units from the nearest cube face.
+This margin is an inspection threshold, not a broadcast legal-range requirement.
+
+### Calibration profiles
+
+`18 Gray` uses scene luminance 0.18, `90 White` uses 0.90, and `2 Black` uses 0.02.
+`Custom` uses `Cal Target x1k`; for example 250 means 0.250. These labels describe
+reference-patch values, not automatic semantic detection of gray/white/black objects.
+
+`Cal Tol x100` is exposure tolerance in hundredths of a stop. `Cal Neutral x1k` is a
+CIE-xy distance threshold in thousandths. The existing `Measure` control still chooses
+decoded Source or after-Balance/pre-look data.
+
+All M6 modes require the same terminal internal Rec.709 diagnostic configuration as the earlier
+diagnostics. They do not inspect downstream color management, LUTs or display transforms.

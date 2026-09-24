@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://harvestpictures.us/schemas/ysew-film-scope-analysis-profile-v1.json",
+  "title": "YSEW Film Scope Analysis Profile",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "working_space", "target_gamut", "reference_gray", "calibration"],
+  "properties": {
+    "version": { "const": 1 },
+    "working_space": { "enum": ["DWG_LINEAR", "DWG_INTERMEDIATE"] },
+    "target_gamut": { "enum": ["REC709", "P3_D65", "REC2020"] },
+    "reference_gray": { "type": "number", "exclusiveMinimum": 0 },
+    "calibration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["profile", "target_luminance", "ev_tolerance", "neutral_xy_tolerance"],
+      "properties": {
+        "profile": { "enum": ["GRAY18", "WHITE90", "BLACK02", "CUSTOM"] },
+        "target_luminance": { "type": "number", "exclusiveMinimum": 0 },
+        "ev_tolerance": { "type": "number", "minimum": 0 },
+        "neutral_xy_tolerance": { "type": "number", "minimum": 0 }
+      }
+    },
+    "histogram_bins": { "type": "integer", "minimum": 64, "maximum": 4096, "default": 1024 },
+    "waveform_columns": { "type": "integer", "minimum": 64, "maximum": 4096, "default": 512 },
+    "vectorscope_bins": { "type": "integer", "minimum": 64, "maximum": 1024, "default": 256 },
+    "reference_id": { "type": ["string", "null"] }
+  }
+}
