@@ -85,8 +85,9 @@ class M7DctlTests(unittest.TestCase):
         self.close(out,(.10,.72,.20))
 
     def test_qc_master_amber_when_compression_is_strong(self):
-        self.s.set(diag_mode=35,qc_margin=1,qc_comp=1,gamut_on=1,gamut_knee=.1)
-        out=self.s.pixel((1,0,0),y=200)
+        self.s.set(input_mode=2,diag_mode=35,qc_margin=1,qc_comp=1,gamut_on=1,gamut_knee=.1)
+        # In-gamut Rec709 scene color with enough chroma to exceed the low compression knee.
+        out=self.s.pixel((.18,.09,.09),y=200)
         self.assertGreater(out[0],.9); self.assertGreater(out[1],.3)
 
     def test_qc_controls_do_not_change_normal_grade(self):
