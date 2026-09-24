@@ -87,3 +87,18 @@ Version `0.4.0-alpha.1` adds the texture entry point, CPU texture emulation and 
 tests for constant-field invariance, impulse spread, halation tint/order, threshold
 rejection, deterministic quality tiers, contribution-view guarding and disabled/zero-
 amount compatibility. Resolve/Metal compilation and performance remain final-test gates.
+
+### M4 CI result
+
+GitHub Actions run `36049056020` completed successfully on the final M4 harness fix.
+The native suite executed **117 tests with GCC** and **117 tests with Clang**; both
+completed with `OK`. Reproducible packaging also passed for both jobs.
+
+The M4 suite includes the texture-form DCTL entry point, CPU texture emulation,
+pointwise-probe compatibility, constant-field invariance, isolated-highlight spread,
+halation tint/channel ordering, threshold rejection, deterministic quality tiers,
+zero-amount/Optics-Off compatibility, and contribution-view output guarding.
+
+This is still not Resolve/Metal qualification. GPU compile/runtime compatibility,
+viewer performance, cache behavior, render consistency, edge behavior on production
+footage, and creative approval are deferred to the comprehensive final test.

@@ -7,6 +7,7 @@
 - Added independent thresholds, radii, halation tint and Optics View diagnostics.
 - Switched the DCTL entry point to texture sampling while preserving the disabled M3 path.
 - Added CPU texture/image tests. Spatial kernels remain original approximations, not measured PSFs.
+- Final M4 CI passes 117 tests with both Clang and GCC.
 
 ## 0.3.0-alpha.1 - 2026-09-24
 
