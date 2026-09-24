@@ -753,7 +753,7 @@ __DEVICE__ float ys_gauge_base(int gauge_kind) {
 }
 __DEVICE__ float ys_grain_cell(int gauge_kind,int size_pct,int image_h) {
     float cell=ys_gauge_base(gauge_kind)*((float)size_pct*0.01f)*((float)image_h/2160.0f);
-    return _fmaxf(cell,0.18f);
+    return _fmaxf(cell,0.01f);
 }
 __DEVICE__ float ys_grain_fractal(float x,float y,float cell,uint phase,uint base_seed,uint salt,float roughness) {
     float a=ys_value_noise(x/cell,y/cell,phase,base_seed,salt);
