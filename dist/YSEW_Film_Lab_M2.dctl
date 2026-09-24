@@ -797,7 +797,7 @@ __DEVICE__ float3 ys_warning(float3 image,int height,int x,int y) {
 }
 typedef struct {
     float balance_ev; float balance_w; float balance_t; float density_r; float density_g; float density_b;
-    int wb_method; float wb_temp; float wb_duv; float wb_strength;
+    int wb_kind; float wb_kelvin; float wb_offset; float wb_mix;
     int neg_active; float neg_c; float neg_t; float neg_s; float neg_chroma; float neg_cross;
     int look_id; float look_amount; float skin_amount; float skin_center; float skin_half; float skin_min; float skin_max;
     int print_active; float print_c; float print_t; float print_s; float print_d; float print_chroma;
@@ -808,7 +808,7 @@ __DEVICE__ float3 ys_guide_curve(float linear_gray,YSGuideParams p) {
     // Full pointwise response to a neutral DWG input; excludes spatial vignette.
     // Tests compare this helper with the actual transform at matching settings.
     float3 v = ys_balance_m2(ys_gray(linear_gray),p.balance_ev,p.balance_w,p.balance_t,p.density_r,p.density_g,p.density_b,
-        p.wb_method,p.wb_temp,p.wb_duv,p.wb_strength);
+        p.wb_kind,p.wb_kelvin,p.wb_offset,p.wb_mix);
     float mask = 0.0f;
     if (p.look_id != 0 && p.look_amount > 0.0f && p.skin_amount > 0.0f)
         mask = ys_skin(v,p.skin_center,p.skin_half,p.skin_min,p.skin_max);
@@ -957,7 +957,7 @@ __DEVICE__ float3 transform(int p_Width,int p_Height,int p_X,int p_Y,float p_R,f
     YSGuideParams gp;
     gp.balance_ev=exposure; gp.balance_w=warm; gp.balance_t=tint;
     gp.density_r=printer_r; gp.density_g=printer_g; gp.density_b=printer_b;
-    gp.wb_method=wb_mode; gp.wb_temp=wb_temp; gp.wb_duv=wb_duv; gp.wb_strength=wb_strength;
+    gp.wb_kind=wb_mode; gp.wb_kelvin=wb_temp; gp.wb_offset=wb_duv; gp.wb_mix=wb_strength;
     gp.neg_active=negative_on; gp.neg_c=neg_contrast; gp.neg_t=neg_toe; gp.neg_s=neg_shoulder; gp.neg_chroma=neg_sat; gp.neg_cross=crosstalk;
     gp.look_id=look_mode; gp.look_amount=look_mix; gp.skin_amount=skin_protect; gp.skin_center=skin_center;
     gp.skin_half=skin_width; gp.skin_min=skin_sat_min; gp.skin_max=skin_sat_max;
