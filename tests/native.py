@@ -132,8 +132,8 @@ extern "C" void render_image(int w,int h,const float* rgb,float* out) {{
 extern "C" void reset_controls() {{ {reset} }}
 extern "C" void set_control(int id,float value) {{ (void)value; switch(id) {{ {''.join(setters)} }} }}
 extern "C" void set_picker(int id,float r,float g,float b) {{ (void)r; (void)g; (void)b; switch(id) {{ {''.join(pickers)} }} }}
-{{wrappers}}
-{{more}}
+{wrappers}
+{more}
 ''')
         library = Path(self.temp.name)/('shader.dylib' if sys.platform == 'darwin' else 'shader.so')
         completed = subprocess.run([compiler,'-std=c++17','-O2','-Wall','-Wextra','-Werror','-shared','-fPIC',str(cpp),'-o',str(library)],
