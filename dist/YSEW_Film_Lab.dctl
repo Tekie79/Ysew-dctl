@@ -307,14 +307,6 @@ __DEVICE__ float3 ys_cat02_wb(float3 scene,float temp,float duv) {
     lms=make_float3(lms.x*dl.x/sl.x,lms.y*dl.y/sl.y,lms.z*dl.z/sl.z);
     return ys_xyz_dwg(ys_cat02_xyz(lms));
 }
-__DEVICE__ float3 ys_balance_m2(float3 v,float ev,float w,float t,float r,float g,float b,
-    int method,float temp,float duv,float strength) {
-    if (method==0) return ys_balance(v,ev,w,t,r,g,b);
-    float3 base=v;
-    if (method==1) base=ys_mix(v,ys_cat02_wb(v,temp,duv),ys_sat(strength));
-    return ys_balance(base,ev,0.0f,0.0f,r,g,b);
-}
-
 __DEVICE__ float3 ys_input(float3 v, int mode) {
     if (mode==0) return make_float3(ys_di_decode(v.x),ys_di_decode(v.y),ys_di_decode(v.z));
     if (mode==1) return v;
@@ -374,6 +366,14 @@ __DEVICE__ float3 ys_balance(float3 v,float ev,float w,float t,float r,float g,f
     return make_float3(v.x*_exp2f(ev+0.35f*w+0.175f*t-0.083048202f*r),
         v.y*_exp2f(ev-0.35f*t-0.083048202f*g),
         v.z*_exp2f(ev-0.35f*w+0.175f*t-0.083048202f*b));
+}
+
+__DEVICE__ float3 ys_balance_m2(float3 v,float ev,float w,float t,float r,float g,float b,
+    int method,float temp,float duv,float strength) {
+    if (method==0) return ys_balance(v,ev,w,t,r,g,b);
+    float3 base=v;
+    if (method==1) base=ys_mix(v,ys_cat02_wb(v,temp,duv),ys_sat(strength));
+    return ys_balance(base,ev,0.0f,0.0f,r,g,b);
 }
 
 // Original analytic SDR renderer. Not ACES, a Resolve DRT clone, or BT.709 camera OETF.
