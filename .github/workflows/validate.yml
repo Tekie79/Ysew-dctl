@@ -35,3 +35,5 @@ jobs:
         run: python3 -m unittest discover -s tests -v
         env:
           CXX: ${{ matrix.compiler }}
+      - name: Validate deterministic M7 release package
+        run: python3 tools/release.py --check

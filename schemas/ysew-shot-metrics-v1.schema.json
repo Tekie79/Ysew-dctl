@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://harvestpictures.us/schemas/ysew-shot-metrics-v1.json",
+  "title": "Yekermo Sew Shot Metrics v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "shot_id", "stage", "working_space", "metrics"],
+  "properties": {
+    "version": {"const": 1},
+    "shot_id": {"type": "string", "minLength": 1},
+    "episode": {"type": ["string", "null"]},
+    "scene": {"type": ["string", "null"]},
+    "frame": {"type": ["integer", "null"], "minimum": 0},
+    "stage": {"enum": ["BALANCED", "LOOK", "PRINT", "FINAL_REC709"]},
+    "working_space": {"enum": ["DWG_LINEAR", "DWG_INTERMEDIATE"]},
+    "film_lab_version": {"type": ["string", "null"]},
+    "show_profile": {"type": ["string", "null"]},
+    "metrics": {
+      "type": "object",
+      "additionalProperties": {"type": "number"}
+    }
+  }
+}

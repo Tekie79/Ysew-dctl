@@ -1,0 +1,103 @@
+{
+  "version": 1,
+  "name": "Yekermo Sew Candidate Show Profiles",
+  "status": "pending_director_review",
+  "notes": "Candidate creative starting points for the M7 comprehensive review. They do not alter input/output color management.",
+  "profiles": {
+    "fall_interior": {
+      "label": "Fall Interior",
+      "approval_status": "pending_director_review",
+      "intent": "Restrained warmth, dense midtones, cool-neutral shadow separation and controlled practical warmth.",
+      "settings": {
+        "film_model": 1, "negative_on": 1, "adv_neg_density": 0.0, "adv_neg_color": 1.0, "adv_neg_sep": 0.35,
+        "adv_neg_shadow": 0.84, "adv_neg_high": 0.72, "adv_neg_warm": 0.05, "adv_neg_green": -0.04, "adv_neg_cool": 0.02,
+        "look_mode": 1, "look_mix": 1.0, "skin_protect": 0.80,
+        "print_on": 1, "adv_print_black": 0.04, "adv_print_white": 0.02, "adv_print_sep": 0.18, "adv_print_warm": 0.12, "adv_print_color": 0.98,
+        "optics_on": 1, "optics_quality": 1, "optics_mix": 1.0, "optics_soft": 75,
+        "halation_amount": 8, "halation_radius": 18, "halation_threshold": 20, "halation_tint": 0.45,
+        "bloom_amount": 10, "bloom_radius": 28, "bloom_threshold": 15,
+        "glow_amount": 4, "glow_radius": 60, "glow_threshold": 5,
+        "veil_amount": 1, "veil_radius": 140, "veil_threshold": 0,
+        "texture_on": 1, "grain_gauge": 2, "grain_amount": 28, "grain_size": 100, "grain_rough": 55, "grain_color": 15,
+        "grain_shadow": 110, "grain_mid": 100, "grain_high": 50, "grain_motion": 1, "grain_seed": 1979,
+        "lens_soft": 6, "lens_radius": 3, "micro_soft": 8
+      }
+    },
+    "winter_interior": {
+      "label": "Winter Interior",
+      "approval_status": "pending_director_review",
+      "intent": "Cooler ambient separation with protected skin and restrained warm practicals.",
+      "settings": {
+        "film_model": 1, "negative_on": 1, "adv_neg_density": 0.0, "adv_neg_color": 0.98, "adv_neg_sep": 0.32,
+        "adv_neg_shadow": 0.80, "adv_neg_high": 0.68, "adv_neg_warm": -0.02, "adv_neg_green": -0.03, "adv_neg_cool": 0.08,
+        "look_mode": 2, "look_mix": 1.0, "skin_protect": 0.82,
+        "print_on": 1, "adv_print_black": 0.05, "adv_print_white": 0.01, "adv_print_sep": 0.17, "adv_print_warm": -0.04, "adv_print_color": 0.94,
+        "optics_on": 1, "optics_quality": 1, "optics_mix": 1.0, "optics_soft": 75,
+        "halation_amount": 6, "halation_radius": 18, "halation_threshold": 20, "halation_tint": 0.30,
+        "bloom_amount": 8, "bloom_radius": 28, "bloom_threshold": 15,
+        "glow_amount": 5, "glow_radius": 60, "glow_threshold": 5,
+        "veil_amount": 2, "veil_radius": 140, "veil_threshold": 0,
+        "texture_on": 1, "grain_gauge": 2, "grain_amount": 30, "grain_size": 100, "grain_rough": 52, "grain_color": 12,
+        "grain_shadow": 115, "grain_mid": 100, "grain_high": 48, "grain_motion": 1, "grain_seed": 1979,
+        "lens_soft": 7, "lens_radius": 3, "micro_soft": 10
+      }
+    },
+    "night": {
+      "label": "Night",
+      "approval_status": "pending_director_review",
+      "intent": "Cool shadow atmosphere, reduced chromatic energy and controlled warm highlight separation.",
+      "settings": {
+        "film_model": 1, "negative_on": 1, "adv_neg_density": 0.02, "adv_neg_color": 0.94, "adv_neg_sep": 0.30,
+        "adv_neg_shadow": 0.76, "adv_neg_high": 0.62, "adv_neg_warm": 0.00, "adv_neg_green": -0.04, "adv_neg_cool": 0.10,
+        "look_mode": 3, "look_mix": 1.0, "skin_protect": 0.82,
+        "print_on": 1, "adv_print_black": 0.10, "adv_print_white": 0.00, "adv_print_sep": 0.16, "adv_print_warm": 0.05, "adv_print_color": 0.90,
+        "optics_on": 1, "optics_quality": 1, "optics_mix": 1.0, "optics_soft": 80,
+        "halation_amount": 10, "halation_radius": 20, "halation_threshold": 18, "halation_tint": 0.42,
+        "bloom_amount": 12, "bloom_radius": 32, "bloom_threshold": 12,
+        "glow_amount": 8, "glow_radius": 72, "glow_threshold": 3,
+        "veil_amount": 3, "veil_radius": 160, "veil_threshold": -5,
+        "texture_on": 1, "grain_gauge": 2, "grain_amount": 38, "grain_size": 105, "grain_rough": 60, "grain_color": 16,
+        "grain_shadow": 125, "grain_mid": 105, "grain_high": 50, "grain_motion": 1, "grain_seed": 1979,
+        "lens_soft": 10, "lens_radius": 4, "micro_soft": 12
+      }
+    },
+    "exterior_day": {
+      "label": "Exterior Day",
+      "approval_status": "pending_director_review",
+      "intent": "Clean daylight separation, restrained saturation and gentle film texture.",
+      "settings": {
+        "film_model": 1, "negative_on": 1, "adv_neg_density": -0.01, "adv_neg_color": 1.0, "adv_neg_sep": 0.28,
+        "adv_neg_shadow": 0.88, "adv_neg_high": 0.78, "adv_neg_warm": 0.00, "adv_neg_green": -0.02, "adv_neg_cool": 0.02,
+        "look_mode": 4, "look_mix": 1.0, "skin_protect": 0.80,
+        "print_on": 1, "adv_print_black": 0.02, "adv_print_white": 0.03, "adv_print_sep": 0.15, "adv_print_warm": 0.00, "adv_print_color": 0.98,
+        "optics_on": 1, "optics_quality": 1, "optics_mix": 1.0, "optics_soft": 70,
+        "halation_amount": 4, "halation_radius": 16, "halation_threshold": 24, "halation_tint": 0.35,
+        "bloom_amount": 5, "bloom_radius": 24, "bloom_threshold": 20,
+        "glow_amount": 2, "glow_radius": 50, "glow_threshold": 8,
+        "veil_amount": 1, "veil_radius": 120, "veil_threshold": 2,
+        "texture_on": 1, "grain_gauge": 2, "grain_amount": 22, "grain_size": 95, "grain_rough": 48, "grain_color": 12,
+        "grain_shadow": 100, "grain_mid": 90, "grain_high": 42, "grain_motion": 1, "grain_seed": 1979,
+        "lens_soft": 4, "lens_radius": 3, "micro_soft": 5
+      }
+    },
+    "exterior_dusk": {
+      "label": "Exterior Dusk",
+      "approval_status": "pending_director_review",
+      "intent": "Cool ambient dusk with stronger warm-highlight separation and moderate texture.",
+      "settings": {
+        "film_model": 1, "negative_on": 1, "adv_neg_density": 0.01, "adv_neg_color": 0.96, "adv_neg_sep": 0.32,
+        "adv_neg_shadow": 0.78, "adv_neg_high": 0.66, "adv_neg_warm": 0.02, "adv_neg_green": -0.03, "adv_neg_cool": 0.10,
+        "look_mode": 5, "look_mix": 1.0, "skin_protect": 0.82,
+        "print_on": 1, "adv_print_black": 0.06, "adv_print_white": 0.02, "adv_print_sep": 0.17, "adv_print_warm": 0.10, "adv_print_color": 0.92,
+        "optics_on": 1, "optics_quality": 1, "optics_mix": 1.0, "optics_soft": 78,
+        "halation_amount": 8, "halation_radius": 18, "halation_threshold": 18, "halation_tint": 0.42,
+        "bloom_amount": 10, "bloom_radius": 30, "bloom_threshold": 14,
+        "glow_amount": 6, "glow_radius": 66, "glow_threshold": 4,
+        "veil_amount": 2, "veil_radius": 150, "veil_threshold": -2,
+        "texture_on": 1, "grain_gauge": 2, "grain_amount": 32, "grain_size": 100, "grain_rough": 56, "grain_color": 14,
+        "grain_shadow": 118, "grain_mid": 100, "grain_high": 48, "grain_motion": 1, "grain_seed": 1979,
+        "lens_soft": 7, "lens_radius": 3, "micro_soft": 8
+      }
+    }
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "name": "Yekermo Sew Candidate Episode Consistency Tolerances",
+  "status": "provisional_pending_final_review",
+  "warn_multiplier": 1.0,
+  "fail_multiplier": 2.0,
+  "metrics": {
+    "exposure_median_ev": {"tolerance": 0.25, "unit": "stops"},
+    "shadow_p10_ev": {"tolerance": 0.35, "unit": "stops"},
+    "highlight_p90_ev": {"tolerance": 0.35, "unit": "stops"},
+    "neutral_xy_error": {"tolerance": 0.008, "unit": "CIE_xy_distance"},
+    "saturation_median": {"tolerance": 0.08, "unit": "normalized"},
+    "skin_ev_median": {"tolerance": 0.35, "unit": "stops"},
+    "gamut_occupancy_p95": {"tolerance": 0.10, "unit": "normalized"},
+    "black_level_p02": {"tolerance": 0.020, "unit": "linear_Rec709"},
+    "highlight_level_p98": {"tolerance": 0.030, "unit": "linear_Rec709"}
+  }
+}
