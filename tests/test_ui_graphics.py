@@ -17,10 +17,10 @@ from native import Shader
 class UISchemaTests(unittest.TestCase):
     def test_control_type_inventory(self):
         ui=parse_ui(SOURCE.read_text())
-        self.assertEqual(len(ui),63)
+        self.assertEqual(len(ui),67)
         self.assertEqual(Counter(c.kind for c in ui),{
-            'DCTLUI_SLIDER_FLOAT':46,'DCTLUI_SLIDER_INT':1,
-            'DCTLUI_COMBO_BOX':8,'DCTLUI_CHECK_BOX':6,'DCTLUI_COLOR_PICKER':2})
+            'DCTLUI_SLIDER_FLOAT':49,'DCTLUI_SLIDER_INT':1,
+            'DCTLUI_COMBO_BOX':9,'DCTLUI_CHECK_BOX':6,'DCTLUI_COLOR_PICKER':2})
 
     def test_short_unquoted_labels(self):
         for c in parse_ui(SOURCE.read_text()):
@@ -72,8 +72,10 @@ class UISchemaTests(unittest.TestCase):
         current=parse_ui(SOURCE.read_text())
         self.assertEqual(len(old),57)
         for before,after in zip(old,current):
-            self.assertEqual(before,{'name':after.name,'type':after.kind,
-                'default':float(after.values[0]),'enum':list(after.enums)})
+            self.assertEqual(before['name'],after.name)
+            self.assertEqual(before['type'],after.kind)
+            self.assertEqual(before['default'],float(after.values[0]))
+            self.assertEqual(before['enum'],list(after.enums)[:len(before['enum'])])
 
     def test_probe_control_inventories(self):
         basic=parse_ui((ROOT/'src/YSEW_UI_Probe_A2.dctl').read_text())

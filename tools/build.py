@@ -10,7 +10,7 @@ from ui_schema import controls, parse_ui  # controls is also used by the native 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / 'src/YSEW_Film_Lab.dctl'
 TARGET = ROOT / 'dist/YSEW_Film_Lab.dctl'
-VERSION = '0.1.0-alpha.2'
+VERSION = '0.2.0-alpha.1'
 
 
 def validate(text: str) -> None:
@@ -37,9 +37,8 @@ def outputs() -> dict[Path, bytes]:
         data = source.read_bytes()
         validate(data.decode('ascii'))
         files[ROOT/'dist'/source.name] = data
-    # A version-distinct filename helps distinguish cached alpha.1 instances in Resolve.
-    # It is an exact copy, not a separate shader or control contract.
-    files[ROOT/'dist/YSEW_Film_Lab_A2.dctl'] = SOURCE.read_bytes()
+    # Keep prior version-distinct files immutable; the current milestone gets its own alias.
+    files[ROOT/'dist/YSEW_Film_Lab_M2.dctl'] = SOURCE.read_bytes()
     return files
 
 

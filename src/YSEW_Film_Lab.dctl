@@ -1,4 +1,4 @@
-// Yekermo Sew Film Lab 0.1.0-alpha.2 - UI repair and optional visual guides.
+// Yekermo Sew Film Lab 0.2.0-alpha.1 - M2 technical input science and CAT02 white balance.
 // Original parametric creative models, NOT measured film-stock emulations.
 // Input must already be decoded RGB with the selected scene encoding.
 // See docs/RESOLVE_SETUP.md and docs/DIAGNOSTICS.md before installation.
@@ -6,7 +6,7 @@
 // UI labels and enum display labels are unquoted DCTL tokens, not C strings.
 // UI numeric arguments use plain literals; float suffixes are for shader code only.
 
-DEFINE_UI_PARAMS(input_mode, Input, DCTLUI_COMBO_BOX, 0, {IN_DI, IN_DWG, IN_709_LINEAR}, {DWG Intermediate, DWG Linear, 709 Scene Linear})
+DEFINE_UI_PARAMS(input_mode, Input, DCTLUI_COMBO_BOX, 0, {IN_DI, IN_DWG, IN_709_LINEAR, IN_LOGC4, IN_SLOG3_CINE, IN_SLOG3_G3, IN_LOG3G10}, {DWG Intermediate, DWG Linear, 709 Scene Linear, ARRI LogC4, Sony SLog3 Cine, Sony SLog3 G3, RED Log3G10})
 DEFINE_UI_PARAMS(output_mode, Output, DCTLUI_COMBO_BOX, 2, {OUT_DI, OUT_DWG, OUT_709}, {DWG Intermediate, DWG Linear, 709 Gamma 2.4})
 DEFINE_UI_PARAMS(exposure, Exposure, DCTLUI_SLIDER_FLOAT, 0.0, -10.0, 10.0, 0.01)
 DEFINE_UI_PARAMS(warm, Warmth, DCTLUI_SLIDER_FLOAT, 0.0, -1.0, 1.0, 0.01)
@@ -73,7 +73,13 @@ DEFINE_UI_PARAMS(skin_pick_on, Pick Skin Hue, DCTLUI_CHECK_BOX, 0)
 DEFINE_UI_PARAMS(guide_mode, Visual Guide, DCTLUI_COMBO_BOX, 0, {G_NONE, G_TONE, G_EXPOSURE, G_COLOR, G_SKIN, G_VIGNETTE}, {Off, Tone Curve, Exposure Band, Color Range, Skin Range, Vignette})
 DEFINE_UI_PARAMS(guide_opacity, Guide Opacity, DCTLUI_SLIDER_FLOAT, 0.95, 0.25, 1.0, 0.01)
 
-DEFINE_UI_TOOLTIP(Input, "RGB encoding arriving at this node. 709 Scene Linear is not a finished Rec709 image. ProRes RAW must be decoded upstream.")
+// M2 controls are appended to preserve all alpha.1/alpha.2 saved parameter indices.
+DEFINE_UI_PARAMS(wb_mode, WB Method, DCTLUI_COMBO_BOX, 0, {WB_LEGACY, WB_CAT02, WB_OFF}, {Legacy, CAT02, Off})
+DEFINE_UI_PARAMS(wb_temp, WB Temp K, DCTLUI_SLIDER_FLOAT, 6504.0, 1667.0, 25000.0, 1.0)
+DEFINE_UI_PARAMS(wb_duv, WB Duv, DCTLUI_SLIDER_FLOAT, 0.0, -0.05, 0.05, 0.0005)
+DEFINE_UI_PARAMS(wb_strength, WB Strength, DCTLUI_SLIDER_FLOAT, 1.0, 0.0, 1.0, 0.01)
+
+DEFINE_UI_TOOLTIP(Input, "RGB encoding arriving at this node. Camera log choices require the decoder or upstream converter to output that exact gamut and curve. ProRes RAW is not auto-detected.")
 DEFINE_UI_TOOLTIP(Output, "DWG choices return working RGB for one external output transform. 709 Gamma 2.4 performs internal SDR rendering. Never apply a second output conversion.")
 DEFINE_UI_TOOLTIP(Exposure, "Photographic exposure adjustment in stops. Plus one doubles scene-linear RGB.")
 DEFINE_UI_TOOLTIP(Warmth, "Relative red-blue balance. This is not calibrated color temperature in Kelvin.")
@@ -104,6 +110,10 @@ DEFINE_UI_TOOLTIP(Pick Range Hue, "Use Range Color hue instead of Range Hue. A n
 DEFINE_UI_TOOLTIP(Pick Skin Hue, "Use Skin Color hue instead of Skin Hue. A neutral or invalid swatch falls back to Skin Hue. Width and saturation limits remain active.")
 DEFINE_UI_TOOLTIP(Visual Guide, "Read-only in-view guides driven by controls. Not draggable curves or an image histogram. Internal Rec709 only. Set Off before export; guides are rendered pixels.")
 DEFINE_UI_TOOLTIP(Guide Opacity, "Opacity of the read-only visual guide. The top warning stripe remains visible regardless of this setting.")
+DEFINE_UI_TOOLTIP(WB Method, "Legacy preserves the alpha.1 Warmth and Tint behavior. CAT02 uses WB Temp K and WB Duv. Off bypasses chromatic white balance while keeping exposure and RGB density trims.")
+DEFINE_UI_TOOLTIP(WB Temp K, "Source illuminant CCT used by CAT02 white balance. The model blends Planckian and CIE daylight loci and adapts the selected source white to D65.")
+DEFINE_UI_TOOLTIP(WB Duv, "Source-white offset in CIE 1960 UCS. Positive values move the assumed illuminant toward green before adaptation to D65.")
+DEFINE_UI_TOOLTIP(WB Strength, "Mix between unadapted and CAT02-adapted scene-linear DWG. One applies the full adaptation.")
 
 // Pure helpers: never refer to UI variables outside transform().
 __DEVICE__ float ys_clamp(float x, float a, float b) { return _fminf(_fmaxf(x, a), b); }
@@ -164,9 +174,167 @@ __DEVICE__ float3 ys_709_xyz(float3 v) {
 }
 __DEVICE__ float3 ys_to709(float3 v) { return ys_xyz_709(ys_dwg_xyz(v)); }
 __DEVICE__ float3 ys_from709(float3 v) { return ys_xyz_dwg(ys_709_xyz(v)); }
+
+// M2 camera input transforms. Each published camera gamut is converted through CIE XYZ D65
+// into scene-linear DaVinci Wide Gamut. These are technical decoders, not RAW debayering.
+__DEVICE__ float ys_logc4_decode(float v) {
+    const float a = 2231.8263090676883f;
+    const float b = 0.9071358748778103f;
+    const float c = 0.09286412512218964f;
+    const float s = 0.1135972086105891f;
+    const float t = -0.01805699611991131f;
+    if (v < 0.0f) return v*s+t;
+    return (_exp2f(14.0f*(v-c)/b+6.0f)-64.0f)/a;
+}
+__DEVICE__ float ys_logc4_encode(float v) {
+    const float a = 2231.8263090676883f;
+    const float b = 0.9071358748778103f;
+    const float c = 0.09286412512218964f;
+    const float s = 0.1135972086105891f;
+    const float t = -0.01805699611991131f;
+    if (v < t) return (v-t)/s;
+    return (_log2f(a*v+64.0f)-6.0f)/14.0f*b+c;
+}
+__DEVICE__ float3 ys_awg4_xyz(float3 v) {
+    return make_float3(
+        0.704858320407232064f*v.x + 0.129760295170463003f*v.y + 0.115837311473976537f*v.z,
+        0.254524176404027025f*v.x + 0.781477732712002049f*v.y - 0.036001909116029039f*v.z,
+        1.089057750759878429f*v.z);
+}
+__DEVICE__ float ys_slog3_decode(float v) {
+    const float cut = 171.2102946929f/1023.0f;
+    if (v >= cut) return _powf(10.0f,(v*1023.0f-420.0f)/261.5f)*0.19f-0.01f;
+    return (v*1023.0f-95.0f)*0.01125f/(171.2102946929f-95.0f);
+}
+__DEVICE__ float ys_slog3_encode(float v) {
+    if (v >= 0.01125f)
+        return (420.0f + (_log2f((v+0.01f)/0.19f)*0.3010299956639812f)*261.5f)/1023.0f;
+    return (v*(171.2102946929f-95.0f)/0.01125f+95.0f)/1023.0f;
+}
+// Matrices below are derived from Sony's published CIE xy primaries and D65 white.
+__DEVICE__ float3 ys_sgamut3cine_xyz(float3 v) {
+    return make_float3(
+        0.599083920758672f*v.x + 0.248925516115147f*v.y + 0.102446490178174f*v.z,
+        0.215075820116077f*v.x + 0.885068501744598f*v.y - 0.100144321860675f*v.z,
+       -0.032065849545822f*v.x - 0.027658390679458f*v.y + 1.148781990204675f*v.z);
+}
+__DEVICE__ float3 ys_sgamut3_xyz(float3 v) {
+    return make_float3(
+        0.706482713192173f*v.x + 0.128801049791290f*v.y + 0.115172164759678f*v.z,
+        0.270979670813193f*v.x + 0.786606411201264f*v.y - 0.057586082014457f*v.z,
+       -0.009677845386151f*v.x + 0.004600037492436f*v.y + 1.094135555285109f*v.z);
+}
+__DEVICE__ float ys_log3g10_decode(float v) {
+    const float a=0.224282f,b=155.975327f,c=0.01f,g=15.1927f;
+    if (v < 0.0f) return v/g-c;
+    return (_powf(10.0f,v/a)-1.0f)/b-c;
+}
+__DEVICE__ float ys_log3g10_encode(float v) {
+    const float a=0.224282f,b=155.975327f,c=0.01f,g=15.1927f;
+    float x=v+c;
+    if (x < 0.0f) return x*g;
+    return a*(_log2f(x*b+1.0f)*0.3010299956639812f);
+}
+__DEVICE__ float3 ys_rwg_xyz(float3 v) {
+    return make_float3(
+        0.735275f*v.x + 0.068609f*v.y + 0.146571f*v.z,
+        0.286694f*v.x + 0.842979f*v.y - 0.129673f*v.z,
+       -0.079681f*v.x - 0.347343f*v.y + 1.516081f*v.z);
+}
+__DEVICE__ float3 ys_planck_xy(float temp) {
+    float T=ys_clamp(temp,1667.0f,25000.0f);
+    float i=1.0f/T,i2=i*i,i3=i2*i;
+    float x=T<=4000.0f ? -0.2661239e9f*i3-0.2343580e6f*i2+0.8776956e3f*i+0.179910f
+                       : -3.0258469e9f*i3+2.1070379e6f*i2+0.2226347e3f*i+0.240390f;
+    float y;
+    if (T<=2222.0f) y=-1.1063814f*x*x*x-1.34811020f*x*x+2.18555832f*x-0.20219683f;
+    else if (T<=4000.0f) y=-0.9549476f*x*x*x-1.37418593f*x*x+2.09137015f*x-0.16748867f;
+    else y=3.0817580f*x*x*x-5.87338670f*x*x+3.75112997f*x-0.37001483f;
+    return make_float3(x,y,0.0f);
+}
+__DEVICE__ float3 ys_daylight_xy(float temp) {
+    float T=ys_clamp(temp,4000.0f,25000.0f),q=1000.0f/T,q2=q*q,q3=q2*q;
+    float x=T<=7000.0f ? 0.244063f+0.09911f*q+2.9678f*q2-4.6070f*q3
+                       : 0.237040f+0.24748f*q+1.9018f*q2-2.0064f*q3;
+    return make_float3(x,-3.0f*x*x+2.87f*x-0.275f,0.0f);
+}
+__DEVICE__ float3 ys_cct_xy(float temp) {
+    float T=ys_clamp(temp,1667.0f,25000.0f);
+    if (T<=3500.0f) return ys_planck_xy(T);
+    if (T>=4500.0f) return ys_daylight_xy(T);
+    return ys_mix(ys_planck_xy(T),ys_daylight_xy(T),ys_smooth(3500.0f,4500.0f,T));
+}
+__DEVICE__ float3 ys_xy_uv1960(float3 xy) {
+    float den=-2.0f*xy.x+12.0f*xy.y+3.0f;
+    return make_float3(4.0f*xy.x/den,6.0f*xy.y/den,0.0f);
+}
+__DEVICE__ float3 ys_uv1960_xy(float3 uv) {
+    float den=2.0f*uv.x-8.0f*uv.y+4.0f;
+    return make_float3(3.0f*uv.x/den,2.0f*uv.y/den,0.0f);
+}
+__DEVICE__ float3 ys_source_white_xy(float temp,float duv) {
+    float T=ys_clamp(temp,1667.0f,25000.0f);
+    if (_fabs(T-6504.0f)<0.5f && _fabs(duv)<1.0e-8f) return make_float3(0.3127f,0.3290f,0.0f);
+    float3 uv=ys_xy_uv1960(ys_cct_xy(T));
+    float lo=_fmaxf(1667.0f,T-25.0f),hi=_fminf(25000.0f,T+25.0f);
+    float3 u0=ys_xy_uv1960(ys_cct_xy(lo)),u1=ys_xy_uv1960(ys_cct_xy(hi));
+    float tu=u1.x-u0.x,tv=u1.y-u0.y,norm=_sqrtf(tu*tu+tv*tv);
+    if (norm>1.0e-10f) {
+        float nu=tv/norm,nv=-tu/norm;
+        if (nv<0.0f) { nu=-nu; nv=-nv; }
+        uv.x+=duv*nu; uv.y+=duv*nv;
+    }
+    return ys_uv1960_xy(uv);
+}
+__DEVICE__ float3 ys_xy_xyz(float3 xy) {
+    float y=_fmaxf(xy.y,1.0e-8f);
+    return make_float3(xy.x/y,1.0f,(1.0f-xy.x-xy.y)/y);
+}
+__DEVICE__ float3 ys_cat02_lms(float3 v) {
+    return make_float3(0.7328f*v.x+0.4296f*v.y-0.1624f*v.z,
+        -0.7036f*v.x+1.6975f*v.y+0.0061f*v.z,0.0030f*v.x+0.0136f*v.y+0.9834f*v.z);
+}
+__DEVICE__ float3 ys_cat02_xyz(float3 v) {
+    return make_float3(1.096123820835514f*v.x-0.278869000218287f*v.y+0.182745179382773f*v.z,
+        0.454369041975359f*v.x+0.473533154307412f*v.y+0.072097803721230f*v.z,
+        -0.009627608738429f*v.x-0.005698031216113f*v.y+1.015325639954543f*v.z);
+}
+__DEVICE__ float3 ys_cat02_wb(float3 scene,float temp,float duv) {
+    float3 src=ys_xy_xyz(ys_source_white_xy(temp,duv));
+    float3 dst=make_float3(0.950455927051672f,1.0f,1.089057750759878f);
+    float3 sl=ys_cat02_lms(src),dl=ys_cat02_lms(dst);
+    float3 lms=ys_cat02_lms(ys_dwg_xyz(scene));
+    lms=make_float3(lms.x*dl.x/sl.x,lms.y*dl.y/sl.y,lms.z*dl.z/sl.z);
+    return ys_xyz_dwg(ys_cat02_xyz(lms));
+}
+__DEVICE__ float3 ys_balance_m2(float3 v,float ev,float w,float t,float r,float g,float b,
+    int method,float temp,float duv,float strength) {
+    if (method==0) return ys_balance(v,ev,w,t,r,g,b);
+    float3 base=v;
+    if (method==1) base=ys_mix(v,ys_cat02_wb(v,temp,duv),ys_sat(strength));
+    return ys_balance(base,ev,0.0f,0.0f,r,g,b);
+}
+
 __DEVICE__ float3 ys_input(float3 v, int mode) {
-    if (mode == 0) return make_float3(ys_di_decode(v.x),ys_di_decode(v.y),ys_di_decode(v.z));
-    if (mode == 2) return ys_from709(v);
+    if (mode==0) return make_float3(ys_di_decode(v.x),ys_di_decode(v.y),ys_di_decode(v.z));
+    if (mode==1) return v;
+    if (mode==2) return ys_from709(v);
+    if (mode==3) {
+        float3 q=make_float3(ys_logc4_decode(v.x),ys_logc4_decode(v.y),ys_logc4_decode(v.z));
+        return ys_xyz_dwg(ys_awg4_xyz(q));
+    }
+    if (mode==4) {
+        float3 q=make_float3(ys_slog3_decode(v.x),ys_slog3_decode(v.y),ys_slog3_decode(v.z));
+        return ys_xyz_dwg(ys_sgamut3cine_xyz(q));
+    }
+    if (mode==5) {
+        float3 q=make_float3(ys_slog3_decode(v.x),ys_slog3_decode(v.y),ys_slog3_decode(v.z));
+        return ys_xyz_dwg(ys_sgamut3_xyz(q));
+    }
+    if (mode==6) {
+        float3 q=make_float3(ys_log3g10_decode(v.x),ys_log3g10_decode(v.y),ys_log3g10_decode(v.z));
+        return ys_xyz_dwg(ys_rwg_xyz(q));
+    }
     return v;
 }
 __DEVICE__ float3 ys_encode_working(float3 v, int mode) {
@@ -629,6 +797,7 @@ __DEVICE__ float3 ys_warning(float3 image,int height,int x,int y) {
 }
 typedef struct {
     float balance_ev; float balance_w; float balance_t; float density_r; float density_g; float density_b;
+    int wb_method; float wb_temp; float wb_duv; float wb_strength;
     int neg_active; float neg_c; float neg_t; float neg_s; float neg_chroma; float neg_cross;
     int look_id; float look_amount; float skin_amount; float skin_center; float skin_half; float skin_min; float skin_max;
     int print_active; float print_c; float print_t; float print_s; float print_d; float print_chroma;
@@ -638,7 +807,8 @@ typedef struct {
 __DEVICE__ float3 ys_guide_curve(float linear_gray,YSGuideParams p) {
     // Full pointwise response to a neutral DWG input; excludes spatial vignette.
     // Tests compare this helper with the actual transform at matching settings.
-    float3 v = ys_balance(ys_gray(linear_gray),p.balance_ev,p.balance_w,p.balance_t,p.density_r,p.density_g,p.density_b);
+    float3 v = ys_balance_m2(ys_gray(linear_gray),p.balance_ev,p.balance_w,p.balance_t,p.density_r,p.density_g,p.density_b,
+        p.wb_method,p.wb_temp,p.wb_duv,p.wb_strength);
     float mask = 0.0f;
     if (p.look_id != 0 && p.look_amount > 0.0f && p.skin_amount > 0.0f)
         mask = ys_skin(v,p.skin_center,p.skin_half,p.skin_min,p.skin_max);
@@ -753,7 +923,8 @@ __DEVICE__ float3 transform(int p_Width,int p_Height,int p_X,int p_Y,float p_R,f
     YSStages s;
     s.source = ys_input(raw,input_mode);
     if (!ys_safe(s.source)) return ys_error(p_X,p_Y);
-    s.balanced = ys_balance(s.source,exposure,warm,tint,printer_r,printer_g,printer_b);
+    s.balanced = ys_balance_m2(s.source,exposure,warm,tint,printer_r,printer_g,printer_b,
+        wb_mode,wb_temp,wb_duv,wb_strength);
     s.negative = negative_on ? ys_interaction(ys_saturation(ys_curve(s.balanced,neg_contrast,neg_toe,neg_shoulder),neg_sat),crosstalk) : s.balanced;
     float range_center = range_pick_on ? ys_picker_hue(make_float3(range_pick.r,range_pick.g,range_pick.b),range_hue) : range_hue;
     float skin_center = skin_pick_on ? ys_picker_hue(make_float3(skin_pick.r,skin_pick.g,skin_pick.b),skin_hue) : skin_hue;
@@ -786,6 +957,7 @@ __DEVICE__ float3 transform(int p_Width,int p_Height,int p_X,int p_Y,float p_R,f
     YSGuideParams gp;
     gp.balance_ev=exposure; gp.balance_w=warm; gp.balance_t=tint;
     gp.density_r=printer_r; gp.density_g=printer_g; gp.density_b=printer_b;
+    gp.wb_method=wb_mode; gp.wb_temp=wb_temp; gp.wb_duv=wb_duv; gp.wb_strength=wb_strength;
     gp.neg_active=negative_on; gp.neg_c=neg_contrast; gp.neg_t=neg_toe; gp.neg_s=neg_shoulder; gp.neg_chroma=neg_sat; gp.neg_cross=crosstalk;
     gp.look_id=look_mode; gp.look_amount=look_mix; gp.skin_amount=skin_protect; gp.skin_center=skin_center;
     gp.skin_half=skin_width; gp.skin_min=skin_sat_min; gp.skin_max=skin_sat_max;

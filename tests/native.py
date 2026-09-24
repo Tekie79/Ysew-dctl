@@ -24,6 +24,12 @@ extern "C" float scalar(int op,float x,float a,float b,float c) {
     if(op==7) return ys_quantize(x,(int)a);
     if(op==8) return ys_digit((int)x,(int)a,(int)b);
     if(op==9) return ys_picker_hue(make_float3(x,a,b),c);
+    if(op==10) return ys_logc4_decode(x);
+    if(op==11) return ys_slog3_decode(x);
+    if(op==12) return ys_log3g10_decode(x);
+    if(op==13) return ys_logc4_encode(x);
+    if(op==14) return ys_slog3_encode(x);
+    if(op==15) return ys_log3g10_encode(x);
     return -999.0f;
 }
 extern "C" void vector(int op,float r,float g,float b,float a,float c,float d,float* out) {
@@ -33,6 +39,10 @@ extern "C" void vector(int op,float r,float g,float b,float a,float c,float d,fl
     else if(op==4) v=ys_curve(v,a,c,d);
     else if(op==5) v=ys_gamut(v,ys_gamut_factor(v,a));
     else if(op==6) v=ys_hsv(v); else if(op==7) v=ys_hue_color(a);
+    else if(op==8) v=ys_awg4_xyz(v); else if(op==9) v=ys_sgamut3cine_xyz(v);
+    else if(op==10) v=ys_sgamut3_xyz(v); else if(op==11) v=ys_rwg_xyz(v);
+    else if(op==12) v=ys_cat02_wb(v,a,c); else if(op==13) v=ys_input(v,(int)a);
+    else if(op==14) v=ys_cct_xy(a);
     out[0]=v.x; out[1]=v.y; out[2]=v.z;
 }
 '''
