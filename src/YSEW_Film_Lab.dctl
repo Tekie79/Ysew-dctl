@@ -315,12 +315,6 @@ __DEVICE__ float ys_target_y(float3 rgb,int target_kind) {
     if (target_kind == 2) return 0.262700212011267f*rgb.x + 0.677998071518871f*rgb.y + 0.059301716469862f*rgb.z;
     return ys_Y709(rgb);
 }
-__DEVICE__ float3 ys_target_pre(float3 dwg,int target_kind,float gray_code) {
-    float3 rgb=ys_target_rgb(dwg,target_kind);
-    float y=ys_target_y(rgb,target_kind);
-    if (y <= 1.0e-20f) return ys_gray(0.0f);
-    return ys_scale(rgb,ys_tone(y,gray_code)/y);
-}
 __DEVICE__ float ys_target_occupancy(float3 rgb,int target_kind) {
     float y=ys_clamp(ys_target_y(rgb,target_kind),0.0f,1.0f);
     float up=_fmaxf(1.0f-y,1.0e-8f), down=_fmaxf(y,1.0e-8f);
@@ -570,6 +564,13 @@ __DEVICE__ float ys_tone(float y,float gray_code) {
     float target = _powf(gray_code,2.4f);
     float k = 0.18f*(1.0f-target)/target;
     return y > 0.0f ? y/(y+k) : 0.0f;
+}
+
+__DEVICE__ float3 ys_target_pre(float3 dwg,int target_kind,float gray_code) {
+    float3 rgb=ys_target_rgb(dwg,target_kind);
+    float y=ys_target_y(rgb,target_kind);
+    if (y <= 1.0e-20f) return ys_gray(0.0f);
+    return ys_scale(rgb,ys_tone(y,gray_code)/y);
 }
 __DEVICE__ float3 ys_pre_gamut(float3 v,float gray_code) {
     float3 r = ys_to709(v); float y = ys_Y709(r);
