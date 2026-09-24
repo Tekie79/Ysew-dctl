@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.7.0-alpha.1 - 2026-09-24
+
+M7 show-consistency and Rec.709 mastering implementation on `develop`.
+
+- Appended Night, Exterior Day and Exterior Dusk look modes without renumbering existing looks.
+- Added QC Pre Gamut, QC Final Range and QC Master diagnostics with configurable boundary/compression thresholds.
+- Added five candidate whole-pipeline show profiles, all explicitly pending director review.
+- Added versioned shot metrics, reference/candidate comparison and episode batch consistency workflow.
+- Added provisional, versioned episode consistency tolerances.
+- Added deterministic release ZIP packaging with SHA-256 manifest and production-ready=false safety metadata.
+- Added comprehensive Resolve/Metal, creative and Rec.709 delivery-QC checklist.
+- M8 remains optional future output/HDR work; M7 does not claim HDR or additional qualified display masters.
+
 ## 0.6.0-alpha.1 - 2026-09-24
 
 M6 advanced-diagnostics implementation on `develop`.

@@ -11,7 +11,7 @@ A checked source milestone does not mean a production release. Every milestone m
 | M4 | Separate halation, bloom, lens glow and veiling glare; multi-radius spectral-weighted spatial kernels; quality/performance tiers and stage-contribution views | Implemented; 117-test dual-compiler CI passed. Comprehensive Resolve/Metal visual/performance acceptance deferred |
 | M5 | Density-domain temporally deterministic multilayer grain; size/roughness/chroma and exposure response; resolution/frame/seed validation; optional lens softness and edge treatment | Implemented; 134-test dual-compiler CI passed. Resolve timeline/cache/render temporal validation and creative texture tuning deferred to comprehensive final test |
 | M6 | Additional advanced diagnostics, validated destination-gamut options, color-volume tools, scene calibration profiles; evaluate OFX scopes/statistics/reference-frame companion | Inline M6 implemented and 149-test dual-compiler CI passed; OFX/statistics/reference-frame companion architecture defined but intentionally not implemented in the DCTL |
-| M7 | Shot/scene matching workflow, director-approved fall/winter/night/exterior presets, episode consistency regression, Rec.709 mastering and delivery QC, packaging | Not started |
+| M7 | Shot/scene matching workflow, director-approved fall/winter/night/exterior presets, episode consistency regression, Rec.709 mastering and delivery QC, packaging | Technical implementation complete: candidate profiles, metric comparison/batch regression, mastering-QC diagnostics and deterministic packaging. Director approval and comprehensive Resolve/delivery qualification pending |
 | M8 | Optional additional display targets including HDR, with independent display rendering and delivery qualification | Future, not advertised as supported |
 
 ## Alpha.2 scope
@@ -20,7 +20,7 @@ UI metadata repair and optional graphical aids are implemented, not a new film-s
 
 ## Next execution gate
 
-Validate the M2 build in the actual Resolve/Metal host and confirm the ProRes RAW converter's exact RGB output before production use. Camera transforms are explicit; no RAW decoder or camera encoding is inferred. Request representative, authorized scene material for creative tuning; do not manufacture film-stock accuracy from mathematical curves alone.
+Run the comprehensive M1-M7 Resolve Studio / Metal acceptance plan in [DELIVERY_QC.md](DELIVERY_QC.md). Confirm the actual ProRes RAW converter output, GPU/UI behavior, optics/grain performance, candidate show-profile decisions, episode-consistency tolerances and Rec.709 export/re-import before any production-ready claim or promotion to `main`.
 
 ## Spatial and grain requirements
 

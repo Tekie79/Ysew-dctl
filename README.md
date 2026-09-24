@@ -2,9 +2,9 @@
 
 Custom DCTL development for the **Yekermo Sew** television series.
 
-**Version:** `0.6.0-alpha.1` | **Development branch:** `develop` | **Milestone:** M6 advanced diagnostics
+**Version:** `0.7.0-alpha.1` | **Development branch:** `develop` | **Milestone:** M7 show consistency and Rec.709 mastering
 
-This is executable source, not a look LUT or a finished film-stock emulator. The first vertical slice implements scene transforms, balancing, original parametric negative/print responses, provisional seasonal looks, vignette, SDR rendering, and 26 diagnostic modes. Alpha.1 failed the user's first Resolve control-load test. Alpha.2 repairs the declarations and adds optional graphical aids; its 76 CPU/source tests pass, but **Resolve retesting is pending. Do not use it as a production master grade yet.**
+This is executable source, not a look LUT or a measured film-stock emulator. The develop branch now contains the M1-M7 technical feature set: camera/working-space transforms, balance/CAT02, parametric negative and print response, Yekermo Sew candidate looks, spatial optics, temporal grain/texture, advanced diagnostics, Rec.709 mastering QC, shot-consistency tooling and deterministic packaging. **Comprehensive Resolve/Metal, creative and delivery acceptance is still pending; do not treat this alpha as a production master grade.**
 
 ## Alpha.2 UI repair and graphical aids
 
@@ -20,11 +20,11 @@ Start with [the UI retest](docs/UI_RETEST.md), using the two minimal probes and 
 - Lens/output: feathered, movable vignette; original analytic SDR tone rendering; luminance-preserving compression toward the Rec.709 neutral axis; Gamma 2.4 encoding. Working-space output is available for an external renderer.
 - Diagnostics: relative scene exposure/false color/zones, grayscale and RGB stop views, exposure ranges, output luminance/luma/hue/saturation/chroma, color-range masks, skin-candidate views, neutral-candidate chromatic bias, channel/volume warnings, compression amount, stage inspection, same-frame before/after and amplified differences. The exposure scale has numerical labels and an always-visible warning strip.
 
-**Not implemented yet:** camera-native IDTs, calibrated chromatic adaptation, measured negative/print stock responses, spatial halation/bloom/glow, animated grain, lens softness, actual frame statistics/scopes, reference-frame shot matching, HDR output, or delivery certification. See [the roadmap](docs/ROADMAP.md).
+**Still outside the completed inline M1-M7 scope:** measured stock characterization, a real OFX frame-statistics/reference companion, HDR/additional qualified display outputs, and production delivery certification. See [the roadmap](docs/ROADMAP.md).
 
 ## Install and test
 
-Use `dist/YSEW_Film_Lab_A2.dctl` for this retest; the canonical file remains `dist/YSEW_Film_Lab.dctl`. Read [Resolve setup](docs/RESOLVE_SETUP.md) before loading it. The default output is internally rendered **Rec.709 Gamma 2.4**; applying another output transform after it would be incorrect.
+Use `dist/YSEW_Film_Lab_M7.dctl` for the comprehensive test; the canonical file remains `dist/YSEW_Film_Lab.dctl`. Read [Resolve setup](docs/RESOLVE_SETUP.md) before loading it. The default output is internally rendered **Rec.709 Gamma 2.4**; applying another output transform after it would be incorrect.
 
 For development, Python 3.10+ and Clang or GCC with C++17 support are sufficient; there are no third-party Python dependencies.
 
@@ -85,3 +85,11 @@ remains unchanged. See [M6 advanced diagnostics](docs/M6_ADVANCED_DIAGNOSTICS.md
 Frame-wide waveform/vectorscope/histogram/3D-cloud and persistent reference-frame comparison
 are intentionally **not** faked inside the DCTL. Their proposed OFX/shared-core architecture is
 defined in [M6 scope companion](docs/M6_SCOPE_COMPANION.md).
+
+## M7 show consistency and mastering
+
+M7 adds Night, Exterior Day and Exterior Dusk looks; versioned candidate whole-pipeline show
+profiles; numerical reference/shot and episode-batch comparison; Rec.709 mastering-QC
+diagnostics; and deterministic release packaging. Candidate profiles remain pending director
+review. See [M7 show/mastering](docs/M7_SHOW_MASTERING.md) and the
+[comprehensive delivery checklist](docs/DELIVERY_QC.md).

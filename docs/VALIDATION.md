@@ -140,3 +140,22 @@ without renumbering any existing saved selection.
 
 Resolve/Metal host compilation, UI population, display-monitor interpretation and visual review
 remain deferred to the comprehensive final test requested for the project.
+
+## M7 technical implementation
+
+Version `0.7.0-alpha.1` adds three append-only show-look modes (Night, Exterior Day,
+Exterior Dusk), three Rec.709 mastering-QC diagnostics, two QC threshold controls, five
+versioned candidate whole-pipeline show profiles, a shot/reference metric-comparison and episode
+batch workflow, a shot-metrics schema, and deterministic release packaging.
+
+All candidate profile records explicitly remain `pending_director_review`. Creative profiles
+are prohibited from modifying technical Input, Output or diagnostic ownership.
+
+The shot matching tool rejects stage/working-space mismatches and classifies metric deltas
+against versioned provisional tolerances as PASS/WARN/FAIL. It consumes numerical metrics and
+does not claim to extract persistent frame statistics from the DCTL.
+
+The release ZIP embeds per-file SHA-256 hashes and remains marked `production_ready=false`
+with host acceptance pending the comprehensive Resolve test.
+
+Final M7 CI outcome is recorded below once the documentation/package commit completes.

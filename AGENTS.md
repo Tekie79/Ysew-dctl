@@ -49,3 +49,19 @@ Alpha.1 failed control loading in the user-reported Studio 21.1 environment. Alp
 24. Gamut Occupancy and RGB Headroom are target-RGB cube metrics, not perceptual Delta E or a full color-volume histogram. Scene neutral error is CIE-xy distance from D65, also not Delta E.
 25. Combo-box compatibility is append-only: prior enum/value ordering must remain an exact prefix even when later phases add choices.
 26. Do not implement fake global scopes or reference-frame statistics inside a stateless per-pixel DCTL. Use the M6 companion architecture for frame reductions, persistent references and matching statistics.
+
+27. M7 candidate show profiles must remain `pending_director_review` until the owner explicitly
+approves them after representative-footage review. Do not use "director-approved" as a status
+because the code exists.
+28. Creative show profiles must never set Input, Output, Diagnostics, calibration, QC or other
+technical ownership controls. Validate every stored profile against the DCTL UI schema.
+29. Shot matching compares versioned numerical metrics measured at the same pipeline stage and
+working space. It is a review workflow, not an automatic grading decision; intentional dramatic
+differences may be correct.
+30. Rec.709 QC modes are inspection aids, not broadcast legalization. Export data levels,
+codec packing, tags and downstream color management remain Resolve/delivery responsibilities.
+31. Deterministic release packaging must keep Diagnostics, Visual Guide, Optics View and Texture
+View defaulted Off and must mark production readiness false until host/creative/delivery gates
+are explicitly closed.
+32. Do not merge M7 to main or promote a production release without the comprehensive evidence
+defined in docs/DELIVERY_QC.md.
