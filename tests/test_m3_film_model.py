@@ -136,7 +136,7 @@ class M3FilmModelTests(unittest.TestCase):
         self.assertTrue(all(a<b for a,b in zip(values,values[1:])))
 
     def test_tone_guide_matches_advanced_pipeline(self):
-        self.s.set(film_model=1,adv_neg_sep=.55,adv_neg_warm=.3,adv_print_black=.2,
+        self.s.set(output_mode=2,film_model=1,adv_neg_sep=.55,adv_neg_warm=.3,adv_print_black=.2,
                    adv_print_white=.15,adv_print_sep=.35,adv_print_warm=.2)
         for gray in [.018,.09,.18,.72,2.88]:
             self.assertRGB(self.s.guide(gray),self.s.pixel((gray,gray,gray)),tol=2e-5)
