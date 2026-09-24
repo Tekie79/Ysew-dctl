@@ -39,3 +39,8 @@ Alpha.1 failed control loading in the user-reported Studio 21.1 environment. Alp
 16. M4 spatial optics use finite neighborhood texture sampling. Never describe the ring kernel as a measured lens PSF, full Gaussian convolution or physically exact film-base scattering.
 17. Optics must default Off and all spatial effect amounts default zero. Preserve the first 81 M3 controls.
 18. Final Resolve testing must include GPU timing, frame boundaries, resolution scaling, cache/render consistency and real bright practicals/windows.
+
+19. M5 gauge names are spatial-size presets only. Do not describe them as measured 8mm, 16mm, 35mm or 65mm stock unless measured reference data is later introduced.
+20. Grain must remain deterministic for the same frame and seed, and temporal mode must use timeline-frame state rather than wall-clock randomness. The host RAND sequence does not need to match the CPU shim; behavioral invariants do.
+21. Grain is applied as a multiplicative density-style perturbation after print, not as display-code additive noise. Texture defaults Off and the first 99 M4 controls remain frozen.
+22. Comprehensive Resolve validation must test timeline seeks, render cache, re-render reproducibility, project reopen, frame-rate changes, resolution scaling, grain aliasing, performance and delivery renders.

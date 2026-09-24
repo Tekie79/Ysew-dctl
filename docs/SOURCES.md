@@ -51,3 +51,11 @@ Used for Log3G10 equations/mapping values and the published REDWideGamutRGB-to-X
 M2 applies the standard CAT02 transform in scene-linear XYZ. The user CCT white is generated
 from documented Planckian/daylight chromaticity approximations and Duv is applied in CIE 1960
 UCS. This is a colorimetric adaptation model, not sensor-specific camera calibration.
+
+**S9 - Blackmagic Design: DaVinci Resolve 19.1 New Features Guide, DCTL RAND.**
+https://documents.blackmagicdesign.com/SupportNotes/DaVinci_Resolve_19_1_New_Features_Guide.pdf
+The guide documents `RAND(uint p_Seed)` as a uniform random generator and explicitly notes
+that `TIMELINE_FRAME_INDEX` can be used as a seed for temporally deterministic effects across
+systems. M5 uses those facilities for grain phase generation. The CPU test shim deliberately
+uses its own deterministic RAND surrogate; tests assert behavior rather than Blackmagic's
+private generator sequence.

@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.5.0-alpha.1 - 2026-09-24
+
+M5 temporal film-texture implementation on `develop`.
+
+- Added opt-in density-style multilayer grain after the print stage.
+- Added artistic 8mm/16mm/35mm/65mm/Custom gauge scales, grain-size, roughness and RGB-layer color controls.
+- Added independent shadow/midtone/highlight grain weighting.
+- Added Static, Every Frame, Hold 2 and Hold 3 temporal modes driven by `TIMELINE_FRAME_INDEX` and `RAND`, plus a user seed.
+- Added pre-negative Lens Soft and luminance-focused Micro Soft controls.
+- Added Grain/Weight/Lens/Combined Texture View diagnostics.
+- Frozen the first 99 M4 controls for saved-grade compatibility.
+- Final M5 CI passes 134 tests with both Clang and GCC.
+
 ## 0.4.0-alpha.1 - 2026-09-24
 
 - Added opt-in two-ring Halation, Bloom, Glow and Veiling Glare.

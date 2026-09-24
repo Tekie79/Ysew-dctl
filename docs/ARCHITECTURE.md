@@ -70,3 +70,29 @@ The advanced print applies its characteristic response, region-weighted black/wh
 neutral print density, a gentler separation stage, master chroma and an optional warm bias.
 The print is still not a measured stock or spectral print model. Output ownership and the
 existing Rec.709 render remain unchanged.
+
+## M5 film-texture stage
+
+M5 adds two distinct operations. Lens Soft and Micro Soft operate on balanced scene-linear
+DWG before the M4 acquisition-optics stage and before the negative. Lens Soft blends toward a
+small weighted neighborhood RGB average; Micro Soft shifts local luminance toward the same
+neighborhood average while retaining more chroma.
+
+Film grain is applied after the print response and before vignette/output. It is multiplicative:
+a deterministic noise value perturbs each print RGB channel by a small base-10 density factor.
+This avoids treating grain as a simple display-code additive overlay. Exposure weighting has
+independent shadow, midtone and highlight multipliers.
+
+Spatial grain is value noise with optional three-scale roughness. Grain Color blends a shared
+noise field toward independent R/G/B fields with slightly different layer scales. Gauge choices
+change the base spatial scale and Grain Size x100 multiplies it. The gauge names are artistic
+scale presets; no measured 8/16/35/65mm stock scan has been used.
+
+Temporal phase is derived from `TIMELINE_FRAME_INDEX`; samples come from DCTL `RAND(uint)`.
+Static ignores frame index, Every Frame changes every frame, and Hold 2/Hold 3 quantize the
+timeline frame index. The seed remains user-controlled. Resolution scaling is normalized to a
+2160-line reference.
+
+Texture View is a terminal Rec.709 diagnostic. Grain shows a signed 0.5-centered signal,
+Weight shows the exposure multiplier, Lens shows the absolute softness contribution, and
+Combined shows absolute grain/lens changes.

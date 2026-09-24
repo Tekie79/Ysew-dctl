@@ -2,7 +2,7 @@
 
 Custom DCTL development for the **Yekermo Sew** television series.
 
-**Version:** `0.4.0-alpha.1` | **Development branch:** `develop` | **Milestone:** M4 spatial optics
+**Version:** `0.5.0-alpha.1` | **Development branch:** `develop` | **Milestone:** M5 film texture
 
 This is executable source, not a look LUT or a finished film-stock emulator. The first vertical slice implements scene transforms, balancing, original parametric negative/print responses, provisional seasonal looks, vignette, SDR rendering, and 26 diagnostic modes. Alpha.1 failed the user's first Resolve control-load test. Alpha.2 repairs the declarations and adds optional graphical aids; its 76 CPU/source tests pass, but **Resolve retesting is pending. Do not use it as a production master grade yet.**
 
@@ -67,3 +67,10 @@ Legacy remains the default for saved-grade compatibility. See
 Opt-in Halation, Bloom, Glow and Veiling Glare now use neighboring-pixel texture
 sampling with Draft/Standard/High quality tiers. All amounts default to zero and
 Optics defaults Off. See [M4 spatial optics](docs/M4_SPATIAL_OPTICS.md).
+
+## M5 film texture
+
+`Texture` enables the new M5 layer: temporally deterministic density-style film grain,
+gauge/size/roughness/color controls, exposure-dependent grain strength, pre-negative lens
+softness and luminance micro-softness. Grain can be Static, Every Frame, Hold 2 or Hold 3.
+All M5 processing defaults Off. See [M5 film texture](docs/M5_FILM_TEXTURE.md).

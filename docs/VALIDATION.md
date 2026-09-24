@@ -102,3 +102,21 @@ zero-amount/Optics-Off compatibility, and contribution-view output guarding.
 This is still not Resolve/Metal qualification. GPU compile/runtime compatibility,
 viewer performance, cache behavior, render consistency, edge behavior on production
 footage, and creative approval are deferred to the comprehensive final test.
+
+## M5 technical implementation
+
+Version `0.5.0-alpha.1` completed automated validation in GitHub Actions run
+`36050862458`. The final native suite executed **134 tests with GCC** and **134 tests with
+Clang**, both with `OK`, and reproducible packaging passed.
+
+M5 coverage includes the frozen first 99 M4 controls; Texture-Off and zero-amount compatibility;
+same-frame/seed determinism; Every-Frame temporal change; Static and Hold-2 cadence; seed
+variation; correlated monochrome versus independent RGB grain; exposure-region suppression;
+resolution-normalized grain coordinates; gauge/size pattern changes; lens-soft impulse spread;
+microcontrast reduction; Texture View guarding; and randomized finite output. The CPU shim
+provides a deterministic RAND surrogate and controllable timeline-frame index solely for testing.
+
+The actual Resolve RAND sequence is not required to match the CPU surrogate. Final acceptance
+must instead verify deterministic behavior for the same timeline frame/seed, temporal changes
+after seeks, caching and renders, reproducibility after reopening, Metal performance, and the
+absence of objectionable temporal crawling/aliasing at actual delivery resolutions.
