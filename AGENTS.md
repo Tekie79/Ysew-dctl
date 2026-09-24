@@ -28,3 +28,6 @@ Do not add a license, cloud dependency, external telemetry, uploaded series medi
 ## Host acceptance status
 
 Alpha.1 failed control loading in the user-reported Studio 21.1 environment. Alpha.2 is a source/UI repair with optional read-only graphical guides; host retest remains pending. Never overwrite this status with a CPU pass. Run the minimal classic-control probe before attributing remaining missing controls to the camera, macOS or color management. See docs/UI_RETEST.md.
+
+11. Camera-log inputs must match the exact decoder-output gamut and transfer function. Never infer an ARRI, Sony or RED encoding from a codec name or camera brand. Append Input enum values; never reorder existing saved indices.
+12. CAT02 white balance is a declared source-white adaptation to D65, not an image-estimated illuminant or sensor calibration. Preserve Legacy as the default unless a deliberate compatibility break is approved.

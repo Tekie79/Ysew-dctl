@@ -6,7 +6,7 @@ A checked source milestone does not mean a production release. Every milestone m
 |---|---|---|
 | M0 | Repository inspection, `develop` branch and engineering contract | Established |
 | M1 | Executable pointwise color pipeline, core diagnostics, tests and reproducible package | Implemented; alpha.1 host UI failed; alpha.2 UI repair and CPU checks complete, host retest pending |
-| M2 | Actual Resolve/Metal acceptance; input/decoder verification; camera-native transforms with reference vectors; calibrated white-point adaptation; diagnostic legend/readout improvements | In progress: declaration repair, graphical guides and probes added; host retest pending |
+| M2 | Actual Resolve/Metal acceptance; input/decoder verification; camera-native transforms with reference vectors; calibrated white-point adaptation; diagnostic legend/readout improvements | Technical implementation complete for ARRI LogC4, Sony S-Log3 and RED Log3G10 plus CAT02 WB; Resolve/Metal and actual decoder-output acceptance pending |
 | M3 | Advanced negative/print response, color-density coupling, hue-dependent behavior, shadow/highlight controls and approved series look revisions; measured-stock profiles only with authorized data | Prototype only; advanced model pending |
 | M4 | Separate halation, bloom, lens glow and veiling glare; multi-radius spectral-weighted spatial kernels; quality/performance tiers and stage-contribution views | Not implemented |
 | M5 | Density-domain temporally deterministic multilayer grain; size/roughness/chroma and exposure response; resolution/frame/seed validation; optional lens softness and edge treatment | Not implemented |
@@ -20,7 +20,7 @@ UI metadata repair and optional graphical aids are implemented, not a new film-s
 
 ## Next execution gate
 
-Validate this alpha in the actual Resolve build and confirm the ProRes RAW decoder's RGB output before adding camera-specific color science. Fix any DCTL parser/backend issues before expanding the UI. Request representative, authorized scene material for creative tuning; do not manufacture film-stock accuracy from mathematical curves alone.
+Validate the M2 build in the actual Resolve/Metal host and confirm the ProRes RAW converter's exact RGB output before production use. Camera transforms are explicit; no RAW decoder or camera encoding is inferred. Request representative, authorized scene material for creative tuning; do not manufacture film-stock accuracy from mathematical curves alone.
 
 ## Spatial and grain requirements
 

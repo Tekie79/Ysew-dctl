@@ -45,3 +45,16 @@ CXX=g++ python3 -m unittest discover -s tests -v
 ```
 
 Use [UI_RETEST.md](UI_RETEST.md) for the smaller host acceptance sequence. Turn both Diagnostics and Visual Guide Off before normal output or delivery.
+
+## M2 technical implementation
+
+Version `0.2.0-alpha.1` technical implementation was completed on `develop`. GitHub Actions
+run `36045730290` passed after two source-order/lint fixes. The final run executed **94 tests**
+under Clang and **94 tests** under GCC. Coverage now includes published camera curve/matrix
+references, camera-neutral conversion, CCT generation, CAT02 D65 identity/source-white mapping,
+white-balance bypass/strength, the prior 64-case alpha pixel fixture, UI contracts and all earlier
+diagnostic/guide tests.
+
+This is still not Resolve/Metal acceptance. Pending gates are Resolve Studio 21.1 control loading,
+Metal compilation/execution, actual ProRes RAW converter-output confirmation, representative
+footage review, GPU performance, saved-project persistence and export/re-import validation.

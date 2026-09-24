@@ -31,3 +31,23 @@ https://github.com/thatcherfreeman/utility-dctls/blob/main/Effects/Process%20Neg
 Primary source authored by Moaz Elgabry demonstrates tooltip binding by the unquoted display label:
 https://github.com/MoazElgabry/DCTLs/blob/main/ME_Localized%20Contrast.dctl
 These were consulted for API spelling only. No color-transform, emulation or graphics algorithm was copied. The curves, glyphs and guides remain original project code. Their appearance in a CPU preview does not certify the target host UI.
+
+**S5 - ARRI LogC4 specification, 23 January 2025.**
+https://www.arri.com/resource/blob/278790/bea879ac0d041a925bed27a096ab3ec2/2022-05-arri-logc4-specification-data.pdf
+Used for the LogC4 scene-linear transfer, negative-value handling, D65 white point and the
+published AWG4-to-XYZ matrix.
+
+**S6 - Sony Technical Summary for S-Gamut3.Cine/S-Log3 and S-Gamut3/S-Log3.**
+https://pro.sony/s3/cms-static-content/uploadfile/06/1237494271406.pdf
+Used for the S-Log3 reflection formula, code-value references, full-range convention and
+published S-Gamut3.Cine/S-Gamut3 primaries. XYZ matrices are derived from those primaries
+and D65.
+
+**S7 - RED White Paper on REDWideGamutRGB and Log3G10, Rev C.**
+https://docs.red.com/955-0187/PDF/915-0187%20Rev-C%20%20%20RED%20OPS,%20White%20Paper%20on%20REDWideGamutRGB%20and%20Log3G10.pdf
+Used for Log3G10 equations/mapping values and the published REDWideGamutRGB-to-XYZ matrix.
+
+**S8 - CAT02 / CIE colorimetry implementation.**
+M2 applies the standard CAT02 transform in scene-linear XYZ. The user CCT white is generated
+from documented Planckian/daylight chromaticity approximations and Duv is applied in CIE 1960
+UCS. This is a colorimetric adaptation model, not sensor-specific camera calibration.

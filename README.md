@@ -2,7 +2,7 @@
 
 Custom DCTL development for the **Yekermo Sew** television series.
 
-**Version:** `0.1.0-alpha.2` | **Development branch:** `develop` | **Milestone:** M1 foundation
+**Version:** `0.2.0-alpha.1` | **Development branch:** `develop` | **Milestone:** M2 technical input science
 
 This is executable source, not a look LUT or a finished film-stock emulator. The first vertical slice implements scene transforms, balancing, original parametric negative/print responses, provisional seasonal looks, vignette, SDR rendering, and 26 diagnostic modes. Alpha.1 failed the user's first Resolve control-load test. Alpha.2 repairs the declarations and adds optional graphical aids; its 76 CPU/source tests pass, but **Resolve retesting is pending. Do not use it as a production master grade yet.**
 
@@ -45,3 +45,11 @@ The test harness compiles and calls the actual DCTL source through a small float
 [Architecture](docs/ARCHITECTURE.md) explains the stage and color-domain contracts. [Diagnostics](docs/DIAGNOSTICS.md) defines every mode, unit, limitation, and warning. [Resolve setup](docs/RESOLVE_SETUP.md) covers output ownership and host testing. [Validation](docs/VALIDATION.md) records what was actually tested. [Roadmap](docs/ROADMAP.md) tracks the full-film pipeline. [Sources](docs/SOURCES.md) identifies the public specifications used.
 
 Keep development on `develop`. Do not merge, force-push, or open a PR to `main` without approval. Do not commit production footage, reference stills, proprietary LUTs, credentials, or SDK copies. No project-wide open-source license has been selected; public repository visibility alone is not a license grant.
+
+## M2 technical input science
+
+The current `develop` build adds explicit ARRI LogC4/AWG4, Sony S-Log3/S-Gamut3.Cine,
+Sony S-Log3/S-Gamut3 and RED Log3G10/REDWideGamutRGB input transforms. It also adds an
+optional CAT02 CCT/Duv white-balance path. These are transforms for already-decoded RGB;
+they do not debayer or identify ProRes RAW automatically. Legacy Warmth/Tint remains the
+default for saved-grade compatibility. See [M2 input science](docs/M2_INPUT_SCIENCE.md).

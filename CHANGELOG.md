@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.2.0-alpha.1 - 2026-09-24
+
+M2 technical input-science implementation on `develop`.
+
+- Added ARRI LogC4/AWG4, Sony S-Log3/S-Gamut3.Cine, Sony S-Log3/S-Gamut3 and RED Log3G10/REDWideGamutRGB input modes while preserving existing Input indices 0-2.
+- Added CAT02 white balance with source CCT, CIE 1960 Duv and strength controls; Legacy remains default and preserves prior Warmth/Tint behavior.
+- Added independent published camera reference-vector tests and a distinct `YSEW_Film_Lab_M2.dctl` filename for host testing.
+- CI passes 94 tests with both Clang and GCC.
+- Resolve/Metal and actual ProRes RAW converter-output acceptance remain pending.
+
 ## 0.1.0-alpha.2 - 2026-09-24
 
 Repair quoted/long UI labels and menu text; use plain numeric UI literals; add hover tooltips and strict UI metadata validation. Preserve the first 57 parameter IDs/types/numerical defaults/enum ordering. Add two opt-in hue color pickers and five read-only viewer guides, with display-domain guards and export warnings. Add classic/picker UI probes and an exact A2-named distribution copy.

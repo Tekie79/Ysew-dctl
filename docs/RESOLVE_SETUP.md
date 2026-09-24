@@ -45,3 +45,19 @@ Do not select internal Rec.709 rendering and then apply RCM/ACES/an additional C
 Use representative source-frame/clip pairs with declared encoding: fall restaurant interior, cool/winter interior, practicals and windows, mixed lighting on different complexions, night shadows, exteriors, wardrobe and production-design colors. Preserve the original image and compare in a controlled display pipeline. Do not commit production media to this public repository; use authorized local fixtures or a private review channel.
 
 References are in [SOURCES.md](SOURCES.md).
+
+## M2 camera-input acceptance
+
+Load a fresh `YSEW_Film_Lab_M2.dctl` after the alpha.2 UI gate passes. Confirm the appended
+ARRI LogC4, Sony SLog3 Cine, Sony SLog3 G3 and RED Log3G10 choices plus WB Method, WB Temp K,
+WB Duv and WB Strength.
+
+For real camera footage, record the RAW decoder/converter name, version, output gamut, output
+gamma and whether camera white balance has already been applied. Select a Film Lab camera input
+only when the converter output matches that exact pair. Otherwise normalize upstream to DWG
+Intermediate.
+
+For controlled references with creative stages bypassed, ARRI LogC4 18% is approximately
+0.2784, Sony S-Log3 18% is 420/1023, and RED Log3G10 18% is approximately 1/3. Each should
+produce scene-relative zero stops. These checks validate the declared signal transform, not a
+sensor's noise floor, clipping point or RAW metadata interpretation.

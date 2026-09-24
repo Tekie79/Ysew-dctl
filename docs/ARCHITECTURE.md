@@ -43,3 +43,16 @@ The production architecture remains modular. Prototype lens bloom/diffusion and 
 Changing stage order or the underlying show response can alter every saved grade. Version those changes and retain regression references. A display output owner remains singular in every configuration.
 
 References [S1]-[S4] are listed in [SOURCES.md](SOURCES.md).
+
+## M2 input boundary
+
+M2 expands the declared input boundary with four camera-log choices. Each transfer function is
+decoded to relative scene linear, converted from its documented D65 camera gamut through XYZ,
+then into scene-linear DWG. No camera mode reads clip metadata or guesses a camera. ARRI LogC4
+uses the EI-independent software curve from the current ARRI specification; Sony uses the
+published S-Log3 reflection formula; RED uses the published Log3G10 equation.
+
+The optional CAT02 white-balance stage is applied after input normalization and before the
+negative/look/print stages. Legacy is still the default and is covered by the alpha regression
+fixture. CAT02 maps a user-declared source illuminant to D65; it does not estimate illumination
+from the image or reverse white balance already applied by a RAW decoder.
