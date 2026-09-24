@@ -10,6 +10,7 @@ M3 advanced film-response implementation on `develop`.
 - Extended the Tone Curve guide so it evaluates the advanced pipeline.
 - Added a frozen 67-control M2 compatibility contract and M3 regression/property tests.
 - The model is original and parametric; no measured stock profile or commercial LUT data is claimed or included.
+- Final M3 CI passes 107 tests with both Clang and GCC.
 
 ## 0.2.0-alpha.1 - 2026-09-24
 

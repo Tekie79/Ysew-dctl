@@ -70,3 +70,13 @@ different exposure regions, the neutral ramp remains monotonic, the Tone Curve g
 the advanced pipeline, and randomized parameter/input combinations remain finite.
 
 Resolve/Metal image-quality and playback acceptance is still required before production use.
+
+### M3 CI result
+
+GitHub Actions run `36047447011` completed successfully on the final M3 test fix.
+The native suite executed **107 tests with GCC** and **107 tests with Clang**; both
+completed with `OK`. The reproducible-package step also passed for both jobs.
+
+This result validates the CPU/shader regression harness only. Resolve Studio 21.1,
+Metal execution, actual footage, GPU timing, persistence and export/re-import remain
+host acceptance items.
