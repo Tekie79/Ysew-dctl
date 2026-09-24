@@ -158,4 +158,25 @@ does not claim to extract persistent frame statistics from the DCTL.
 The release ZIP embeds per-file SHA-256 hashes and remains marked `production_ready=false`
 with host acceptance pending the comprehensive Resolve test.
 
-Final M7 CI outcome is recorded below once the documentation/package commit completes.
+### M7 CI result
+
+GitHub Actions run `36063954328` completed successfully. The final native suite executed
+**166 tests with GCC** and **166 tests with Clang**, both with `OK`. The deterministic
+release-package validation also passed in both jobs.
+
+Both jobs generated identical package metadata:
+
+```text
+YSEW_Film_Lab_0.7.0-alpha.1.zip
+sha256 8e43755aa4da3f85230429270df656c1dccd0b367a0d183bed9f26fb8b1be5c5
+bytes  47213
+```
+
+The ZIP is generated during validation rather than committed to the repository. Its manifest
+still marks `production_ready=false` and host acceptance pending the comprehensive Resolve
+test.
+
+This CI result completes M7's automated/source validation only. Resolve Studio 21.1 / Metal,
+actual ProRes RAW converter output, representative Yekermo Sew creative approval, GPU
+performance, temporal cache/render behavior and Rec.709 delivery export/re-import are still
+the final acceptance gates.

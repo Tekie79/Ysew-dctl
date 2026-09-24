@@ -12,6 +12,7 @@ M7 show-consistency and Rec.709 mastering implementation on `develop`.
 - Added deterministic release ZIP packaging with SHA-256 manifest and production-ready=false safety metadata.
 - Added comprehensive Resolve/Metal, creative and Rec.709 delivery-QC checklist.
 - M8 remains optional future output/HDR work; M7 does not claim HDR or additional qualified display masters.
+- Final M7 CI passes 166 tests with both Clang and GCC; deterministic package hash is identical across both jobs.
 
 ## 0.6.0-alpha.1 - 2026-09-24
 
