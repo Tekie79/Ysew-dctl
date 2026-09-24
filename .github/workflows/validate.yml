@@ -1,0 +1,37 @@
+name: Film Lab CPU validation
+on:
+  push:
+    branches: [develop]
+  pull_request:
+    branches: [develop]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: ysew-cpu-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  cpu-tests:
+    name: CPU shader tests (${{ matrix.compiler }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        compiler: [clang++, g++]
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Toolchain
+        run: |
+          python3 --version
+          "$CXX" --version
+        env:
+          CXX: ${{ matrix.compiler }}
+      - name: Reproducible package
+        run: python3 tools/build.py --check
+      - name: Execute native shader tests (not Resolve or GPU acceptance)
+        run: python3 -m unittest discover -s tests -v
+        env:
+          CXX: ${{ matrix.compiler }}

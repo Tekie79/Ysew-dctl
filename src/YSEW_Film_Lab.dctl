@@ -1,0 +1,424 @@
+// Yekermo Sew Film Lab 0.1.0-alpha.1 - M1 color and diagnostics foundation.
+// Original parametric creative models, NOT measured film-stock emulations.
+// Input must already be decoded RGB with the selected scene encoding.
+// See docs/RESOLVE_SETUP.md and docs/DIAGNOSTICS.md before installation.
+// UI order is part of the saved-grade contract. Append; do not reorder.
+
+DEFINE_UI_PARAMS(input_mode, "01 Input encoding", DCTLUI_COMBO_BOX, 0, {IN_DI, IN_DWG, IN_709_LINEAR}, {"DWG Intermediate scene", "DWG Linear scene", "Rec709 Linear scene"})
+DEFINE_UI_PARAMS(output_mode, "02 Output ownership", DCTLUI_COMBO_BOX, 2, {OUT_DI, OUT_DWG, OUT_709}, {"DWG Intermediate external output", "DWG Linear external output", "Rec709 Gamma 2.4 internal output"})
+DEFINE_UI_PARAMS(exposure, "Balance exposure stops", DCTLUI_SLIDER_FLOAT, 0.0f, -10.0f, 10.0f, 0.01f)
+DEFINE_UI_PARAMS(warm, "Balance warm cool relative", DCTLUI_SLIDER_FLOAT, 0.0f, -1.0f, 1.0f, 0.01f)
+DEFINE_UI_PARAMS(tint, "Balance magenta green relative", DCTLUI_SLIDER_FLOAT, 0.0f, -1.0f, 1.0f, 0.01f)
+DEFINE_UI_PARAMS(printer_r, "Density R points positive darkens", DCTLUI_SLIDER_FLOAT, 0.0f, -12.0f, 12.0f, 0.1f)
+DEFINE_UI_PARAMS(printer_g, "Density G points positive darkens", DCTLUI_SLIDER_FLOAT, 0.0f, -12.0f, 12.0f, 0.1f)
+DEFINE_UI_PARAMS(printer_b, "Density B points positive darkens", DCTLUI_SLIDER_FLOAT, 0.0f, -12.0f, 12.0f, 0.1f)
+DEFINE_UI_PARAMS(negative_on, "Negative enabled", DCTLUI_CHECK_BOX, 1)
+DEFINE_UI_PARAMS(neg_contrast, "Negative contrast", DCTLUI_SLIDER_FLOAT, 1.08f, 0.5f, 2.0f, 0.01f)
+DEFINE_UI_PARAMS(neg_toe, "Negative toe softness", DCTLUI_SLIDER_FLOAT, 0.08f, 0.0f, 0.4f, 0.01f)
+DEFINE_UI_PARAMS(neg_shoulder, "Negative shoulder softness", DCTLUI_SLIDER_FLOAT, 0.16f, 0.0f, 0.4f, 0.01f)
+DEFINE_UI_PARAMS(neg_sat, "Negative saturation", DCTLUI_SLIDER_FLOAT, 0.98f, 0.0f, 1.5f, 0.01f)
+DEFINE_UI_PARAMS(crosstalk, "Negative RGB interaction proxy", DCTLUI_SLIDER_FLOAT, 0.025f, 0.0f, 0.2f, 0.001f)
+DEFINE_UI_PARAMS(look_mode, "YS show look", DCTLUI_COMBO_BOX, 0, {LOOK_NEUTRAL, LOOK_FALL, LOOK_WINTER}, {"Neutral", "Fall Interior provisional", "Winter Interior provisional"})
+DEFINE_UI_PARAMS(look_mix, "YS look strength", DCTLUI_SLIDER_FLOAT, 1.0f, 0.0f, 1.0f, 0.01f)
+DEFINE_UI_PARAMS(skin_protect, "YS candidate skin protection", DCTLUI_SLIDER_FLOAT, 0.75f, 0.0f, 1.0f, 0.01f)
+DEFINE_UI_PARAMS(skin_hue, "Skin candidate hue degrees", DCTLUI_SLIDER_FLOAT, 28.0f, 0.0f, 360.0f, 1.0f)
+DEFINE_UI_PARAMS(skin_width, "Skin candidate hue half width", DCTLUI_SLIDER_FLOAT, 24.0f, 1.0f, 90.0f, 1.0f)
+DEFINE_UI_PARAMS(skin_sat_min, "Skin candidate saturation minimum", DCTLUI_SLIDER_FLOAT, 0.06f, 0.0f, 1.0f, 0.01f)
+DEFINE_UI_PARAMS(skin_sat_max, "Skin candidate saturation maximum", DCTLUI_SLIDER_FLOAT, 0.9f, 0.0f, 1.0f, 0.01f)
+DEFINE_UI_PARAMS(print_on, "Print enabled", DCTLUI_CHECK_BOX, 1)
+DEFINE_UI_PARAMS(print_contrast, "Print contrast", DCTLUI_SLIDER_FLOAT, 1.06f, 0.5f, 2.0f, 0.01f)
+DEFINE_UI_PARAMS(print_toe, "Print toe softness", DCTLUI_SLIDER_FLOAT, 0.04f, 0.0f, 0.4f, 0.01f)
+DEFINE_UI_PARAMS(print_shoulder, "Print shoulder softness", DCTLUI_SLIDER_FLOAT, 0.12f, 0.0f, 0.4f, 0.01f)
+DEFINE_UI_PARAMS(print_density, "Print neutral density", DCTLUI_SLIDER_FLOAT, 0.0f, -0.3f, 0.3f, 0.005f)
+DEFINE_UI_PARAMS(print_sat, "Print saturation", DCTLUI_SLIDER_FLOAT, 0.98f, 0.0f, 1.5f, 0.01f)
+DEFINE_UI_PARAMS(vignette_stops, "Lens vignette stops", DCTLUI_SLIDER_FLOAT, 0.0f, 0.0f, 3.0f, 0.01f)
+DEFINE_UI_PARAMS(vignette_radius, "Lens vignette inner radius", DCTLUI_SLIDER_FLOAT, 0.7f, 0.0f, 2.0f, 0.01f)
+DEFINE_UI_PARAMS(vignette_soft, "Lens vignette feather", DCTLUI_SLIDER_FLOAT, 0.7f, 0.01f, 2.0f, 0.01f)
+DEFINE_UI_PARAMS(vignette_round, "Lens vignette roundness", DCTLUI_SLIDER_FLOAT, 0.0f, 0.0f, 1.0f, 0.01f)
+DEFINE_UI_PARAMS(vignette_x, "Lens vignette center X", DCTLUI_SLIDER_FLOAT, 0.0f, -1.0f, 1.0f, 0.01f)
+DEFINE_UI_PARAMS(vignette_y, "Lens vignette center Y", DCTLUI_SLIDER_FLOAT, 0.0f, -1.0f, 1.0f, 0.01f)
+DEFINE_UI_PARAMS(output_gray, "Output neutral gray code value", DCTLUI_SLIDER_FLOAT, 0.42f, 0.25f, 0.65f, 0.005f)
+DEFINE_UI_PARAMS(gamut_on, "Output soft gamut compression", DCTLUI_CHECK_BOX, 1)
+DEFINE_UI_PARAMS(gamut_knee, "Output gamut knee", DCTLUI_SLIDER_FLOAT, 0.8f, 0.1f, 0.95f, 0.01f)
+DEFINE_UI_PARAMS(diag_mode, "DIAGNOSTIC MODE turn OFF for export", DCTLUI_COMBO_BOX, 0, {D_OFF, D_FALSE, D_EVGRAY, D_ZONE, D_EVMATTE, D_EVOVER, D_RGBEV, D_YPRIME, D_YFALSE, D_LIN_Y, D_HUE, D_SAT, D_CHROMA, D_COLMATTE, D_COLISO, D_SKIN, D_SKINEV, D_NEUTRAL, D_LOW, D_HIGH, D_CHROMATICITY, D_VOLUME, D_COMPRESSION, D_BEFORE, D_DIFF, D_STAGE, D_INVALID}, {"Off", "Scene false color", "Scene exposure grayscale", "Scene zones grayscale", "Scene exposure range matte", "Scene exposure range overlay", "Scene RGB relative stops", "Output grayscale Y prime", "Output luma false color", "Output linear luminance viewed", "Output hue map", "Output HSV saturation heat", "Output RGB chroma heat", "Color range matte", "Color range isolate", "Candidate skin matte", "Candidate skin relative exposure", "Neutral candidate chromatic bias", "Scene nonpositive RGB channels", "Pre gamut channel limits", "Rec709 chromaticity warning", "SDR RGB volume warning", "Gamut compression amount", "Balanced versus finished split", "Display difference amplified", "Inspect pipeline stage", "Nonfinite or unsafe input"})
+DEFINE_UI_PARAMS(diag_tap, "Diagnostic scene measurement tap", DCTLUI_COMBO_BOX, 0, {TAP_SOURCE, TAP_BALANCE}, {"Decoded source pre grade", "After balance pre look"})
+DEFINE_UI_PARAMS(inspect_stage, "Diagnostic stage to inspect", DCTLUI_COMBO_BOX, 0, {ST_SOURCE, ST_BALANCE, ST_NEG, ST_LOOK, ST_PRINT, ST_LENS, ST_PRE, ST_OUT}, {"Decoded source viewed", "Balance viewed", "Negative viewed", "Look viewed", "Print viewed", "Vignette viewed", "Pre gamut display viewed", "Final output"})
+DEFINE_UI_PARAMS(reference_gray, "Diagnostic reference scene gray", DCTLUI_SLIDER_FLOAT, 0.18f, 0.01f, 0.5f, 0.005f)
+DEFINE_UI_PARAMS(ev_span, "Diagnostic EV scale plus minus", DCTLUI_SLIDER_INT, 6, 2, 12, 1)
+DEFINE_UI_PARAMS(ev_step, "Diagnostic EV quantization", DCTLUI_COMBO_BOX, 1, {EV_CONT, EV_ONE, EV_HALF, EV_THIRD}, {"Continuous", "One stop", "Half stop", "Third stop"})
+DEFINE_UI_PARAMS(ev_low, "Diagnostic EV range minimum", DCTLUI_SLIDER_FLOAT, -2.0f, -16.0f, 16.0f, 0.1f)
+DEFINE_UI_PARAMS(ev_high, "Diagnostic EV range maximum", DCTLUI_SLIDER_FLOAT, 2.0f, -16.0f, 16.0f, 0.1f)
+DEFINE_UI_PARAMS(ev_soft, "Diagnostic EV range feather", DCTLUI_SLIDER_FLOAT, 0.25f, 0.0f, 2.0f, 0.05f)
+DEFINE_UI_PARAMS(range_hue, "Color range hue degrees", DCTLUI_SLIDER_FLOAT, 28.0f, 0.0f, 360.0f, 1.0f)
+DEFINE_UI_PARAMS(range_width, "Color range hue half width", DCTLUI_SLIDER_FLOAT, 20.0f, 1.0f, 180.0f, 1.0f)
+DEFINE_UI_PARAMS(range_soft, "Color range hue feather degrees", DCTLUI_SLIDER_FLOAT, 8.0f, 0.0f, 45.0f, 1.0f)
+DEFINE_UI_PARAMS(range_smin, "Color range HSV saturation minimum", DCTLUI_SLIDER_FLOAT, 0.05f, 0.0f, 1.0f, 0.01f)
+DEFINE_UI_PARAMS(range_smax, "Color range HSV saturation maximum", DCTLUI_SLIDER_FLOAT, 1.0f, 0.0f, 1.0f, 0.01f)
+DEFINE_UI_PARAMS(range_ymin, "Color range Y prime minimum", DCTLUI_SLIDER_FLOAT, 0.0f, 0.0f, 1.0f, 0.01f)
+DEFINE_UI_PARAMS(range_ymax, "Color range Y prime maximum", DCTLUI_SLIDER_FLOAT, 1.0f, 0.0f, 1.0f, 0.01f)
+DEFINE_UI_PARAMS(neutral_tol, "Neutral candidate max HSV saturation", DCTLUI_SLIDER_FLOAT, 0.12f, 0.01f, 0.5f, 0.01f)
+DEFINE_UI_PARAMS(diag_gain, "Diagnostic difference or bias gain", DCTLUI_SLIDER_FLOAT, 4.0f, 1.0f, 20.0f, 0.5f)
+DEFINE_UI_PARAMS(diag_overlay, "Diagnostic exposure overlay opacity", DCTLUI_SLIDER_FLOAT, 0.65f, 0.0f, 1.0f, 0.01f)
+DEFINE_UI_PARAMS(split_pos, "Diagnostic split position", DCTLUI_SLIDER_FLOAT, 0.5f, 0.0f, 1.0f, 0.01f)
+DEFINE_UI_PARAMS(diag_legend, "Diagnostic exposure scale legend", DCTLUI_CHECK_BOX, 1)
+
+// Pure helpers: never refer to UI variables outside transform().
+__DEVICE__ float ys_clamp(float x, float a, float b) { return _fminf(_fmaxf(x, a), b); }
+__DEVICE__ float ys_sat(float x) { return ys_clamp(x, 0.0f, 1.0f); }
+__DEVICE__ float3 ys_gray(float x) { return make_float3(x, x, x); }
+__DEVICE__ float3 ys_scale(float3 a, float k) { return make_float3(a.x*k, a.y*k, a.z*k); }
+__DEVICE__ float3 ys_mix(float3 a, float3 b, float t) {
+    return make_float3(a.x+(b.x-a.x)*t, a.y+(b.y-a.y)*t, a.z+(b.z-a.z)*t);
+}
+__DEVICE__ float3 ys_clip(float3 v) { return make_float3(ys_sat(v.x), ys_sat(v.y), ys_sat(v.z)); }
+__DEVICE__ float ys_max(float3 v) { return _fmaxf(v.x, _fmaxf(v.y, v.z)); }
+__DEVICE__ float ys_min(float3 v) { return _fminf(v.x, _fminf(v.y, v.z)); }
+__DEVICE__ float ys_smooth(float a, float b, float x) {
+    if (b <= a) return x >= a ? 1.0f : 0.0f;
+    float t = ys_sat((x-a)/(b-a)); return t*t*(3.0f-2.0f*t);
+}
+__DEVICE__ float ys_band(float x, float a, float b, float feather) {
+    float lo = _fminf(a,b), hi = _fmaxf(a,b);
+    if (feather <= 0.0f) return x >= lo && x <= hi ? 1.0f : 0.0f;
+    return ys_smooth(lo-feather, lo, x) * (1.0f-ys_smooth(hi,hi+feather,x));
+}
+__DEVICE__ int ys_finite(float x) { return x == x && _fabs(x) <= 3.4028234e38f; }
+__DEVICE__ int ys_safe(float3 v) {
+    return ys_finite(v.x) && ys_finite(v.y) && ys_finite(v.z) &&
+        _fabs(v.x) <= 1.0e6f && _fabs(v.y) <= 1.0e6f && _fabs(v.z) <= 1.0e6f;
+}
+__DEVICE__ float ys_Y(float3 v) { return 0.27411851f*v.x + 0.87363190f*v.y - 0.14775041f*v.z; }
+__DEVICE__ float ys_Y709(float3 v) { return 0.212639006f*v.x + 0.715168679f*v.y + 0.072192315f*v.z; }
+__DEVICE__ float ys_yprime(float3 v) { return 0.2126f*v.x + 0.7152f*v.y + 0.0722f*v.z; }
+
+// Blackmagic DWG/DI specification, April 2021, pp. 3-4. Negative linear branch retained.
+__DEVICE__ float ys_di_decode(float v) {
+    if (v <= 0.02740668f) return v / 10.44426855f;
+    return _exp2f(v / 0.07329248f - 7.0f) - 0.0075f;
+}
+__DEVICE__ float ys_di_encode(float v) {
+    if (v <= 0.00262409f) return v * 10.44426855f;
+    return (_log2f(v + 0.0075f) + 7.0f) * 0.07329248f;
+}
+__DEVICE__ float3 ys_dwg_xyz(float3 v) {
+    return make_float3(0.70062239f*v.x+0.14877482f*v.y+0.10105872f*v.z,
+        ys_Y(v), -0.09896291f*v.x-0.13789533f*v.y+1.32591599f*v.z);
+}
+__DEVICE__ float3 ys_xyz_dwg(float3 v) {
+    return make_float3(1.51667204f*v.x-0.28147805f*v.y-0.14696363f*v.z,
+        -0.46491710f*v.x+1.25142378f*v.y+0.17488461f*v.z,
+        0.06484905f*v.x+0.10913934f*v.y+0.76141462f*v.z);
+}
+// Matrices derived from BT.709 primaries and D65, not a camera IDT.
+__DEVICE__ float3 ys_xyz_709(float3 v) {
+    return make_float3(3.240969942f*v.x-1.537383178f*v.y-0.498610760f*v.z,
+        -0.969243636f*v.x+1.875967502f*v.y+0.041555057f*v.z,
+        0.055630080f*v.x-0.203976959f*v.y+1.056971514f*v.z);
+}
+__DEVICE__ float3 ys_709_xyz(float3 v) {
+    return make_float3(0.412390799f*v.x+0.357584339f*v.y+0.180480788f*v.z,
+        ys_Y709(v), 0.019330819f*v.x+0.119194780f*v.y+0.950532152f*v.z);
+}
+__DEVICE__ float3 ys_to709(float3 v) { return ys_xyz_709(ys_dwg_xyz(v)); }
+__DEVICE__ float3 ys_from709(float3 v) { return ys_xyz_dwg(ys_709_xyz(v)); }
+__DEVICE__ float3 ys_input(float3 v, int mode) {
+    if (mode == 0) return make_float3(ys_di_decode(v.x),ys_di_decode(v.y),ys_di_decode(v.z));
+    if (mode == 2) return ys_from709(v);
+    return v;
+}
+__DEVICE__ float3 ys_encode_working(float3 v, int mode) {
+    if (mode == 0) return make_float3(ys_di_encode(v.x),ys_di_encode(v.y),ys_di_encode(v.z));
+    return v;
+}
+__DEVICE__ float ys_stops(float y, float gray) {
+    // Nonpositive luminance is not a measurable finite exposure. Caller marks it.
+    return y > 0.0f ? _log2f(_fmaxf(y,1.0e-30f)/gray) : -100.0f;
+}
+__DEVICE__ float ys_softplus(float x) {
+    if (x > 20.0f) return x;
+    if (x < -20.0f) return _exp2f(x)*1.442695041f;
+    return _log2f(1.0f+_exp2f(x));
+}
+__DEVICE__ float3 ys_curve(float3 v, float contrast, float toe, float shoulder) {
+    float y = ys_Y(v);
+    if (y <= 1.0e-20f) return v;
+    float s = ys_stops(y,0.18f);
+    float anchor = ys_softplus(-2.0f);
+    float t = contrast*s + toe*(ys_softplus(-s-2.0f)-anchor)
+        - shoulder*(ys_softplus(s-2.0f)-anchor);
+    return ys_scale(v,_exp2f(ys_clamp(t-s,-30.0f,30.0f)));
+}
+__DEVICE__ float3 ys_saturation(float3 v, float amount) { return ys_mix(ys_gray(ys_Y(v)),v,amount); }
+__DEVICE__ float3 ys_interaction(float3 v, float amount) {
+    float y = ys_Y(v);
+    float c = amount*(1.0f-ys_smooth(1.0f,6.0f,ys_stops(y,0.18f)));
+    float3 r = make_float3((1.0f-c)*v.x+c*(0.6f*v.y+0.4f*v.z),
+        (1.0f-c)*v.y+c*(0.5f*v.x+0.5f*v.z), (1.0f-c)*v.z+c*(0.4f*v.x+0.6f*v.y));
+    float yr = ys_Y(r);
+    if (y > 1.0e-8f && yr > 1.0e-8f) r = ys_scale(r,y/yr);
+    return r;
+}
+__DEVICE__ float3 ys_balance(float3 v,float ev,float w,float t,float r,float g,float b) {
+    // Relative RGB balance, NOT Kelvin/chromatic adaptation. A density point = 0.025 log10.
+    return make_float3(v.x*_exp2f(ev+0.35f*w+0.175f*t-0.083048202f*r),
+        v.y*_exp2f(ev-0.35f*t-0.083048202f*g),
+        v.z*_exp2f(ev-0.35f*w+0.175f*t-0.083048202f*b));
+}
+
+// Original analytic SDR renderer. Not ACES, a Resolve DRT clone, or BT.709 camera OETF.
+__DEVICE__ float ys_tone(float y,float gray_code) {
+    float target = _powf(gray_code,2.4f);
+    float k = 0.18f*(1.0f-target)/target;
+    return y > 0.0f ? y/(y+k) : 0.0f;
+}
+__DEVICE__ float3 ys_pre_gamut(float3 v,float gray_code) {
+    float3 r = ys_to709(v); float y = ys_Y709(r);
+    if (y <= 1.0e-20f) return ys_gray(0.0f);
+    return ys_scale(r,ys_tone(y,gray_code)/y);
+}
+__DEVICE__ float ys_gamut_factor(float3 v,float knee) {
+    float y = ys_sat(ys_Y709(v));
+    float up = _fmaxf(1.0f-y,1.0e-8f), down = _fmaxf(y,1.0e-8f);
+    float e = _fmaxf((ys_max(v)-y)/up,(y-ys_min(v))/down);
+    if (e <= knee) return 1.0f;
+    float mapped = knee+(1.0f-knee)*(1.0f-_expf(-(e-knee)/(1.0f-knee)));
+    return ys_sat(mapped/_fmaxf(e,1.0e-8f));
+}
+__DEVICE__ float3 ys_gamut(float3 v,float factor) { return ys_mix(ys_gray(ys_Y709(v)),v,factor); }
+__DEVICE__ float3 ys_gamma24(float3 v) {
+    v = ys_clip(v); return make_float3(_powf(v.x,1.0f/2.4f),_powf(v.y,1.0f/2.4f),_powf(v.z,1.0f/2.4f));
+}
+__DEVICE__ float3 ys_view(float3 v,float gray_code,int compress,float knee) {
+    float3 p = ys_pre_gamut(v,gray_code);
+    return ys_gamma24(compress ? ys_gamut(p,ys_gamut_factor(p,knee)) : p);
+}
+__DEVICE__ float3 ys_hsv(float3 v) {
+    float mx = ys_max(v), mn = ys_min(v), d = mx-mn;
+    float h = 0.0f;
+    if (d > 1.0e-7f) {
+        if (mx == v.x) h = 60.0f*(v.y-v.z)/d;
+        else if (mx == v.y) h = 120.0f+60.0f*(v.z-v.x)/d;
+        else h = 240.0f+60.0f*(v.x-v.y)/d;
+        if (h < 0.0f) h += 360.0f;
+    }
+    return make_float3(h,mx > 1.0e-8f ? d/mx : 0.0f,mx);
+}
+__DEVICE__ float ys_hue_weight(float h,float center,float width,float feather) {
+    float d = _fabs(h-center); d = _fminf(d,360.0f-d);
+    if (width >= 180.0f) return 1.0f;
+    if (feather <= 0.0f) return d <= width ? 1.0f : 0.0f;
+    return 1.0f-ys_smooth(width,_fminf(width+feather,180.0f),d);
+}
+__DEVICE__ float ys_skin(float3 scene,float center,float width,float smin,float smax) {
+    // Fixed neutral viewing transform; independent of the creative look and output gray.
+    float3 hsv = ys_hsv(ys_view(scene,0.42f,1,0.8f));
+    if (hsv.y < 1.0e-6f) return 0.0f;
+    return ys_hue_weight(hsv.x,center,width,8.0f)*ys_band(hsv.y,smin,smax,0.03f);
+}
+__DEVICE__ float3 ys_show(float3 v,int mode,float amount,float protect,float skin) {
+    if (mode == 0 || amount <= 0.0f) return v;
+    float s = ys_stops(ys_Y(v),0.18f);
+    float sh = 1.0f-ys_smooth(-2.0f,1.0f,s), hi = ys_smooth(0.0f,4.0f,s);
+    float rr = -0.035f*sh+0.04f*hi, gg = 0.0f, bb = 0.055f*sh-0.025f*hi;
+    float sat = 0.94f;
+    if (mode == 2) { rr = -0.08f*sh+0.025f*hi; gg = 0.008f*sh; bb = 0.12f*sh; sat = 0.90f; }
+    float3 out = make_float3(v.x*_exp2f(rr),v.y*_exp2f(gg),v.z*_exp2f(bb));
+    float oy = ys_Y(out), iy = ys_Y(v);
+    if (oy > 1.0e-8f && iy > 1.0e-8f) out = ys_scale(out,iy/oy);
+    out = ys_saturation(out,sat);
+    return ys_mix(v,out,amount*(1.0f-protect*skin));
+}
+__DEVICE__ float ys_vignette(int w,int h,int x,int y,float radius,float feather,float roundness,float cx,float cy) {
+    float aspect = (float)w/(float)h;
+    float nx = (2.0f*((float)x+0.5f)/(float)w-1.0f-cx)*aspect;
+    float ny = 2.0f*((float)y+0.5f)/(float)h-1.0f-cy;
+    nx /= 1.0f+(aspect-1.0f)*(1.0f-roundness);
+    return ys_smooth(radius,radius+feather,_sqrtf(nx*nx+ny*ny));
+}
+
+typedef struct { float3 source; float3 balanced; float3 negative; float3 look; float3 print; float3 lens; float3 pre; float3 output; float compression; } YSStages;
+typedef struct {
+    int mode; int tap; int stage; int span; int step; int legend;
+    float gray; float evlo; float evhi; float evsoft;
+    float hue; float width; float soft; float smin; float smax; float ymin; float ymax;
+    float skinh; float skinw; float skinsmin; float skinsmax;
+    float neutral; float gain; float opacity; float split;
+} YSDiag;
+__DEVICE__ float ys_quantize(float ev,int step) {
+    if (step == 0) return ev;
+    float n = step == 1 ? 1.0f : (step == 2 ? 2.0f : 3.0f);
+    return _floorf(ev*n+0.5f)/n;
+}
+__DEVICE__ float3 ys_heat(float t) {
+    t = ys_sat(t);
+    if (t < 0.25f) return ys_mix(make_float3(0.07f,0.03f,0.25f),make_float3(0.0f,0.55f,0.95f),t*4.0f);
+    if (t < 0.5f) return ys_mix(make_float3(0.0f,0.55f,0.95f),make_float3(0.1f,0.75f,0.15f),(t-0.25f)*4.0f);
+    if (t < 0.75f) return ys_mix(make_float3(0.1f,0.75f,0.15f),make_float3(1.0f,0.85f,0.05f),(t-0.5f)*4.0f);
+    return ys_mix(make_float3(1.0f,0.85f,0.05f),make_float3(0.95f,0.05f,0.15f),(t-0.75f)*4.0f);
+}
+__DEVICE__ float3 ys_ev_color(float ev,int span,int step) {
+    return ys_heat(0.5f+ys_quantize(ev,step)/(2.0f*(float)span));
+}
+__DEVICE__ float3 ys_hue_color(float hue) {
+    float t = hue/60.0f;
+    float r = ys_sat(_fabs(t-3.0f)-1.0f);
+    float g = ys_sat(2.0f-_fabs(t-2.0f));
+    float b = ys_sat(2.0f-_fabs(t-4.0f));
+    return make_float3(r,g,b);
+}
+__DEVICE__ float ys_color_mask(float3 rgb,YSDiag d) {
+    float3 hsv = ys_hsv(rgb);
+    if (hsv.y < 1.0e-6f && d.width < 180.0f) return 0.0f;
+    return ys_hue_weight(hsv.x,d.hue,d.width,d.soft)*ys_band(hsv.y,d.smin,d.smax,0.02f)
+        *ys_band(ys_yprime(rgb),d.ymin,d.ymax,0.02f);
+}
+__DEVICE__ float3 ys_error(int x,int y) {
+    return ((x/16+y/16)%2) == 0 ? make_float3(1.0f,0.0f,0.65f) : ys_gray(0.05f);
+}
+// Tiny original procedural digits for the exposure scale. No font assets.
+__DEVICE__ int ys_digit(int digit,int x,int y) {
+    if (x < 0 || x > 2 || y < 0 || y > 4) return 0;
+    int bits = 0;
+    if (digit == 0) bits = 31599; else if (digit == 1) bits = 11415;
+    else if (digit == 2) bits = 29671; else if (digit == 3) bits = 29647;
+    else if (digit == 4) bits = 23497; else if (digit == 5) bits = 31183;
+    else if (digit == 6) bits = 31215; else if (digit == 7) bits = 29257;
+    else if (digit == 8) bits = 31727; else if (digit == 9) bits = 31695;
+    return (bits >> (14-(y*3+x))) & 1;
+}
+__DEVICE__ int ys_number(int number,int x,int y) {
+    if (number < 0) {
+        if (x < 4) return y == 2 && x >= 0 && x <= 2;
+        x -= 4; number = -number;
+    }
+    if (number >= 10) {
+        if (x < 4) return ys_digit(number/10,x,y);
+        x -= 4;
+    }
+    return ys_digit(number%10,x,y);
+}
+__DEVICE__ float3 ys_legend(float3 image,int w,int h,int x,int y,YSDiag d) {
+    // Warning strip is deliberately non-optional whenever diagnostics are active.
+    if (y < _fmaxf(3.0f,(float)h*0.009f))
+        return ((x/12)%2) == 0 ? make_float3(1.0f,0.6f,0.0f) : ys_gray(0.04f);
+    int exposure_mode = d.mode >= 1 && d.mode <= 6;
+    if (!d.legend || !exposure_mode || w < 320 || h < 160 || y < (int)((float)h*0.90f)) return image;
+    int bands = 2*d.span+1;
+    float bw = (float)w/(float)bands;
+    int index = (int)((float)x/bw); if (index >= bands) index = bands-1;
+    int ev = index-d.span;
+    int bar_end = (int)((float)h*0.943f);
+    if (y < bar_end) {
+        if (d.mode == 2) return ys_gray(ys_sat(0.5f+(float)ev/(2.0f*(float)d.span)));
+        if (d.mode == 3) return ys_gray(ys_sat(((float)ev+5.0f)/10.0f));
+        if (d.mode == 4 || d.mode == 5) return ys_gray(ys_band((float)ev,d.evlo,d.evhi,d.evsoft));
+        if (d.mode == 6) return ys_gray(ys_sat(0.5f+(float)ev/(2.0f*(float)d.span)));
+        return ys_ev_color((float)ev,d.span,d.step);
+    }
+    int scale = (int)_fmaxf(1.0f,_fminf((float)h/150.0f,bw/14.0f));
+    int digits = (ev < 0 ? 1 : 0)+(_fabs((float)ev) >= 10.0f ? 2 : 1);
+    int origin = (int)(((float)index+0.5f)*bw)-(digits*4-1)*scale/2;
+    int top = bar_end+2*scale;
+    if (x >= origin && y >= top && ys_number(ev,(x-origin)/scale,(y-top)/scale)) return ys_gray(0.95f);
+    return ys_gray(0.025f);
+}
+__DEVICE__ float3 ys_diagnostic(YSStages s,YSDiag d,float gray_code,int compress,float knee,int w,int h,int x,int y) {
+    float3 tap = d.tap == 0 ? s.source : s.balanced;
+    float yscene = ys_Y(tap), ev = ys_stops(yscene,d.gray);
+    float3 rgb = s.output, hsv = ys_hsv(rgb), result = rgb;
+    float yp = ys_yprime(rgb);
+    float mask = ys_color_mask(rgb,d);
+    float skin = ys_skin(tap,d.skinh,d.skinw,d.skinsmin,d.skinsmax);
+    float selection = yscene > 0.0f ? ys_band(ev,d.evlo,d.evhi,d.evsoft) : 0.0f;
+    if (d.mode == 1) result = yscene > 0.0f ? ys_ev_color(ev,d.span,d.step) : ys_gray(0.0f);
+    else if (d.mode == 2) result = ys_gray(ys_sat(0.5f+ys_quantize(ev,d.step)/(2.0f*(float)d.span)));
+    else if (d.mode == 3) result = ys_gray(ys_sat((_floorf(ev+0.5f)+5.0f)/10.0f));
+    else if (d.mode == 4) result = ys_gray(selection);
+    else if (d.mode == 5) result = ys_mix(rgb,make_float3(0.1f,1.0f,0.35f),selection*d.opacity);
+    else if (d.mode == 6) result = make_float3(ys_sat(0.5f+ys_stops(tap.x,d.gray)/(2.0f*(float)d.span)),
+        ys_sat(0.5f+ys_stops(tap.y,d.gray)/(2.0f*(float)d.span)),ys_sat(0.5f+ys_stops(tap.z,d.gray)/(2.0f*(float)d.span)));
+    else if (d.mode == 7) result = ys_gray(yp);
+    else if (d.mode == 8) result = ys_heat(yp);
+    else if (d.mode == 9) {
+        float3 linear = make_float3(_powf(rgb.x,2.4f),_powf(rgb.y,2.4f),_powf(rgb.z,2.4f));
+        result = ys_gamma24(ys_gray(ys_Y709(linear)));
+    }
+    else if (d.mode == 10) result = hsv.y > 1.0e-5f ? ys_hue_color(hsv.x) : ys_gray(0.35f);
+    else if (d.mode == 11) result = ys_heat(hsv.y);
+    else if (d.mode == 12) result = ys_heat(ys_max(rgb)-ys_min(rgb));
+    else if (d.mode == 13) result = ys_gray(mask);
+    else if (d.mode == 14) result = ys_mix(ys_gray(yp*0.35f),rgb,mask);
+    else if (d.mode == 15) result = ys_gray(skin);
+    else if (d.mode == 16) result = ys_mix(ys_gray(0.08f),ys_ev_color(ev,d.span,d.step),skin);
+    else if (d.mode == 17) {
+        result = hsv.y <= d.neutral ? ys_clip(make_float3(0.5f+(rgb.x-yp)*d.gain,
+            0.5f+(rgb.y-yp)*d.gain,0.5f+(rgb.z-yp)*d.gain)) : ys_gray(0.12f);
+    }
+    else if (d.mode == 18) result = make_float3(tap.x <= 0.0f ? 1.0f : 0.0f,tap.y <= 0.0f ? 1.0f : 0.0f,tap.z <= 0.0f ? 1.0f : 0.0f);
+    else if (d.mode == 19) {
+        if (ys_min(s.pre) < -1.0e-6f) result = ys_error(x,y);
+        else result = make_float3(s.pre.x >= 0.995f ? 1.0f : 0.0f,s.pre.y >= 0.995f ? 1.0f : 0.0f,s.pre.z >= 0.995f ? 1.0f : 0.0f);
+    }
+    else if (d.mode == 20) {
+        float3 p = ys_to709(s.lens); float ly = ys_Y709(p);
+        if (ly <= 1.0e-8f) result = ys_gray(0.15f);
+        else if (ys_min(p) < -1.0e-6f*ly) result = make_float3(1.0f,0.05f,0.1f);
+        else if (ys_min(p)/ly < 0.02f) result = make_float3(1.0f,0.75f,0.0f);
+        else result = make_float3(0.1f,0.65f,0.2f);
+    }
+    else if (d.mode == 21) {
+        if (ys_min(s.pre) < -1.0e-6f || ys_max(s.pre) > 1.000001f) result = make_float3(1.0f,0.05f,0.1f);
+        else if (ys_min(s.pre) < 0.01f || ys_max(s.pre) > 0.99f) result = make_float3(1.0f,0.75f,0.0f);
+        else result = make_float3(0.1f,0.65f,0.2f);
+    }
+    else if (d.mode == 22) result = ys_gray(s.compression);
+    else if (d.mode == 23) result = (float)x < (float)w*d.split ? ys_view(s.balanced,gray_code,compress,knee) : rgb;
+    else if (d.mode == 24) {
+        float3 before = ys_view(s.balanced,gray_code,compress,knee);
+        result = ys_clip(make_float3(_fabs(rgb.x-before.x)*d.gain,_fabs(rgb.y-before.y)*d.gain,_fabs(rgb.z-before.z)*d.gain));
+    }
+    else if (d.mode == 25) {
+        float3 v = s.source;
+        if (d.stage == 1) v = s.balanced; else if (d.stage == 2) v = s.negative;
+        else if (d.stage == 3) v = s.look; else if (d.stage == 4) v = s.print;
+        else if (d.stage == 5) v = s.lens;
+        result = d.stage == 7 ? rgb : (d.stage == 6 ? ys_gamma24(s.pre) : ys_view(v,gray_code,compress,knee));
+    }
+    else if (d.mode == 26) result = ys_gray(0.0f); // Unsafe inputs exit before any transforms.
+    return ys_legend(result,w,h,x,y,d);
+}
+
+__DEVICE__ float3 transform(int p_Width,int p_Height,int p_X,int p_Y,float p_R,float p_G,float p_B) {
+    float3 raw = make_float3(p_R,p_G,p_B);
+    if (p_Width <= 0 || p_Height <= 0 || !ys_safe(raw)) return ys_error(p_X,p_Y);
+    YSStages s;
+    s.source = ys_input(raw,input_mode);
+    if (!ys_safe(s.source)) return ys_error(p_X,p_Y);
+    s.balanced = ys_balance(s.source,exposure,warm,tint,printer_r,printer_g,printer_b);
+    s.negative = negative_on ? ys_interaction(ys_saturation(ys_curve(s.balanced,neg_contrast,neg_toe,neg_shoulder),neg_sat),crosstalk) : s.balanced;
+    float skin = 0.0f;
+    if (look_mode != 0 && look_mix > 0.0f && skin_protect > 0.0f)
+        skin = ys_skin(s.balanced,skin_hue,skin_width,skin_sat_min,skin_sat_max);
+    s.look = ys_show(s.negative,look_mode,look_mix,skin_protect,skin);
+    s.print = print_on ? ys_scale(ys_saturation(ys_curve(s.look,print_contrast,print_toe,print_shoulder),print_sat),_powf(10.0f,-print_density)) : s.look;
+    s.lens = ys_scale(s.print,_exp2f(-vignette_stops*ys_vignette(p_Width,p_Height,p_X,p_Y,vignette_radius,vignette_soft,vignette_round,vignette_x,vignette_y)));
+    if (diag_mode == 0 && output_mode != 2) return ys_encode_working(s.lens,output_mode);
+    s.pre = ys_pre_gamut(s.lens,output_gray);
+    float factor = gamut_on ? ys_gamut_factor(s.pre,gamut_knee) : 1.0f;
+    s.compression = 1.0f-factor;
+    s.output = ys_gamma24(ys_gamut(s.pre,factor));
+    if (diag_mode == 0) return output_mode == 2 ? s.output : ys_encode_working(s.lens,output_mode);
+    // Diagnostic colors need an unmanaged terminal Rec709 path. Never silently pass
+    // display-coded overlays into a DWG working chain and call them calibrated.
+    if (output_mode != 2) {
+        float3 warning = ys_from709(ys_error(p_X,p_Y));
+        return ys_encode_working(warning,output_mode);
+    }
+    YSDiag d;
+    d.mode=diag_mode; d.tap=diag_tap; d.stage=inspect_stage; d.span=ev_span; d.step=ev_step; d.legend=diag_legend;
+    d.gray=reference_gray; d.evlo=ev_low; d.evhi=ev_high; d.evsoft=ev_soft;
+    d.hue=range_hue; d.width=range_width; d.soft=range_soft; d.smin=range_smin; d.smax=range_smax; d.ymin=range_ymin; d.ymax=range_ymax;
+    d.skinh=skin_hue; d.skinw=skin_width; d.skinsmin=skin_sat_min; d.skinsmax=skin_sat_max;
+    d.neutral=neutral_tol; d.gain=diag_gain; d.opacity=diag_overlay; d.split=split_pos;
+    return ys_diagnostic(s,d,output_gray,gamut_on,gamut_knee,p_Width,p_Height,p_X,p_Y);
+}

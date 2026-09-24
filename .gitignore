@@ -1,0 +1,14 @@
+__pycache__/
+*.py[cod]
+.venv/
+.DS_Store
+build/
+artifacts/
+*.so
+*.dylib
+*.dll
+*.exr
+*.mov
+*.mp4
+.env
+.env.*

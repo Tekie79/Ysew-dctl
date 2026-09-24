@@ -1,0 +1,31 @@
+# Development roadmap
+
+A checked source milestone does not mean a production release. Every milestone must record mathematical, host, visual, and performance acceptance separately.
+
+| Milestone | Scope | State |
+|---|---|---|
+| M0 | Repository inspection, `develop` branch and engineering contract | Established |
+| M1 | Executable pointwise color pipeline, core diagnostics, tests and reproducible package | Implemented; local CPU tests passed; host acceptance pending |
+| M2 | Actual Resolve/Metal acceptance; input/decoder verification; camera-native transforms with reference vectors; calibrated white-point adaptation; diagnostic legend/readout improvements | Not implemented |
+| M3 | Advanced negative/print response, color-density coupling, hue-dependent behavior, shadow/highlight controls and approved series look revisions; measured-stock profiles only with authorized data | Prototype only; advanced model pending |
+| M4 | Separate halation, bloom, lens glow and veiling glare; multi-radius spectral-weighted spatial kernels; quality/performance tiers and stage-contribution views | Not implemented |
+| M5 | Density-domain temporally deterministic multilayer grain; size/roughness/chroma and exposure response; resolution/frame/seed validation; optional lens softness and edge treatment | Not implemented |
+| M6 | Additional advanced diagnostics, validated destination-gamut options, color-volume tools, scene calibration profiles; evaluate OFX scopes/statistics/reference-frame companion | Core inline subset implemented; companion absent |
+| M7 | Shot/scene matching workflow, director-approved fall/winter/night/exterior presets, episode consistency regression, Rec.709 mastering and delivery QC, packaging | Not started |
+| M8 | Optional additional display targets including HDR, with independent display rendering and delivery qualification | Future, not advertised as supported |
+
+## Next execution gate
+
+Validate this alpha in the actual Resolve build and confirm the ProRes RAW decoder's RGB output before adding camera-specific color science. Fix any DCTL parser/backend issues before expanding the UI. Request representative, authorized scene material for creative tuning; do not manufacture film-stock accuracy from mathematical curves alone.
+
+## Spatial and grain requirements
+
+Halation must isolate highlight/edge behavior without washing the full image red. Bloom must remain distinct from film-base/emulsion scatter. Test an impulse, edge, constant field and bright practicals for energy, boundary sampling, radius scaling, tint and resolution independence. Do not promise an efficient large-radius single-node DCTL before profiling: texture sampling alone does not provide a cached multipass image graph.
+
+Grain must be reproducible for the same frame/seed, change coherently across frames, survive seeks/cache/render, and have declared exposure and density domains. Resolve's documented RAND and timeline-frame facilities are candidates [S4], not yet used by M1. A film-gauge selector needs a defined spatial scale, not a renamed noise-amplitude preset.
+
+Reference-frame matching and real scopes require access to image statistics/reference data outside the current pointwise transform. Define acquisition, storage, reference encoding, scope math and host synchronization before committing to a companion OFX implementation.
+
+## Release gates
+
+No release until the applicable tests, target GPU compilation, representative footage review, saved-grade compatibility, performance measurements, output-transform ownership, diagnostic-off export verification and delivery checks are documented. `main` remains unchanged unless the owner explicitly approves promotion.
