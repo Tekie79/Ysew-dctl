@@ -1,4 +1,4 @@
-// Yekermo Sew Film Lab 0.2.0-alpha.1 - M2 technical input science and CAT02 white balance.
+// Yekermo Sew Film Lab 0.3.0-alpha.1 - M3 advanced parametric negative and print model.
 // Original parametric creative models, NOT measured film-stock emulations.
 // Input must already be decoded RGB with the selected scene encoding.
 // See docs/RESOLVE_SETUP.md and docs/DIAGNOSTICS.md before installation.
@@ -79,6 +79,22 @@ DEFINE_UI_PARAMS(wb_temp, WB Temp K, DCTLUI_SLIDER_FLOAT, 6504.0, 1667.0, 25000.
 DEFINE_UI_PARAMS(wb_duv, WB Duv, DCTLUI_SLIDER_FLOAT, 0.0, -0.05, 0.05, 0.0005)
 DEFINE_UI_PARAMS(wb_strength, WB Strength, DCTLUI_SLIDER_FLOAT, 1.0, 0.0, 1.0, 0.01)
 
+// M3 advanced film model. Legacy is the saved-grade compatible default.
+DEFINE_UI_PARAMS(film_model, Film Model, DCTLUI_COMBO_BOX, 0, {FILM_LEGACY, FILM_YS_ADV}, {Legacy, YS Advanced})
+DEFINE_UI_PARAMS(adv_neg_density, Neg Density, DCTLUI_SLIDER_FLOAT, 0.0, -0.30, 0.30, 0.005)
+DEFINE_UI_PARAMS(adv_neg_color, Neg Color, DCTLUI_SLIDER_FLOAT, 1.0, 0.0, 1.5, 0.01)
+DEFINE_UI_PARAMS(adv_neg_sep, Neg Sep, DCTLUI_SLIDER_FLOAT, 0.32, 0.0, 1.0, 0.01)
+DEFINE_UI_PARAMS(adv_neg_shadow, Neg Shadow Sat, DCTLUI_SLIDER_FLOAT, 0.82, 0.0, 1.25, 0.01)
+DEFINE_UI_PARAMS(adv_neg_high, Neg High Sat, DCTLUI_SLIDER_FLOAT, 0.72, 0.0, 1.25, 0.01)
+DEFINE_UI_PARAMS(adv_neg_warm, Neg Warm, DCTLUI_SLIDER_FLOAT, 0.0, -1.0, 1.0, 0.01)
+DEFINE_UI_PARAMS(adv_neg_green, Neg Green, DCTLUI_SLIDER_FLOAT, 0.0, -1.0, 1.0, 0.01)
+DEFINE_UI_PARAMS(adv_neg_cool, Neg Cool, DCTLUI_SLIDER_FLOAT, 0.0, -1.0, 1.0, 0.01)
+DEFINE_UI_PARAMS(adv_print_black, Print Blacks, DCTLUI_SLIDER_FLOAT, 0.0, -1.0, 1.0, 0.01)
+DEFINE_UI_PARAMS(adv_print_white, Print Whites, DCTLUI_SLIDER_FLOAT, 0.0, -1.0, 1.0, 0.01)
+DEFINE_UI_PARAMS(adv_print_sep, Print Sep, DCTLUI_SLIDER_FLOAT, 0.18, 0.0, 1.0, 0.01)
+DEFINE_UI_PARAMS(adv_print_warm, Print Warm, DCTLUI_SLIDER_FLOAT, 0.0, -1.0, 1.0, 0.01)
+DEFINE_UI_PARAMS(adv_print_color, Print Color, DCTLUI_SLIDER_FLOAT, 1.0, 0.0, 1.5, 0.01)
+
 DEFINE_UI_TOOLTIP(Input, "RGB encoding arriving at this node. Camera log choices require the decoder or upstream converter to output that exact gamut and curve. ProRes RAW is not auto-detected.")
 DEFINE_UI_TOOLTIP(Output, "DWG choices return working RGB for one external output transform. 709 Gamma 2.4 performs internal SDR rendering. Never apply a second output conversion.")
 DEFINE_UI_TOOLTIP(Exposure, "Photographic exposure adjustment in stops. Plus one doubles scene-linear RGB.")
@@ -114,6 +130,20 @@ DEFINE_UI_TOOLTIP(WB Method, "Legacy preserves the alpha.1 Warmth and Tint behav
 DEFINE_UI_TOOLTIP(WB Temp K, "Source illuminant CCT used by CAT02 white balance. The model blends Planckian and CIE daylight loci and adapts the selected source white to D65.")
 DEFINE_UI_TOOLTIP(WB Duv, "Source-white offset in CIE 1960 UCS. Positive values move the assumed illuminant toward green before adaptation to D65.")
 DEFINE_UI_TOOLTIP(WB Strength, "Mix between unadapted and CAT02-adapted scene-linear DWG. One applies the full adaptation.")
+DEFINE_UI_TOOLTIP(Film Model, "Legacy preserves prior negative and print behavior. YS Advanced enables the M3 parametric density-separation and exposure-dependent color model.")
+DEFINE_UI_TOOLTIP(Neg Density, "Neutral negative-density trim in base-10 density units. Positive darkens before the show look. This is parametric, not measured stock density.")
+DEFINE_UI_TOOLTIP(Neg Color, "Master chroma scale for the advanced negative model.")
+DEFINE_UI_TOOLTIP(Neg Sep, "Log-ratio color separation for positive RGB regions, blended safely back toward the legacy chroma basis near negative wide-gamut components.")
+DEFINE_UI_TOOLTIP(Neg Shadow Sat, "Relative chroma retention in deep shadows for the advanced negative.")
+DEFINE_UI_TOOLTIP(Neg High Sat, "Relative chroma retention in strong highlights for the advanced negative.")
+DEFINE_UI_TOOLTIP(Neg Warm, "Hue-selective warm-family density bias. Zero is neutral.")
+DEFINE_UI_TOOLTIP(Neg Green, "Hue-selective green-family density bias. Zero is neutral.")
+DEFINE_UI_TOOLTIP(Neg Cool, "Hue-selective cyan-blue density bias. Zero is neutral.")
+DEFINE_UI_TOOLTIP(Print Blacks, "Advanced print shadow-density trim in stops. Positive deepens shadows.")
+DEFINE_UI_TOOLTIP(Print Whites, "Advanced print highlight-density trim in stops. Positive lifts upper values.")
+DEFINE_UI_TOOLTIP(Print Sep, "Advanced print log-ratio color separation amount.")
+DEFINE_UI_TOOLTIP(Print Warm, "Luminance-preserving warm print bias weighted toward the upper midtones and highlights.")
+DEFINE_UI_TOOLTIP(Print Color, "Master print chroma scale before the display render.")
 
 // Pure helpers: never refer to UI variables outside transform().
 __DEVICE__ float ys_clamp(float x, float a, float b) { return _fminf(_fmaxf(x, a), b); }
@@ -439,6 +469,88 @@ __DEVICE__ float3 ys_show(float3 v,int mode,float amount,float protect,float ski
     out = ys_saturation(out,sat);
     return ys_mix(v,out,amount*(1.0f-protect*skin));
 }
+
+
+__DEVICE__ float3 ys_preserve_y(float3 v,float target_y) {
+    float y=ys_Y(v);
+    if (target_y > 1.0e-8f && y > 1.0e-8f) return ys_scale(v,target_y/y);
+    return v;
+}
+__DEVICE__ float3 ys_density_separation(float3 v,float amount) {
+    float y=ys_Y(v);
+    if (amount <= 0.0f || y <= 1.0e-8f) return v;
+    float floorv=_fmaxf(y*1.0e-5f,1.0e-12f);
+    float positivity=ys_smooth(-0.02f*y,0.05f*y,ys_min(v));
+    if (positivity <= 0.0f) return v;
+    float lr=_log2f(_fmaxf(v.x,floorv)/y);
+    float lg=_log2f(_fmaxf(v.y,floorv)/y);
+    float lb=_log2f(_fmaxf(v.z,floorv)/y);
+    float k=amount*positivity;
+    float nr=lr+k*(0.55f*lr-0.30f*lg-0.25f*lb);
+    float ng=lg+k*(-0.22f*lr+0.46f*lg-0.24f*lb);
+    float nb=lb+k*(-0.20f*lr-0.28f*lg+0.48f*lb);
+    float3 out=make_float3(y*_exp2f(nr),y*_exp2f(ng),y*_exp2f(nb));
+    out=ys_preserve_y(out,y);
+    return ys_mix(v,out,positivity);
+}
+__DEVICE__ float3 ys_exposure_chroma(float3 v,float master,float shadow_keep,float high_keep) {
+    float y=ys_Y(v);
+    if (y <= 1.0e-8f) return v;
+    float ev=ys_stops(y,0.18f);
+    float sh=1.0f-ys_smooth(-3.5f,-0.25f,ev);
+    float hi=ys_smooth(0.75f,5.0f,ev);
+    float retention=master*(1.0f-sh*(1.0f-shadow_keep))*(1.0f-hi*(1.0f-high_keep));
+    return ys_saturation(v,_fmaxf(retention,0.0f));
+}
+__DEVICE__ float3 ys_hue_density_bias(float3 v,float warm,float green,float cool) {
+    float y=ys_Y(v);
+    if (y <= 1.0e-8f || (_fabs(warm)+_fabs(green)+_fabs(cool)) <= 1.0e-8f) return v;
+    float3 hsv=ys_hsv(ys_view(v,0.42f,1,0.8f));
+    if (hsv.y <= 1.0e-5f) return v;
+    float ww=ys_hue_weight(hsv.x,28.0f,62.0f,18.0f);
+    float gw=ys_hue_weight(hsv.x,125.0f,42.0f,18.0f);
+    float cw=ys_hue_weight(hsv.x,228.0f,68.0f,20.0f);
+    float rr=0.11f*warm*ww-0.035f*green*gw-0.045f*cool*cw;
+    float gg=0.025f*warm*ww+0.085f*green*gw-0.020f*cool*cw;
+    float bb=-0.090f*warm*ww-0.040f*green*gw+0.105f*cool*cw;
+    float3 out=make_float3(v.x*_exp2f(rr),v.y*_exp2f(gg),v.z*_exp2f(bb));
+    return ys_preserve_y(out,y);
+}
+__DEVICE__ float3 ys_advanced_negative(float3 v,float contrast,float toe,float shoulder,float base_sat,float cross,
+    float density,float color,float separation,float shadow_keep,float high_keep,float warm,float green,float cool) {
+    float3 out=ys_curve(v,contrast,toe,shoulder);
+    out=ys_scale(out,_powf(10.0f,-density));
+    out=ys_interaction(out,cross);
+    out=ys_density_separation(out,separation);
+    out=ys_exposure_chroma(out,base_sat*color,shadow_keep,high_keep);
+    out=ys_hue_density_bias(out,warm,green,cool);
+    return out;
+}
+__DEVICE__ float3 ys_advanced_print(float3 v,float contrast,float toe,float shoulder,float density,float base_sat,
+    float black_trim,float white_trim,float separation,float warm,float color) {
+    float3 out=ys_curve(v,contrast,toe,shoulder);
+    float y=ys_Y(out);
+    if (y > 1.0e-8f) {
+        float ev=ys_stops(y,0.18f);
+        float sh=1.0f-ys_smooth(-3.5f,-0.25f,ev);
+        float hi=ys_smooth(0.5f,4.5f,ev);
+        out=ys_scale(out,_exp2f(-black_trim*sh+white_trim*hi));
+    }
+    out=ys_scale(out,_powf(10.0f,-density));
+    out=ys_density_separation(out,separation);
+    out=ys_saturation(out,base_sat*color);
+    float yy=ys_Y(out);
+    if (yy > 1.0e-8f && _fabs(warm) > 1.0e-8f) {
+        float ev=ys_stops(yy,0.18f);
+        float weight=0.25f+0.75f*ys_smooth(-0.5f,3.5f,ev);
+        float3 biased=make_float3(out.x*_exp2f(0.070f*warm*weight),
+                                  out.y*_exp2f(0.018f*warm*weight),
+                                  out.z*_exp2f(-0.075f*warm*weight));
+        out=ys_preserve_y(biased,yy);
+    }
+    return out;
+}
+
 __DEVICE__ float ys_vignette(int w,int h,int x,int y,float radius,float feather,float roundness,float cx,float cy) {
     float aspect = (float)w/(float)h;
     float nx = (2.0f*((float)x+0.5f)/(float)w-1.0f-cx)*aspect;
@@ -798,9 +910,12 @@ __DEVICE__ float3 ys_warning(float3 image,int height,int x,int y) {
 typedef struct {
     float balance_ev; float balance_w; float balance_t; float density_r; float density_g; float density_b;
     int wb_kind; float wb_kelvin; float wb_offset; float wb_mix;
+    int film_kind;
     int neg_active; float neg_c; float neg_t; float neg_s; float neg_chroma; float neg_cross;
+    float adv_nd; float adv_nc; float adv_ns; float adv_nsh; float adv_nhi; float adv_nw; float adv_ng; float adv_nb;
     int look_id; float look_amount; float skin_amount; float skin_center; float skin_half; float skin_min; float skin_max;
     int print_active; float print_c; float print_t; float print_s; float print_d; float print_chroma;
+    float adv_pb; float adv_pw; float adv_ps; float adv_pwarm; float adv_pc;
     float gray_code; int compress; float knee;
     float vig_inner; float vig_feather; float vig_round; float vig_cx; float vig_cy;
 } YSGuideParams;
@@ -812,9 +927,19 @@ __DEVICE__ float3 ys_guide_curve(float linear_gray,YSGuideParams p) {
     float mask = 0.0f;
     if (p.look_id != 0 && p.look_amount > 0.0f && p.skin_amount > 0.0f)
         mask = ys_skin(v,p.skin_center,p.skin_half,p.skin_min,p.skin_max);
-    if (p.neg_active) v = ys_interaction(ys_saturation(ys_curve(v,p.neg_c,p.neg_t,p.neg_s),p.neg_chroma),p.neg_cross);
+    if (p.neg_active) {
+        v = p.film_kind == 0
+            ? ys_interaction(ys_saturation(ys_curve(v,p.neg_c,p.neg_t,p.neg_s),p.neg_chroma),p.neg_cross)
+            : ys_advanced_negative(v,p.neg_c,p.neg_t,p.neg_s,p.neg_chroma,p.neg_cross,
+                p.adv_nd,p.adv_nc,p.adv_ns,p.adv_nsh,p.adv_nhi,p.adv_nw,p.adv_ng,p.adv_nb);
+    }
     v = ys_show(v,p.look_id,p.look_amount,p.skin_amount,mask);
-    if (p.print_active) v = ys_scale(ys_saturation(ys_curve(v,p.print_c,p.print_t,p.print_s),p.print_chroma),_powf(10.0f,-p.print_d));
+    if (p.print_active) {
+        v = p.film_kind == 0
+            ? ys_scale(ys_saturation(ys_curve(v,p.print_c,p.print_t,p.print_s),p.print_chroma),_powf(10.0f,-p.print_d))
+            : ys_advanced_print(v,p.print_c,p.print_t,p.print_s,p.print_d,p.print_chroma,
+                p.adv_pb,p.adv_pw,p.adv_ps,p.adv_pwarm,p.adv_pc);
+    }
     return ys_view(v,p.gray_code,p.compress,p.knee);
 }
 __DEVICE__ float3 ys_vignette_guide(float3 image,YSGuideParams p,int w,int h,int x,int y,float opacity) {
@@ -925,14 +1050,27 @@ __DEVICE__ float3 transform(int p_Width,int p_Height,int p_X,int p_Y,float p_R,f
     if (!ys_safe(s.source)) return ys_error(p_X,p_Y);
     s.balanced = ys_balance_m2(s.source,exposure,warm,tint,printer_r,printer_g,printer_b,
         wb_mode,wb_temp,wb_duv,wb_strength);
-    s.negative = negative_on ? ys_interaction(ys_saturation(ys_curve(s.balanced,neg_contrast,neg_toe,neg_shoulder),neg_sat),crosstalk) : s.balanced;
+    s.negative = s.balanced;
+    if (negative_on) {
+        s.negative = film_model == 0
+            ? ys_interaction(ys_saturation(ys_curve(s.balanced,neg_contrast,neg_toe,neg_shoulder),neg_sat),crosstalk)
+            : ys_advanced_negative(s.balanced,neg_contrast,neg_toe,neg_shoulder,neg_sat,crosstalk,
+                adv_neg_density,adv_neg_color,adv_neg_sep,adv_neg_shadow,adv_neg_high,
+                adv_neg_warm,adv_neg_green,adv_neg_cool);
+    }
     float range_center = range_pick_on ? ys_picker_hue(make_float3(range_pick.r,range_pick.g,range_pick.b),range_hue) : range_hue;
     float skin_center = skin_pick_on ? ys_picker_hue(make_float3(skin_pick.r,skin_pick.g,skin_pick.b),skin_hue) : skin_hue;
     float skin = 0.0f;
     if (look_mode != 0 && look_mix > 0.0f && skin_protect > 0.0f)
         skin = ys_skin(s.balanced,skin_center,skin_width,skin_sat_min,skin_sat_max);
     s.look = ys_show(s.negative,look_mode,look_mix,skin_protect,skin);
-    s.print = print_on ? ys_scale(ys_saturation(ys_curve(s.look,print_contrast,print_toe,print_shoulder),print_sat),_powf(10.0f,-print_density)) : s.look;
+    s.print = s.look;
+    if (print_on) {
+        s.print = film_model == 0
+            ? ys_scale(ys_saturation(ys_curve(s.look,print_contrast,print_toe,print_shoulder),print_sat),_powf(10.0f,-print_density))
+            : ys_advanced_print(s.look,print_contrast,print_toe,print_shoulder,print_density,print_sat,
+                adv_print_black,adv_print_white,adv_print_sep,adv_print_warm,adv_print_color);
+    }
     s.lens = ys_scale(s.print,_exp2f(-vignette_stops*ys_vignette(p_Width,p_Height,p_X,p_Y,vignette_radius,vignette_soft,vignette_round,vignette_x,vignette_y)));
     if (diag_mode == 0 && guide_mode == 0 && output_mode != 2) return ys_encode_working(s.lens,output_mode);
     s.pre = ys_pre_gamut(s.lens,output_gray);
@@ -958,10 +1096,14 @@ __DEVICE__ float3 transform(int p_Width,int p_Height,int p_X,int p_Y,float p_R,f
     gp.balance_ev=exposure; gp.balance_w=warm; gp.balance_t=tint;
     gp.density_r=printer_r; gp.density_g=printer_g; gp.density_b=printer_b;
     gp.wb_kind=wb_mode; gp.wb_kelvin=wb_temp; gp.wb_offset=wb_duv; gp.wb_mix=wb_strength;
+    gp.film_kind=film_model;
     gp.neg_active=negative_on; gp.neg_c=neg_contrast; gp.neg_t=neg_toe; gp.neg_s=neg_shoulder; gp.neg_chroma=neg_sat; gp.neg_cross=crosstalk;
+    gp.adv_nd=adv_neg_density; gp.adv_nc=adv_neg_color; gp.adv_ns=adv_neg_sep;
+    gp.adv_nsh=adv_neg_shadow; gp.adv_nhi=adv_neg_high; gp.adv_nw=adv_neg_warm; gp.adv_ng=adv_neg_green; gp.adv_nb=adv_neg_cool;
     gp.look_id=look_mode; gp.look_amount=look_mix; gp.skin_amount=skin_protect; gp.skin_center=skin_center;
     gp.skin_half=skin_width; gp.skin_min=skin_sat_min; gp.skin_max=skin_sat_max;
     gp.print_active=print_on; gp.print_c=print_contrast; gp.print_t=print_toe; gp.print_s=print_shoulder; gp.print_d=print_density; gp.print_chroma=print_sat;
+    gp.adv_pb=adv_print_black; gp.adv_pw=adv_print_white; gp.adv_ps=adv_print_sep; gp.adv_pwarm=adv_print_warm; gp.adv_pc=adv_print_color;
     gp.gray_code=output_gray; gp.compress=gamut_on; gp.knee=gamut_knee;
     gp.vig_inner=vignette_radius; gp.vig_feather=vignette_soft; gp.vig_round=vignette_round; gp.vig_cx=vignette_x; gp.vig_cy=vignette_y;
     return ys_graphic(result,d,gp,guide_mode,guide_opacity,p_Width,p_Height,p_X,p_Y);

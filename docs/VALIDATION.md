@@ -58,3 +58,15 @@ diagnostic/guide tests.
 This is still not Resolve/Metal acceptance. Pending gates are Resolve Studio 21.1 control loading,
 Metal compilation/execution, actual ProRes RAW converter-output confirmation, representative
 footage review, GPU performance, saved-project persistence and export/re-import validation.
+
+## M3 technical implementation
+
+Version `0.3.0-alpha.1` adds an opt-in advanced negative/print path and a frozen M2 UI
+compatibility snapshot. The new tests verify that all M3 parameters are inert in Legacy mode,
+advanced negative/print bypasses remain valid, neutral density follows its documented base-10
+trim, log-ratio separation preserves neutrals, shadow/highlight saturation controls are
+exposure-selective, hue bias is selective and luminance-stable, print black/white trims target
+different exposure regions, the neutral ramp remains monotonic, the Tone Curve guide follows
+the advanced pipeline, and randomized parameter/input combinations remain finite.
+
+Resolve/Metal image-quality and playback acceptance is still required before production use.

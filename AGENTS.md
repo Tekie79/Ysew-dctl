@@ -31,3 +31,7 @@ Alpha.1 failed control loading in the user-reported Studio 21.1 environment. Alp
 
 11. Camera-log inputs must match the exact decoder-output gamut and transfer function. Never infer an ARRI, Sony or RED encoding from a codec name or camera brand. Append Input enum values; never reorder existing saved indices.
 12. CAT02 white balance is a declared source-white adaptation to D65, not an image-estimated illuminant or sensor calibration. Preserve Legacy as the default unless a deliberate compatibility break is approved.
+
+13. M3 advanced film behavior is parametric. Do not call it Kodak, Fuji, 2383, 3513 or a measured stock unless licensed measurement data and a separate validated profile are actually added.
+14. Preserve Film Model=Legacy as the default for existing grades. M3 UI controls are append-only; tests/ui_m2_compat.json freezes the first 67 controls.
+15. Hue-family and density-separation controls must preserve neutral behavior where documented and must be stress-tested with signed wide-gamut inputs.

@@ -56,3 +56,17 @@ The optional CAT02 white-balance stage is applied after input normalization and 
 negative/look/print stages. Legacy is still the default and is covered by the alpha regression
 fixture. CAT02 maps a user-declared source illuminant to D65; it does not estimate illumination
 from the image or reverse white balance already applied by a RAW decoder.
+
+## M3 advanced film model
+
+M3 is selected with `Film Model = YS Advanced`. The negative first applies the existing
+log-exposure characteristic curve and neutral density. Positive RGB regions can then receive
+log channel-ratio separation; that operation fades toward the original signal around negative
+wide-gamut components instead of taking invalid logarithms. Exposure-dependent chroma retention
+acts separately in deep shadows and highlights. Broad hue-family density biases are calculated
+from a fixed neutral viewing transform and are renormalized to preserve scene Y.
+
+The advanced print applies its characteristic response, region-weighted black/white trims,
+neutral print density, a gentler separation stage, master chroma and an optional warm bias.
+The print is still not a measured stock or spectral print model. Output ownership and the
+existing Rec.709 render remain unchanged.

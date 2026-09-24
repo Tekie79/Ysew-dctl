@@ -2,7 +2,7 @@
 
 Custom DCTL development for the **Yekermo Sew** television series.
 
-**Version:** `0.2.0-alpha.1` | **Development branch:** `develop` | **Milestone:** M2 technical input science
+**Version:** `0.3.0-alpha.1` | **Development branch:** `develop` | **Milestone:** M3 advanced film model
 
 This is executable source, not a look LUT or a finished film-stock emulator. The first vertical slice implements scene transforms, balancing, original parametric negative/print responses, provisional seasonal looks, vignette, SDR rendering, and 26 diagnostic modes. Alpha.1 failed the user's first Resolve control-load test. Alpha.2 repairs the declarations and adds optional graphical aids; its 76 CPU/source tests pass, but **Resolve retesting is pending. Do not use it as a production master grade yet.**
 
@@ -53,3 +53,11 @@ Sony S-Log3/S-Gamut3 and RED Log3G10/REDWideGamutRGB input transforms. It also a
 optional CAT02 CCT/Duv white-balance path. These are transforms for already-decoded RGB;
 they do not debayer or identify ProRes RAW automatically. Legacy Warmth/Tint remains the
 default for saved-grade compatibility. See [M2 input science](docs/M2_INPUT_SCIENCE.md).
+
+## M3 advanced film model
+
+`Film Model → YS Advanced` enables the new opt-in negative/print response: neutral
+density, density-inspired log-ratio color separation, exposure-dependent shadow/highlight
+chroma, broad hue-family density biases, and independent print shadow/highlight trims.
+Legacy remains the default for saved-grade compatibility. See
+[M3 advanced film model](docs/M3_FILM_MODEL.md).

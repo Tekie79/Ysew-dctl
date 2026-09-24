@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.3.0-alpha.1 - 2026-09-24
+
+M3 advanced film-response implementation on `develop`.
+
+- Added opt-in `Film Model = YS Advanced`; Legacy remains default.
+- Added negative density, master color, log-ratio separation, shadow/highlight chroma retention and warm/green/cool hue-family biases.
+- Added print black/white density trims, print separation, warm bias and master color.
+- Extended the Tone Curve guide so it evaluates the advanced pipeline.
+- Added a frozen 67-control M2 compatibility contract and M3 regression/property tests.
+- The model is original and parametric; no measured stock profile or commercial LUT data is claimed or included.
+
 ## 0.2.0-alpha.1 - 2026-09-24
 
 M2 technical input-science implementation on `develop`.
