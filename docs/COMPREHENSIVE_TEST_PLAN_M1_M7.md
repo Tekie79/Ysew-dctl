@@ -2,7 +2,7 @@
 
 Version under test: `0.7.0-alpha.1`  
 Branch: `develop`  
-Frozen source commit for this plan: `86bdd8c4ef0023ee9c4e042919efe68d83ec7165`  
+Repository test-plan commit: `a75ab1cd5cba1612d22fceff378eedd027d2afe8`\nDCTL code last changed at M7 commit: `a75ab1cd5cba1612d22fceff378eedd027d2afe8`  
 Primary DCTL: `dist/YSEW_Film_Lab_M7.dctl`
 
 This is the formal end-of-development acceptance plan for milestones M1-M7. It replaces the
@@ -122,7 +122,7 @@ Expected Git commit:
 86bdd8c4ef0023ee9c4e042919efe68d83ec7165
 ```
 
-The deterministic M7 package validated in CI as:
+For this test-plan commit, the deterministic M7 package validated in CI as:
 
 ```text
 YSEW_Film_Lab_0.7.0-alpha.1.zip
