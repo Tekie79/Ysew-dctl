@@ -2,9 +2,15 @@
 
 Custom DCTL development for the **Yekermo Sew** television series.
 
-**Version:** `0.1.0-alpha.1` | **Development branch:** `develop` | **Milestone:** M1 foundation
+**Version:** `0.1.0-alpha.2` | **Development branch:** `develop` | **Milestone:** M1 foundation
 
-This is executable source, not a look LUT or a finished film-stock emulator. The first vertical slice implements scene transforms, balancing, original parametric negative/print responses, provisional seasonal looks, vignette, SDR rendering, and 26 diagnostic modes. It has passed local CPU tests. **It has not yet been compiled or visually qualified inside DaVinci Resolve. Do not use it as a production master grade yet.**
+This is executable source, not a look LUT or a finished film-stock emulator. The first vertical slice implements scene transforms, balancing, original parametric negative/print responses, provisional seasonal looks, vignette, SDR rendering, and 26 diagnostic modes. Alpha.1 failed the user's first Resolve control-load test. Alpha.2 repairs the declarations and adds optional graphical aids; its 76 CPU/source tests pass, but **Resolve retesting is pending. Do not use it as a production master grade yet.**
+
+## Alpha.2 UI repair and graphical aids
+
+Unquoted, concise labels; corrected menu declarations; hover tooltips; two native color pickers; and read-only tone, exposure-band, color/skin-range and vignette guides. The original 57 control IDs/types/defaults/enum order are retained; six controls are appended and optional behavior defaults Off. No draggable curve editor or OFX scope is claimed.
+
+Start with [the UI retest](docs/UI_RETEST.md), using the two minimal probes and `dist/YSEW_Film_Lab_A2.dctl` (an exact version-named copy). See [graphical controls](docs/GRAPHICAL_CONTROLS.md) and the [sanitized host report](docs/validation/2026-09-24-host-alpha1.md). Color-picker/tooltips require Resolve 19.1 or later; the reported Studio 21.1 host is the current retest target.
 
 ## Current implementation
 
@@ -18,7 +24,7 @@ This is executable source, not a look LUT or a finished film-stock emulator. The
 
 ## Install and test
 
-Use `dist/YSEW_Film_Lab.dctl`. Read [Resolve setup](docs/RESOLVE_SETUP.md) before loading it. The default output is internally rendered **Rec.709 Gamma 2.4**; applying another output transform after it would be incorrect.
+Use `dist/YSEW_Film_Lab_A2.dctl` for this retest; the canonical file remains `dist/YSEW_Film_Lab.dctl`. Read [Resolve setup](docs/RESOLVE_SETUP.md) before loading it. The default output is internally rendered **Rec.709 Gamma 2.4**; applying another output transform after it would be incorrect.
 
 For development, Python 3.10+ and Clang or GCC with C++17 support are sufficient; there are no third-party Python dependencies.
 
@@ -29,6 +35,8 @@ python3 -m unittest discover -s tests -v
 # Optional: exercise another CPU compiler.
 CXX=g++ python3 -m unittest discover -s tests -v
 ```
+
+Turn both Diagnostics and Visual Guide Off before delivery. Visual guides are rendered pixels, not export-safe host widgets.
 
 The test harness compiles and calls the actual DCTL source through a small float32 C++ adapter. It does not merely test a separate Python reimplementation. It also does not replace Resolve's DCTL parser or a Metal/CUDA/OpenCL acceptance test.
 

@@ -1,5 +1,7 @@
 # Diagnostic reference
 
+Alpha.2 uses shortened UI labels. `Scene exposure grayscale` is now `Scene EV Gray`; the source/balance tap selector is `Measure`. All original mode indices and measurements remain unchanged. [ui_label_changes.json](ui_label_changes.json) maps every renamed control. Optional [graphical guides](GRAPHICAL_CONTROLS.md) are a separate overlay selector, not additional measurement modes. Turn both Diagnostics and Visual Guide Off before export.
+
 ## Measurement rules
 
 A diagnostic must state what it measures and where. In M1, scene exposure is `log2(Y/reference_gray)` in decoded scene-linear DWG. The default gray is 0.18. It is relative image exposure, not a recovered camera exposure, incident-light meter, sensor clipping level, dynamic-range measurement or assessment of recoverable detail. The quantity is only meaningful when the input encoding and upstream scene normalization are correct. Source clipping/noise calibration would need independent camera/decoder evidence.

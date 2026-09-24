@@ -20,79 +20,8 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'tools'))
 from build import SOURCE, TARGET, controls, validate
 
-class Shader:
-    def __init__(self):
-        self.temp = tempfile.TemporaryDirectory(prefix='ysew-native-')
-        self.ui = controls(SOURCE.read_text())
-        self.ids = {row[0]: n for n, row in enumerate(self.ui)}
-        compiler = os.environ.get('CXX') or shutil.which('clang++') or shutil.which('g++')
-        if not compiler:
-            raise RuntimeError('Install Clang or GCC, or set CXX; shader tests must not silently skip.')
-        reset = '\n'.join(f'{name}={default};' for name, _, _, default in self.ui)
-        setters = '\n'.join(f'case {n}: {name}=({"float" if kind.endswith("SLIDER_FLOAT") else "int"})value; break;'
-                            for n, (name, _, kind, _) in enumerate(self.ui))
-        cpp = Path(self.temp.name) / 'shader.cpp'
-        cpp.write_text(f'''#include "{(ROOT/'tests/native_shim.hpp').as_posix()}"
-#include "{SOURCE.as_posix()}"
-extern "C" void reset_controls() {{ {reset} }}
-extern "C" void set_control(int id,float value) {{ switch(id) {{ {setters} }} }}
-extern "C" void pixel(float r,float g,float b,int w,int h,int x,int y,float* out) {{
-    float3 v=transform(w,h,x,y,r,g,b); out[0]=v.x; out[1]=v.y; out[2]=v.z;
-}}
-extern "C" float scalar(int op,float x,float a,float b,float c) {{
-    if(op==0) return ys_di_decode(x);
-    if(op==1) return ys_di_encode(x);
-    if(op==2) return ys_stops(x,a);
-    if(op==3) return ys_tone(x,a);
-    if(op==4) return ys_hue_weight(x,a,b,c);
-    if(op==5) return ys_band(x,a,b,c);
-    if(op==6) return ys_Y(ys_curve(ys_gray(x),a,b,c));
-    if(op==7) return ys_quantize(x,(int)a);
-    if(op==8) return ys_digit((int)x,(int)a,(int)b);
-    return -999.0f;
-}}
-extern "C" void vector(int op,float r,float g,float b,float a,float c,float d,float* out) {{
-    float3 v=make_float3(r,g,b);
-    if(op==0) v=ys_dwg_xyz(v); else if(op==1) v=ys_xyz_dwg(v);
-    else if(op==2) v=ys_to709(v); else if(op==3) v=ys_from709(v);
-    else if(op==4) v=ys_curve(v,a,c,d);
-    else if(op==5) v=ys_gamut(v,ys_gamut_factor(v,a));
-    else if(op==6) v=ys_hsv(v);
-    else if(op==7) v=ys_hue_color(a);
-    out[0]=v.x; out[1]=v.y; out[2]=v.z;
-}}
-''')
-        library = Path(self.temp.name) / ('shader.dylib' if sys.platform == 'darwin' else 'shader.so')
-        command = [compiler, '-std=c++17', '-O2', '-Wall', '-Wextra', '-Werror', '-shared', '-fPIC', str(cpp), '-o', str(library)]
-        completed = subprocess.run(command, text=True, capture_output=True, timeout=45)
-        if completed.returncode:
-            raise RuntimeError('CPU compilation failed:\n' + completed.stdout + completed.stderr)
-        self.lib = C.CDLL(str(library))
-        self.lib.reset_controls.argtypes = []
-        self.lib.reset_controls.restype = None
-        self.lib.set_control.argtypes = [C.c_int, C.c_float]
-        self.lib.set_control.restype = None
-        self.lib.pixel.argtypes = [C.c_float]*3 + [C.c_int]*4 + [C.POINTER(C.c_float)]
-        self.lib.pixel.restype = None
-        self.lib.scalar.argtypes = [C.c_int] + [C.c_float]*4
-        self.lib.scalar.restype = C.c_float
-        self.lib.vector.argtypes = [C.c_int] + [C.c_float]*6 + [C.POINTER(C.c_float)]
-        self.lib.vector.restype = None
-    def reset(self):
-        self.lib.reset_controls()
-    def set(self, **kwargs):
-        for name, value in kwargs.items():
-            self.lib.set_control(self.ids[name], value)
-    def pixel(self, rgb, w=1920, h=1080, x=960, y=540):
-        out = (C.c_float*3)()
-        self.lib.pixel(*rgb, w, h, x, y, out)
-        return tuple(out)
-    def scalar(self, op, x, a=0, b=0, c=0):
-        return self.lib.scalar(op, x, a, b, c)
-    def vector(self, op, rgb, a=0, b=0, c=0):
-        out = (C.c_float*3)()
-        self.lib.vector(op, *rgb, a, b, c, out)
-        return tuple(out)
+from native import Shader
+from ui_schema import parse_ui
 
 class FilmLabTests(unittest.TestCase):
     @classmethod
@@ -283,7 +212,7 @@ class FilmLabTests(unittest.TestCase):
             self.assertTrue(all(math.isfinite(v) and 0<=v<=1 for v in out),out)
     def test_40_ui_contract(self):
         text=SOURCE.read_text(); validate(text)
-        actual=[{'name':name,'type':kind,'default':default} for name,_,kind,default in controls(text)]
+        actual=[c.contract() for c in parse_ui(text)]
         saved=json.loads((ROOT/'tests/ui_contract.json').read_text())
         self.assertEqual(actual,saved)
     def test_41_reproducible_distribution(self):

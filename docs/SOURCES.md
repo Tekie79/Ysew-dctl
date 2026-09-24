@@ -23,3 +23,11 @@ https://github.com/actions/checkout/commit/11bd71901bbe5b1630ceea73d27597364c9af
 The commit was checked through the GitHub API. CI pins that version with read-only contents permissions and does not require repository write credentials for test execution.
 
 The negative/print curves, RGB interaction proxy, provisional YS looks, gamut-knee function, diagnostic palettes and procedural digit glyphs are original project code. No commercial LUT, film scan, proprietary stock dataset, third-party DCTL implementation or model weight is included. Authentic stock profiling and licensing remain future work.
+
+## Alpha.2 UI implementation references
+
+The S4 Blackmagic 19.1 guide explicitly introduces native color pickers and hover tooltips. Primary source authored by Thatcher Freeman demonstrates unquoted control/menu labels and color-picker RGB member access:
+https://github.com/thatcherfreeman/utility-dctls/blob/main/Effects/Process%20Negative%20Scans.dctl
+Primary source authored by Moaz Elgabry demonstrates tooltip binding by the unquoted display label:
+https://github.com/MoazElgabry/DCTLs/blob/main/ME_Localized%20Contrast.dctl
+These were consulted for API spelling only. No color-transform, emulation or graphics algorithm was copied. The curves, glyphs and guides remain original project code. Their appearance in a CPU preview does not certify the target host UI.

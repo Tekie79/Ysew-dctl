@@ -1,6 +1,8 @@
 # Resolve setup and first host acceptance
 
-**Alpha. No Resolve/GPU acceptance has been completed.** Use a duplicate test timeline, never the only production grade. Back up the project first. The intended API baseline is the classic RGB Transform DCTL plus combo/slider/checkbox controls; host-version compatibility must be verified on the actual installed build. Newer temporal/spatial work will have explicit version requirements.
+**Alpha. The user reported an alpha.1 control-load failure; alpha.2 retesting is pending.**
+
+Start with [UI_RETEST.md](UI_RETEST.md). Alpha.2 uses short labels and optional graphical controls; the old longer names below describe the same underlying controls. Its native picker/tooltips target Resolve 19.1 or later. Both Diagnostics and Visual Guide must be Off for export. Use a duplicate test timeline, never the only production grade. Back up the project first. The current API baseline is RGB Transform DCTL with classic controls plus native color pickers/tooltips; host-version compatibility must be verified on the actual installed build. Newer temporal/spatial work will have explicit version requirements.
 
 ## Install
 

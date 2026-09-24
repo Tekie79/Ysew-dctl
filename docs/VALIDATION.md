@@ -1,35 +1,42 @@
-# M1 validation record
+# Validation record - 0.1.0-alpha.2
 
-Version: `0.1.0-alpha.1`  
-Validation date: 2026-09-24  
-Source and distribution SHA-256: `c8c3cdc1b91b8ccca0467246ac224c05e63396f46b763a446f3c46c3bb2b575d`
+Date: 2026-09-24
+Source / canonical distribution / A2 alias SHA-256: `d384dcd5ae415e0de95bc23b14adb10b6ae456565ed95205ed87ce768c7f60aa`
 
-## Executed locally
+## Host status
 
-| Check | Result |
+**Alpha.1 host UI acceptance failed. Alpha.2 host retest is pending.** The owner reported float sliders and literal quoted labels, but no custom combo boxes or checkboxes, on Resolve Studio 21.1 / macOS 26.3.2 / Apple M5 Pro. No build-error dialog was reported. The selected file matched the alpha.1 manifest. Numerical, footage, playback, persistence and export checks were not run. The GPU processing preference and timeline overrides were not confirmed. See [the sanitized report](validation/2026-09-24-host-alpha1.md).
+
+The quoted declarations were a source defect. The old CPU adapter discarded labels and enum metadata, and its old linter incorrectly required quotes. Both defects are corrected in alpha.2. This does not establish that quoting was the sole cause of every absent control; the isolated basic and color probes separate host parsing, stale instances and optional picker support from the main pipeline.
+
+## Executed locally for alpha.2
+
+| Check | Actual result |
 |---|---|
-| Reproducible package and UI lint | Passed; source and distribution byte-identical |
-| Native CPU suite with Clang 17.0.0 | 43 tests passed |
-| Native CPU suite with GCC 14.2.0 | 43 tests passed |
-| Float32 shader source compiled with C++17, O2, Wall, Wextra, Werror | Passed under both compilers |
-| Procedural false-color scale preview at 640x320 | Rendered through the native adapter and visually inspected; numeric -6 through +6 labels and warning strip visible |
-| Python environment | Python 3.13.5; standard-library tests, no third-party test packages |
+| Strict UI source lint | Passed: raw unquoted labels and choices, numeric arguments, type/default/range checks, enum ordering, tooltip targets and picker defaults |
+| Build reproducibility | Passed: every source equals its distribution; the version-distinct A2 alias equals the main shader |
+| Native shader suite, Clang 17.0.0 | 76 tests passed |
+| Native shader suite, GCC 14.2.0 | 76 tests passed |
+| Toolchain | Python 3.13.5; C++17, O2, Wall, Wextra, Werror; no third-party test packages |
+| Old numeric behavior | 64 recorded alpha.1 CPU input/control/output cases passed with new features disabled |
+| UI compatibility contract | Original 57 IDs, types, numeric defaults and enum identifiers/order retained; six new controls appended |
+| Source safety | Targeted guard rejects GPU-reserved local type/address-space names; not a GPU compilation |
 
-There are 43 unique tests, not 86 unique tests. Each compiler executes the same suite. The C++ adapter invokes the actual shader functions/entry point; it does not run Resolve or its DCTL preprocessor. The generated image is a synthetic test ramp, not series footage or a GPU result.
+There are **76 unique tests**, each run with both compilers, not 152 unique tests. The native adapter compiles and executes the actual shader source using float32 CPU intrinsics. Its strict macro linter is a project-side source check, not a reimplementation or guarantee of Resolve's UI parser.
 
-## Covered behavior
+## Coverage
 
-Published DI mapping vectors, signed log/linear roundtrips, piecewise continuity, DWG/XYZ values, D65/Rec.709 checks, matrix roundtrips, relative exposure references, photographic stop gains, density-point convention, negative curve gray anchor and monotonicity, signed working-space bypasses, output-gray calibration, tone monotonicity, gamut compression bounds and luminance preservation, input/balance diagnostic separation, nonpositive luminance, hue wrap, crossed range bounds, achromatic exclusion, candidate-skin mask behavior, working-output diagnostic guard, before/after difference, stage inspection, vignette center/edge, invalid-input flags, chromaticity versus brightness, warning stripe, stop quantization, all diagnostic modes, randomized controls, UI contract, reproducible source/distribution and procedural glyphs.
+The original 43 mathematical tests remain, covering published conversion vectors, signed roundtrips, exposure, tone response, gamut mapping, diagnostic masks, warnings and numerical robustness. Additional tests cover the reported quote regressions, enum/default contracts, native color-picker fields, four-class basic UI probe, separate color-picker probe, optional-feature bypass behavior, picker/manual-hue equivalence, neutral/invalid swatch fallback, graphical response, output-domain guards, guides at varied dimensions, and the GPU-name regression.
 
-The suite contains seeded random tests: 300 matrix roundtrips, 500 candidate gamut samples with valid-luminance filtering, 80 input samples for each of 27 modes including Off, and 700 randomized-control renders. These are bounded synthetic tests, not proof of correctness over all possible inputs.
+The tone-curve helper is compared to the actual pointwise pipeline over 50 varied control sets. The guide excludes spatial vignette. The 64 alpha.1 reference cases are regression fixtures generated by executing the old shader, not independent stock measurements, GPU results or Resolve readouts. Host visual appearance, native picker dialog behavior, runtime keyframes and saved-grade migration are not certified by retaining parameter IDs.
 
-## Not executed / release blockers
+## Not executed here
 
-Resolve host compilation and UI parsing; Metal, CUDA and OpenCL execution; macOS/Windows Resolve acceptance; actual camera-decoder roundtrip validation; production footage; saved-grade/keyframe migration behavior; GPU timing, cache and playback; calibrated display comparison; external color-management diagnostics; delivery codec/data-level/metadata/broadcast verification. Temporal and large-radius spatial effects are not present in M1.
+Resolve DCTL compilation/UI parsing; Metal, CUDA and OpenCL execution; real footage; GPU/cache/playback performance; host color-picker sample-domain checks; timeline overrides; project persistence; delivery exports; calibrated-monitor comparison. No claim of production readiness or host compatibility is made. The reported alpha.1 UI failure remains a release blocker until the alpha.2 retest succeeds.
 
-The GitHub Actions workflow is configured to repeat the CPU tests on `develop`. Its remote execution status is separate from these local results; this record does not assert a successful GitHub runner execution.
+GitHub Actions is configured to repeat the CPU suite on develop. Its run status is separate from this local record. No remote result is asserted here before the new commit is run.
 
-## How to reproduce
+## Reproduce
 
 ```bash
 python3 tools/build.py --check
@@ -37,4 +44,4 @@ CXX=clang++ python3 -m unittest discover -s tests -v
 CXX=g++ python3 -m unittest discover -s tests -v
 ```
 
-Record failures with the complete message and actual toolchain. Use [RESOLVE_SETUP.md](RESOLVE_SETUP.md) for the separate host acceptance gate. Do not describe this alpha as Resolve-tested, production-ready, physically calibrated, or real-time based on this record.
+Use [UI_RETEST.md](UI_RETEST.md) for the smaller host acceptance sequence. Turn both Diagnostics and Visual Guide Off before normal output or delivery.
