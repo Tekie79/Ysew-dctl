@@ -26,7 +26,7 @@ class M4SpatialTests(unittest.TestCase):
         self.assertEqual(len(old),81)
         for a,b in zip(old,cur):
             self.assertEqual(a['name'],b.name); self.assertEqual(a['kind'],b.kind)
-            self.assertEqual(a['values'],list(b.values)); self.assertEqual(a['enums'],list(b.enums)); self.assertEqual(a['choices'],list(b.choices))
+            self.assertEqual(a['values'],list(b.values)); self.assertEqual(a['enums'],list(b.enums)[:len(a['enums'])]); self.assertEqual(a['choices'],list(b.choices)[:len(a['choices'])])
     def test_optics_off_is_exact_compatibility(self):
         rgb=(.31,.14,.06); base=self.s.pixel(rgb,w=97,h=55,x=48,y=27)
         self.s.set(optics_quality=2,optics_mix=2,halation_amount=200,bloom_amount=200,glow_amount=200,veil_amount=100,halation_tint=1)

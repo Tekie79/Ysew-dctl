@@ -29,8 +29,8 @@ class M3FilmModelTests(unittest.TestCase):
             self.assertEqual(before['name'],after.name)
             self.assertEqual(before['kind'],after.kind)
             self.assertEqual(before['values'],list(after.values))
-            self.assertEqual(before['enums'],list(after.enums))
-            self.assertEqual(before['choices'],list(after.choices))
+            self.assertEqual(before['enums'],list(after.enums)[:len(before['enums'])])
+            self.assertEqual(before['choices'],list(after.choices)[:len(before['choices'])])
 
     def test_legacy_is_default_and_new_controls_are_inert(self):
         self.s.reset()

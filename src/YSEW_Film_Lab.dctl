@@ -326,7 +326,7 @@ __DEVICE__ float ys_target_headroom(float3 rgb) {
 }
 __DEVICE__ float3 ys_target_status(float3 rgb,float margin) {
     float h=ys_target_headroom(rgb);
-    if (h < 0.0f) return make_float3(1.0f,0.05f,0.10f);
+    if (h < -1.0e-5f) return make_float3(1.0f,0.05f,0.10f);
     if (h < margin) return make_float3(1.0f,0.75f,0.0f);
     return make_float3(0.10f,0.65f,0.20f);
 }
@@ -1075,12 +1075,12 @@ __DEVICE__ float3 ys_diagnostic(YSStages s,YSDiag d,float gray_code,int compress
     else if (d.mode == 28) {
         float3 target=ys_target_pre(s.lens,d.target_kind,gray_code);
         float occ=ys_target_occupancy(target,d.target_kind);
-        result=occ > 1.0f ? make_float3(1.0f,0.0f,0.65f) : ys_heat(ys_sat(occ));
+        result=occ > 1.00001f ? make_float3(1.0f,0.0f,0.65f) : ys_heat(ys_sat(occ));
     }
     else if (d.mode == 29) {
         float3 target=ys_target_pre(s.lens,d.target_kind,gray_code);
         float head=ys_target_headroom(target);
-        if (head < 0.0f) result=make_float3(1.0f,0.05f,0.10f);
+        if (head < -1.0e-5f) result=make_float3(1.0f,0.05f,0.10f);
         else {
             float safe=ys_sat(head/_fmaxf(5.0f*d.target_margin,1.0e-5f));
             result=ys_mix(make_float3(1.0f,0.75f,0.0f),make_float3(0.10f,0.65f,0.20f),safe);

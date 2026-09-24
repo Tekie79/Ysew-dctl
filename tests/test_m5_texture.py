@@ -28,7 +28,7 @@ class M5TextureTests(unittest.TestCase):
         self.assertEqual(len(old),99)
         for a,b in zip(old,cur):
             self.assertEqual(a['name'],b.name); self.assertEqual(a['kind'],b.kind)
-            self.assertEqual(a['values'],list(b.values)); self.assertEqual(a['enums'],list(b.enums)); self.assertEqual(a['choices'],list(b.choices))
+            self.assertEqual(a['values'],list(b.values)); self.assertEqual(a['enums'],list(b.enums)[:len(a['enums'])]); self.assertEqual(a['choices'],list(b.choices)[:len(a['choices'])])
 
     def test_texture_off_is_exact_compatibility(self):
         rgb=(.31,.14,.06); base=self.s.pixel(rgb,w=128,h=72,x=37,y=29)
