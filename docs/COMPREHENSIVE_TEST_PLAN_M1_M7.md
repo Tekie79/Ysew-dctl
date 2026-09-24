@@ -2,7 +2,8 @@
 
 Version under test: `0.7.0-alpha.1`  
 Branch: `develop`  
-Repository test-plan commit: `a75ab1cd5cba1612d22fceff378eedd027d2afe8`\nDCTL code last changed at M7 commit: `a75ab1cd5cba1612d22fceff378eedd027d2afe8`  
+DCTL code freeze commit: `86bdd8c4ef0023ee9c4e042919efe68d83ec7165`  
+Plan: record the current documentation-only `develop` HEAD at test start  
 Primary DCTL: `dist/YSEW_Film_Lab_M7.dctl`
 
 This is the formal end-of-development acceptance plan for milestones M1-M7. It replaces the
