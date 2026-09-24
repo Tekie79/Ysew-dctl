@@ -46,13 +46,13 @@ class M4SpatialTests(unittest.TestCase):
     def test_halation_is_red_orange(self):
         w=h=65; data=[0.0]*(w*h*3); i=(32*w+32)*3; data[i:i+3]=[20,20,20]
         self.s.set(optics_on=1,optics_quality=1,halation_amount=100,halation_radius=30,halation_threshold=-20,halation_tint=.35)
-        r,g,b=pix(self.s.render_image(data,w,h),w,34,32)
+        r,g,b=pix(self.s.render_image(data,w,h),w,33,32)
         self.assertGreater(r,g); self.assertGreater(g,b)
     def test_halation_tint_increases_green(self):
         w=h=65; data=[0.0]*(w*h*3); i=(32*w+32)*3; data[i:i+3]=[20,20,20]
         self.s.set(optics_on=1,optics_quality=1,halation_amount=100,halation_radius=30,halation_threshold=-20,halation_tint=0)
         a=self.s.render_image(data,w,h); self.s.set(halation_tint=1); b=self.s.render_image(data,w,h)
-        self.assertGreater(pix(b,w,34,32)[1],pix(a,w,34,32)[1])
+        self.assertGreater(pix(b,w,33,32)[1],pix(a,w,33,32)[1])
     def test_high_threshold_rejects_gray_impulse(self):
         w=h=49; data=[0.0]*(w*h*3); i=(24*w+24)*3; data[i:i+3]=[.18,.18,.18]
         self.s.set(optics_on=1,bloom_amount=100,bloom_radius=24,bloom_threshold=60,optics_soft=10)

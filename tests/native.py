@@ -77,12 +77,9 @@ class Shader:
                 float3 v=ys_guide_curve(gray,gp); out[0]=v.x; out[1]=v.y; out[2]=v.z;
             }
             '''
-        cpp = Path(self.temp.name)/'shader.cpp'
-        cpp.write_text(f'''#include "{(ROOT/'tests/native_shim.hpp').as_posix()}"
-#include "{source.as_posix()}"
-extern "C" void reset_controls() {{ {reset} }}
-extern "C" void set_control(int id,float value) {{ (void)value; switch(id) {{ {''.join(setters)} }} }}
-extern "C" void set_picker(int id,float r,float g,float b) {{ (void)r; (void)g; (void)b; switch(id) {{ {''.join(pickers)} }} }}
+        texture_mode = '__TEXTURE__ p_TexR' in text
+        if texture_mode:
+            wrappers = f'''
 extern "C" void pixel(float r,float g,float b,int w,int h,int x,int y,float* out) {{
     YSTexture tr{{nullptr,w,h,r}},tg{{nullptr,w,h,g}},tb{{nullptr,w,h,b}};
     float3 v=transform(w,h,x,y,tr,tg,tb); out[0]=v.x; out[1]=v.y; out[2]=v.z;
@@ -108,7 +105,35 @@ extern "C" void render_image(int w,int h,const float* rgb,float* out) {{
         int i=3*(y*w+x); out[i]=v.x; out[i+1]=v.y; out[i+2]=v.z;
     }}
 }}
-{more}
+'''
+        else:
+            wrappers = f'''
+extern "C" void pixel(float r,float g,float b,int w,int h,int x,int y,float* out) {{
+    float3 v=transform(w,h,x,y,r,g,b); out[0]=v.x; out[1]=v.y; out[2]=v.z;
+}}
+extern "C" void render(int w,int h,float* out) {{
+    for(int y=0;y<h;++y) for(int x=0;x<w;++x) {{
+        float gray=0.18f*std::exp2(((float)x/(float)(w-1)*2.0f-1.0f)*6.0f);
+        float3 v=transform(w,h,x,y,gray,gray,gray);
+        int i=3*(y*w+x); out[i]=v.x; out[i+1]=v.y; out[i+2]=v.z;
+    }}
+}}
+extern "C" void render_image(int w,int h,const float* rgb,float* out) {{
+    for(int y=0;y<h;++y) for(int x=0;x<w;++x) {{
+        int i=3*(y*w+x);
+        float3 v=transform(w,h,x,y,rgb[i],rgb[i+1],rgb[i+2]);
+        out[i]=v.x; out[i+1]=v.y; out[i+2]=v.z;
+    }}
+}}
+'''
+        cpp = Path(self.temp.name)/'shader.cpp'
+        cpp.write_text(f'''#include "{(ROOT/'tests/native_shim.hpp').as_posix()}"
+#include "{source.as_posix()}"
+extern "C" void reset_controls() {{ {reset} }}
+extern "C" void set_control(int id,float value) {{ (void)value; switch(id) {{ {''.join(setters)} }} }}
+extern "C" void set_picker(int id,float r,float g,float b) {{ (void)r; (void)g; (void)b; switch(id) {{ {''.join(pickers)} }} }}
+{{wrappers}}
+{{more}}
 ''')
         library = Path(self.temp.name)/('shader.dylib' if sys.platform == 'darwin' else 'shader.so')
         completed = subprocess.run([compiler,'-std=c++17','-O2','-Wall','-Wextra','-Werror','-shared','-fPIC',str(cpp),'-o',str(library)],
