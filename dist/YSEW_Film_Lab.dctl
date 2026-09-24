@@ -99,20 +99,20 @@ DEFINE_UI_PARAMS(adv_print_color, Print Color, DCTLUI_SLIDER_FLOAT, 1.0, 0.0, 1.
 DEFINE_UI_PARAMS(optics_on, Optics, DCTLUI_CHECK_BOX, 0)
 DEFINE_UI_PARAMS(optics_quality, Optics Quality, DCTLUI_COMBO_BOX, 1, {OPT_DRAFT, OPT_STANDARD, OPT_HIGH}, {Draft, Standard, High})
 DEFINE_UI_PARAMS(optics_mix, Optics Mix, DCTLUI_SLIDER_FLOAT, 1.0, 0.0, 2.0, 0.01)
-DEFINE_UI_PARAMS(optics_soft, Optic Soft, DCTLUI_SLIDER_FLOAT, 0.75, 0.05, 3.0, 0.05)
-DEFINE_UI_PARAMS(halation_amount, Halation, DCTLUI_SLIDER_FLOAT, 0.0, 0.0, 2.0, 0.01)
-DEFINE_UI_PARAMS(halation_radius, Hal Radius, DCTLUI_SLIDER_FLOAT, 18.0, 1.0, 120.0, 1.0)
-DEFINE_UI_PARAMS(halation_threshold, Hal Threshold, DCTLUI_SLIDER_FLOAT, 2.0, -2.0, 8.0, 0.1)
+DEFINE_UI_PARAMS(optics_soft, Soft x100, DCTLUI_SLIDER_INT, 75, 5, 300, 5)
+DEFINE_UI_PARAMS(halation_amount, Hal Percent, DCTLUI_SLIDER_INT, 0, 0, 200, 1)
+DEFINE_UI_PARAMS(halation_radius, Hal Radius, DCTLUI_SLIDER_INT, 18, 1, 120, 1)
+DEFINE_UI_PARAMS(halation_threshold, Hal EV x10, DCTLUI_SLIDER_INT, 20, -20, 80, 1)
 DEFINE_UI_PARAMS(halation_tint, Hal Tint, DCTLUI_SLIDER_FLOAT, 0.35, 0.0, 1.0, 0.01)
-DEFINE_UI_PARAMS(bloom_amount, Bloom, DCTLUI_SLIDER_FLOAT, 0.0, 0.0, 2.0, 0.01)
-DEFINE_UI_PARAMS(bloom_radius, Bloom Radius, DCTLUI_SLIDER_FLOAT, 28.0, 1.0, 180.0, 1.0)
-DEFINE_UI_PARAMS(bloom_threshold, Bloom Threshold, DCTLUI_SLIDER_FLOAT, 1.5, -2.0, 8.0, 0.1)
-DEFINE_UI_PARAMS(glow_amount, Glow, DCTLUI_SLIDER_FLOAT, 0.0, 0.0, 2.0, 0.01)
-DEFINE_UI_PARAMS(glow_radius, Glow Radius, DCTLUI_SLIDER_FLOAT, 60.0, 1.0, 300.0, 1.0)
-DEFINE_UI_PARAMS(glow_threshold, Glow Threshold, DCTLUI_SLIDER_FLOAT, 0.5, -3.0, 8.0, 0.1)
-DEFINE_UI_PARAMS(veil_amount, Veiling Glare, DCTLUI_SLIDER_FLOAT, 0.0, 0.0, 1.0, 0.01)
-DEFINE_UI_PARAMS(veil_radius, Veil Radius, DCTLUI_SLIDER_FLOAT, 140.0, 4.0, 600.0, 2.0)
-DEFINE_UI_PARAMS(veil_threshold, Veil Threshold, DCTLUI_SLIDER_FLOAT, 0.0, -4.0, 8.0, 0.1)
+DEFINE_UI_PARAMS(bloom_amount, Bloom Percent, DCTLUI_SLIDER_INT, 0, 0, 200, 1)
+DEFINE_UI_PARAMS(bloom_radius, Bloom Radius, DCTLUI_SLIDER_INT, 28, 1, 180, 1)
+DEFINE_UI_PARAMS(bloom_threshold, Bloom EV x10, DCTLUI_SLIDER_INT, 15, -20, 80, 1)
+DEFINE_UI_PARAMS(glow_amount, Glow Percent, DCTLUI_SLIDER_INT, 0, 0, 200, 1)
+DEFINE_UI_PARAMS(glow_radius, Glow Radius, DCTLUI_SLIDER_INT, 60, 1, 300, 1)
+DEFINE_UI_PARAMS(glow_threshold, Glow EV x10, DCTLUI_SLIDER_INT, 5, -30, 80, 1)
+DEFINE_UI_PARAMS(veil_amount, Veil Percent, DCTLUI_SLIDER_INT, 0, 0, 100, 1)
+DEFINE_UI_PARAMS(veil_radius, Veil Radius, DCTLUI_SLIDER_INT, 140, 4, 600, 2)
+DEFINE_UI_PARAMS(veil_threshold, Veil EV x10, DCTLUI_SLIDER_INT, 0, -40, 80, 1)
 DEFINE_UI_PARAMS(optics_view, Optics View, DCTLUI_COMBO_BOX, 0, {OV_OFF, OV_HAL, OV_BLOOM, OV_GLOW, OV_VEIL, OV_SUM}, {Off, Halation, Bloom, Glow, Veil, Sum})
 
 DEFINE_UI_TOOLTIP(Input, "RGB encoding arriving at this node. Camera log choices require the decoder or upstream converter to output that exact gamut and curve. ProRes RAW is not auto-detected.")
@@ -167,20 +167,20 @@ DEFINE_UI_TOOLTIP(Print Color, "Master print chroma scale before the display ren
 DEFINE_UI_TOOLTIP(Optics, "Enable M4 spatial sampling. Off preserves the M3 pointwise pipeline and avoids neighborhood texture reads.")
 DEFINE_UI_TOOLTIP(Optics Quality, "Draft samples 4 directions, Standard 8 and High 16 at two radii. Higher quality substantially increases texture reads.")
 DEFINE_UI_TOOLTIP(Optics Mix, "Master gain for all spatial optical contributions.")
-DEFINE_UI_TOOLTIP(Optic Soft, "Shared highlight-source feather in exposure stops around each effect threshold.")
-DEFINE_UI_TOOLTIP(Halation, "Red-orange bright-edge spread derived from balanced scene exposure and injected after the negative response.")
+DEFINE_UI_TOOLTIP(Soft x100, "Shared highlight feather in hundredths of a stop. 75 means 0.75 stop.")
+DEFINE_UI_TOOLTIP(Hal Percent, "Halation amount in percent. 100 means unity contribution gain before Optics Mix.")
 DEFINE_UI_TOOLTIP(Hal Radius, "Halation radius in reference pixels at 2160 image lines; scales with image height.")
-DEFINE_UI_TOOLTIP(Hal Threshold, "Scene exposure threshold in stops relative to 18 percent gray for halation.")
+DEFINE_UI_TOOLTIP(Hal EV x10, "Halation threshold in tenths of a stop relative to 18 percent gray. 20 means plus 2.0 stops.")
 DEFINE_UI_TOOLTIP(Hal Tint, "Zero is redder and one moves the contribution toward orange.")
-DEFINE_UI_TOOLTIP(Bloom, "Broadband bright-edge spread added before the negative response.")
+DEFINE_UI_TOOLTIP(Bloom Percent, "Bloom amount in percent. 100 means unity contribution gain before Optics Mix.")
 DEFINE_UI_TOOLTIP(Bloom Radius, "Bloom radius in reference pixels at 2160 image lines.")
-DEFINE_UI_TOOLTIP(Bloom Threshold, "Scene exposure threshold in stops relative to 18 percent gray for bloom.")
-DEFINE_UI_TOOLTIP(Glow, "Larger partially neutralized optical glow added before the negative response.")
+DEFINE_UI_TOOLTIP(Bloom EV x10, "Bloom threshold in tenths of a stop relative to 18 percent gray.")
+DEFINE_UI_TOOLTIP(Glow Percent, "Glow amount in percent. 100 means unity contribution gain before Optics Mix.")
 DEFINE_UI_TOOLTIP(Glow Radius, "Glow radius in reference pixels at 2160 image lines.")
-DEFINE_UI_TOOLTIP(Glow Threshold, "Scene exposure threshold in stops relative to 18 percent gray for glow.")
-DEFINE_UI_TOOLTIP(Veiling Glare, "Large-radius neutral-weighted local glare around bright regions; not a global frame integral.")
+DEFINE_UI_TOOLTIP(Glow EV x10, "Glow threshold in tenths of a stop relative to 18 percent gray.")
+DEFINE_UI_TOOLTIP(Veil Percent, "Veiling-glare amount in percent. This remains a local finite-radius approximation.")
 DEFINE_UI_TOOLTIP(Veil Radius, "Veiling-glare radius in reference pixels at 2160 image lines.")
-DEFINE_UI_TOOLTIP(Veil Threshold, "Scene exposure threshold in stops relative to 18 percent gray for veiling glare.")
+DEFINE_UI_TOOLTIP(Veil EV x10, "Veiling-glare threshold in tenths of a stop relative to 18 percent gray.")
 DEFINE_UI_TOOLTIP(Optics View, "Contribution view for M4 effects. Requires internal Rec709 output and uses Diag Gain for inspection.")
 
 // Pure helpers: never refer to UI variables outside transform().
@@ -1195,6 +1195,15 @@ __DEVICE__ float3 transform(int p_Width,int p_Height,int p_X,int p_Y,
     s.glow=make_float3(0.0f,0.0f,0.0f);
     s.veil=make_float3(0.0f,0.0f,0.0f);
     s.optical=s.balanced;
+    float optic_soft_stops=(float)optics_soft*0.01f;
+    float hal_gain=(float)halation_amount*0.01f;
+    float bloom_gain=(float)bloom_amount*0.01f;
+    float glow_gain=(float)glow_amount*0.01f;
+    float veil_gain=(float)veil_amount*0.01f;
+    float hal_ev=(float)halation_threshold*0.1f;
+    float bloom_ev=(float)bloom_threshold*0.1f;
+    float glow_ev=(float)glow_threshold*0.1f;
+    float veil_ev=(float)veil_threshold*0.1f;
     if (optics_on && optics_mix > 0.0f) {
         YSSpatialParams sp;
         sp.enc=input_mode; sp.ev_adj=exposure; sp.warm_adj=warm; sp.tint_adj=tint;
@@ -1202,23 +1211,23 @@ __DEVICE__ float3 transform(int p_Width,int p_Height,int p_X,int p_Y,
         sp.wb_kind=wb_mode; sp.wb_kelvin=wb_temp; sp.wb_offset=wb_duv; sp.wb_mix=wb_strength;
         if (bloom_amount > 0.0f) {
             float3 spread=ys_spread_source(p_TexR,p_TexG,p_TexB,p_Width,p_Height,p_X,p_Y,sp,
-                bloom_radius,optics_quality,bloom_threshold,optics_soft);
-            s.bloom=ys_scale(spread,optics_mix*bloom_amount);
+                bloom_radius,optics_quality,bloom_ev,optic_soft_stops);
+            s.bloom=ys_scale(spread,optics_mix*bloom_gain);
         }
         if (glow_amount > 0.0f) {
             float3 spread=ys_spread_source(p_TexR,p_TexG,p_TexB,p_Width,p_Height,p_X,p_Y,sp,
-                glow_radius,optics_quality,glow_threshold,optics_soft);
-            s.glow=ys_scale(ys_glow_color(spread,0.42f),optics_mix*glow_amount);
+                glow_radius,optics_quality,glow_ev,optic_soft_stops);
+            s.glow=ys_scale(ys_glow_color(spread,0.42f),optics_mix*glow_gain);
         }
         if (veil_amount > 0.0f) {
             float3 spread=ys_spread_source(p_TexR,p_TexG,p_TexB,p_Width,p_Height,p_X,p_Y,sp,
-                veil_radius,optics_quality,veil_threshold,optics_soft);
-            s.veil=ys_scale(ys_glow_color(spread,0.78f),optics_mix*veil_amount);
+                veil_radius,optics_quality,veil_ev,optic_soft_stops);
+            s.veil=ys_scale(ys_glow_color(spread,0.78f),optics_mix*veil_gain);
         }
         if (halation_amount > 0.0f) {
             float3 spread=ys_spread_source(p_TexR,p_TexG,p_TexB,p_Width,p_Height,p_X,p_Y,sp,
-                halation_radius,optics_quality,halation_threshold,optics_soft);
-            s.halation=ys_scale(ys_halation_color(spread,halation_tint),optics_mix*halation_amount);
+                halation_radius,optics_quality,hal_ev,optic_soft_stops);
+            s.halation=ys_scale(ys_halation_color(spread,halation_tint),optics_mix*hal_gain);
         }
         s.optical=ys_add3(s.optical,ys_add3(s.bloom,ys_add3(s.glow,s.veil)));
     }

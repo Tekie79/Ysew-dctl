@@ -19,7 +19,7 @@ class UISchemaTests(unittest.TestCase):
         ui=parse_ui(SOURCE.read_text())
         self.assertEqual(len(ui),99)
         self.assertEqual(Counter(c.kind for c in ui),{
-            'DCTLUI_SLIDER_FLOAT':77,'DCTLUI_SLIDER_INT':1,
+            'DCTLUI_SLIDER_FLOAT':64,'DCTLUI_SLIDER_INT':14,
             'DCTLUI_COMBO_BOX':12,'DCTLUI_CHECK_BOX':7,'DCTLUI_COLOR_PICKER':2})
 
     def test_short_unquoted_labels(self):

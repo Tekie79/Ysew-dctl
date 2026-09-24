@@ -1195,26 +1195,26 @@
   },
   {
     "name": "optics_soft",
-    "label": "Optic Soft",
-    "kind": "DCTLUI_SLIDER_FLOAT",
+    "label": "Soft x100",
+    "kind": "DCTLUI_SLIDER_INT",
     "values": [
-      "0.75",
-      "0.05",
-      "3.0",
-      "0.05"
+      "75",
+      "5",
+      "300",
+      "5"
     ],
     "enums": [],
     "choices": []
   },
   {
     "name": "halation_amount",
-    "label": "Halation",
-    "kind": "DCTLUI_SLIDER_FLOAT",
+    "label": "Hal Percent",
+    "kind": "DCTLUI_SLIDER_INT",
     "values": [
-      "0.0",
-      "0.0",
-      "2.0",
-      "0.01"
+      "0",
+      "0",
+      "200",
+      "1"
     ],
     "enums": [],
     "choices": []
@@ -1222,25 +1222,25 @@
   {
     "name": "halation_radius",
     "label": "Hal Radius",
-    "kind": "DCTLUI_SLIDER_FLOAT",
+    "kind": "DCTLUI_SLIDER_INT",
     "values": [
-      "18.0",
-      "1.0",
-      "120.0",
-      "1.0"
+      "18",
+      "1",
+      "120",
+      "1"
     ],
     "enums": [],
     "choices": []
   },
   {
     "name": "halation_threshold",
-    "label": "Hal Threshold",
-    "kind": "DCTLUI_SLIDER_FLOAT",
+    "label": "Hal EV x10",
+    "kind": "DCTLUI_SLIDER_INT",
     "values": [
-      "2.0",
-      "-2.0",
-      "8.0",
-      "0.1"
+      "20",
+      "-20",
+      "80",
+      "1"
     ],
     "enums": [],
     "choices": []
@@ -1260,13 +1260,13 @@
   },
   {
     "name": "bloom_amount",
-    "label": "Bloom",
-    "kind": "DCTLUI_SLIDER_FLOAT",
+    "label": "Bloom Percent",
+    "kind": "DCTLUI_SLIDER_INT",
     "values": [
-      "0.0",
-      "0.0",
-      "2.0",
-      "0.01"
+      "0",
+      "0",
+      "200",
+      "1"
     ],
     "enums": [],
     "choices": []
@@ -1274,38 +1274,38 @@
   {
     "name": "bloom_radius",
     "label": "Bloom Radius",
-    "kind": "DCTLUI_SLIDER_FLOAT",
+    "kind": "DCTLUI_SLIDER_INT",
     "values": [
-      "28.0",
-      "1.0",
-      "180.0",
-      "1.0"
+      "28",
+      "1",
+      "180",
+      "1"
     ],
     "enums": [],
     "choices": []
   },
   {
     "name": "bloom_threshold",
-    "label": "Bloom Threshold",
-    "kind": "DCTLUI_SLIDER_FLOAT",
+    "label": "Bloom EV x10",
+    "kind": "DCTLUI_SLIDER_INT",
     "values": [
-      "1.5",
-      "-2.0",
-      "8.0",
-      "0.1"
+      "15",
+      "-20",
+      "80",
+      "1"
     ],
     "enums": [],
     "choices": []
   },
   {
     "name": "glow_amount",
-    "label": "Glow",
-    "kind": "DCTLUI_SLIDER_FLOAT",
+    "label": "Glow Percent",
+    "kind": "DCTLUI_SLIDER_INT",
     "values": [
-      "0.0",
-      "0.0",
-      "2.0",
-      "0.01"
+      "0",
+      "0",
+      "200",
+      "1"
     ],
     "enums": [],
     "choices": []
@@ -1313,38 +1313,38 @@
   {
     "name": "glow_radius",
     "label": "Glow Radius",
-    "kind": "DCTLUI_SLIDER_FLOAT",
+    "kind": "DCTLUI_SLIDER_INT",
     "values": [
-      "60.0",
-      "1.0",
-      "300.0",
-      "1.0"
+      "60",
+      "1",
+      "300",
+      "1"
     ],
     "enums": [],
     "choices": []
   },
   {
     "name": "glow_threshold",
-    "label": "Glow Threshold",
-    "kind": "DCTLUI_SLIDER_FLOAT",
+    "label": "Glow EV x10",
+    "kind": "DCTLUI_SLIDER_INT",
     "values": [
-      "0.5",
-      "-3.0",
-      "8.0",
-      "0.1"
+      "5",
+      "-30",
+      "80",
+      "1"
     ],
     "enums": [],
     "choices": []
   },
   {
     "name": "veil_amount",
-    "label": "Veiling Glare",
-    "kind": "DCTLUI_SLIDER_FLOAT",
+    "label": "Veil Percent",
+    "kind": "DCTLUI_SLIDER_INT",
     "values": [
-      "0.0",
-      "0.0",
-      "1.0",
-      "0.01"
+      "0",
+      "0",
+      "100",
+      "1"
     ],
     "enums": [],
     "choices": []
@@ -1352,25 +1352,25 @@
   {
     "name": "veil_radius",
     "label": "Veil Radius",
-    "kind": "DCTLUI_SLIDER_FLOAT",
+    "kind": "DCTLUI_SLIDER_INT",
     "values": [
-      "140.0",
-      "4.0",
-      "600.0",
-      "2.0"
+      "140",
+      "4",
+      "600",
+      "2"
     ],
     "enums": [],
     "choices": []
   },
   {
     "name": "veil_threshold",
-    "label": "Veil Threshold",
-    "kind": "DCTLUI_SLIDER_FLOAT",
+    "label": "Veil EV x10",
+    "kind": "DCTLUI_SLIDER_INT",
     "values": [
-      "0.0",
-      "-4.0",
-      "8.0",
-      "0.1"
+      "0",
+      "-40",
+      "80",
+      "1"
     ],
     "enums": [],
     "choices": []
