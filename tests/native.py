@@ -132,6 +132,7 @@ extern "C" void render_image(int w,int h,const float* rgb,float* out) {{
 extern "C" void reset_controls() {{ {reset} }}
 extern "C" void set_control(int id,float value) {{ (void)value; switch(id) {{ {''.join(setters)} }} }}
 extern "C" void set_picker(int id,float r,float g,float b) {{ (void)r; (void)g; (void)b; switch(id) {{ {''.join(pickers)} }} }}
+extern "C" void set_frame(int frame) {{ ys_frame_index=(uint)(frame < 0 ? 0 : frame); }}
 {wrappers}
 {more}
 ''')
@@ -147,6 +148,8 @@ extern "C" void set_picker(int id,float r,float g,float b) {{ (void)r; (void)g; 
         self.lib.set_control.restype = None
         self.lib.set_picker.argtypes = [C.c_int]+[C.c_float]*3
         self.lib.set_picker.restype = None
+        self.lib.set_frame.argtypes = [C.c_int]
+        self.lib.set_frame.restype = None
         self.lib.pixel.argtypes = [C.c_float]*3+[C.c_int]*4+[C.POINTER(C.c_float)]
         self.lib.pixel.restype = None
         self.lib.render.argtypes = [C.c_int,C.c_int,C.POINTER(C.c_float)]
@@ -163,6 +166,10 @@ extern "C" void set_picker(int id,float r,float g,float b) {{ (void)r; (void)g; 
 
     def reset(self):
         self.lib.reset_controls()
+        self.lib.set_frame(0)
+
+    def set_frame(self,frame):
+        self.lib.set_frame(frame)
 
     def set(self, **kwargs):
         for name, value in kwargs.items():

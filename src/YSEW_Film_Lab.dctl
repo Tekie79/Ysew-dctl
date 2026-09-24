@@ -1,4 +1,4 @@
-// Yekermo Sew Film Lab 0.4.0-alpha.1 - M4 spatial optics: halation, bloom, glow and veiling glare.
+// Yekermo Sew Film Lab 0.5.0-alpha.1 - M5 temporal grain, film texture and lens softness.
 // Original parametric creative models, NOT measured film-stock emulations.
 // Input must already be decoded RGB with the selected scene encoding.
 // See docs/RESOLVE_SETUP.md and docs/DIAGNOSTICS.md before installation.
@@ -115,6 +115,23 @@ DEFINE_UI_PARAMS(veil_radius, Veil Radius, DCTLUI_SLIDER_INT, 140, 4, 600, 2)
 DEFINE_UI_PARAMS(veil_threshold, Veil EV x10, DCTLUI_SLIDER_INT, 0, -40, 80, 1)
 DEFINE_UI_PARAMS(optics_view, Optics View, DCTLUI_COMBO_BOX, 0, {OV_OFF, OV_HAL, OV_BLOOM, OV_GLOW, OV_VEIL, OV_SUM}, {Off, Halation, Bloom, Glow, Veil, Sum})
 
+// M5 film texture. Disabled by default. Grain uses RAND and timeline-frame seeding.
+DEFINE_UI_PARAMS(texture_on, Texture, DCTLUI_CHECK_BOX, 0)
+DEFINE_UI_PARAMS(grain_gauge, Grain Gauge, DCTLUI_COMBO_BOX, 2, {GAUGE_8, GAUGE_16, GAUGE_35, GAUGE_65, GAUGE_CUSTOM}, {8mm, 16mm, 35mm, 65mm, Custom})
+DEFINE_UI_PARAMS(grain_amount, Grain Percent, DCTLUI_SLIDER_INT, 0, 0, 200, 1)
+DEFINE_UI_PARAMS(grain_size, Grain Size x100, DCTLUI_SLIDER_INT, 100, 50, 300, 1)
+DEFINE_UI_PARAMS(grain_rough, Grain Rough, DCTLUI_SLIDER_INT, 55, 0, 100, 1)
+DEFINE_UI_PARAMS(grain_color, Grain Color, DCTLUI_SLIDER_INT, 18, 0, 100, 1)
+DEFINE_UI_PARAMS(grain_shadow, Grain Shadow, DCTLUI_SLIDER_INT, 115, 0, 200, 1)
+DEFINE_UI_PARAMS(grain_mid, Grain Mid, DCTLUI_SLIDER_INT, 100, 0, 200, 1)
+DEFINE_UI_PARAMS(grain_high, Grain High, DCTLUI_SLIDER_INT, 55, 0, 200, 1)
+DEFINE_UI_PARAMS(grain_motion, Grain Motion, DCTLUI_COMBO_BOX, 1, {GM_STATIC, GM_FRAME, GM_HOLD2, GM_HOLD3}, {Static, Every Frame, Hold 2, Hold 3})
+DEFINE_UI_PARAMS(grain_seed, Grain Seed, DCTLUI_SLIDER_INT, 1979, 0, 9999, 1)
+DEFINE_UI_PARAMS(lens_soft, Lens Soft, DCTLUI_SLIDER_INT, 0, 0, 100, 1)
+DEFINE_UI_PARAMS(lens_radius, Lens Radius, DCTLUI_SLIDER_INT, 3, 1, 24, 1)
+DEFINE_UI_PARAMS(micro_soft, Micro Soft, DCTLUI_SLIDER_INT, 0, 0, 100, 1)
+DEFINE_UI_PARAMS(texture_view, Texture View, DCTLUI_COMBO_BOX, 0, {TV_OFF, TV_GRAIN, TV_WEIGHT, TV_LENS, TV_COMBINED}, {Off, Grain, Weight, Lens, Combined})
+
 DEFINE_UI_TOOLTIP(Input, "RGB encoding arriving at this node. Camera log choices require the decoder or upstream converter to output that exact gamut and curve. ProRes RAW is not auto-detected.")
 DEFINE_UI_TOOLTIP(Output, "DWG choices return working RGB for one external output transform. 709 Gamma 2.4 performs internal SDR rendering. Never apply a second output conversion.")
 DEFINE_UI_TOOLTIP(Exposure, "Photographic exposure adjustment in stops. Plus one doubles scene-linear RGB.")
@@ -182,6 +199,21 @@ DEFINE_UI_TOOLTIP(Veil Percent, "Veiling-glare amount in percent. This remains a
 DEFINE_UI_TOOLTIP(Veil Radius, "Veiling-glare radius in reference pixels at 2160 image lines.")
 DEFINE_UI_TOOLTIP(Veil EV x10, "Veiling-glare threshold in tenths of a stop relative to 18 percent gray.")
 DEFINE_UI_TOOLTIP(Optics View, "Contribution view for M4 effects. Requires internal Rec709 output and uses Diag Gain for inspection.")
+DEFINE_UI_TOOLTIP(Texture, "Enable M5 lens softness and film grain. Off preserves the M4 pipeline and skips texture processing.")
+DEFINE_UI_TOOLTIP(Grain Gauge, "Base spatial grain-size preset. Gauge names are artistic scale presets, not measured stock scans.")
+DEFINE_UI_TOOLTIP(Grain Percent, "Master grain density amplitude in percent. Grain is multiplicative in a density-style domain after print.")
+DEFINE_UI_TOOLTIP(Grain Size x100, "Multiplier for the selected gauge grain size. 100 is the preset base size.")
+DEFINE_UI_TOOLTIP(Grain Rough, "Blends single-scale grain toward a rougher three-scale texture.")
+DEFINE_UI_TOOLTIP(Grain Color, "Blend from correlated monochrome grain toward independent RGB layer grain.")
+DEFINE_UI_TOOLTIP(Grain Shadow, "Relative grain amplitude in deep shadows, percent.")
+DEFINE_UI_TOOLTIP(Grain Mid, "Relative grain amplitude around middle exposure, percent.")
+DEFINE_UI_TOOLTIP(Grain High, "Relative grain amplitude in strong highlights, percent.")
+DEFINE_UI_TOOLTIP(Grain Motion, "Static or timeline-frame deterministic cadence using TIMELINE_FRAME_INDEX and RAND.")
+DEFINE_UI_TOOLTIP(Grain Seed, "Deterministic spatial and temporal grain seed.")
+DEFINE_UI_TOOLTIP(Lens Soft, "Broadband local RGB softness before the negative, percent.")
+DEFINE_UI_TOOLTIP(Lens Radius, "Lens-softness radius in reference pixels at 2160 image lines.")
+DEFINE_UI_TOOLTIP(Micro Soft, "Reduces local luminance microcontrast while retaining more chroma, percent.")
+DEFINE_UI_TOOLTIP(Texture View, "M5 diagnostic for signed grain, exposure weight, lens-softness difference, or combined contribution. Internal Rec709 only.")
 
 // Pure helpers: never refer to UI variables outside transform().
 __DEVICE__ float ys_clamp(float x, float a, float b) { return _fminf(_fmaxf(x, a), b); }
@@ -687,6 +719,101 @@ __DEVICE__ float3 ys_optics_view(float3 contribution,float gain_value,float gray
     return ys_view(ys_scale(ys_pos3(contribution),gain_value),gray_code,compress,knee);
 }
 
+
+__DEVICE__ uint ys_grain_phase(int cadence) {
+    uint f=(uint)TIMELINE_FRAME_INDEX;
+    if (cadence == 0) return 0u;
+    if (cadence == 2) return f/2u;
+    if (cadence == 3) return f/3u;
+    return f;
+}
+__DEVICE__ uint ys_seed_xy(int ix,int iy,uint phase,uint base_seed,uint salt) {
+    return (uint)(ix+4099)*1973u + (uint)(iy+8191)*9277u + phase*26699u + base_seed*31847u + salt*1013u;
+}
+__DEVICE__ float ys_noise_corner(int ix,int iy,uint phase,uint base_seed,uint salt) {
+    return RAND(ys_seed_xy(ix,iy,phase,base_seed,salt))*2.0f-1.0f;
+}
+__DEVICE__ float ys_value_noise(float gx,float gy,uint phase,uint base_seed,uint salt) {
+    int ix=(int)_floorf(gx), iy=(int)_floorf(gy);
+    float fx=gx-(float)ix, fy=gy-(float)iy;
+    float sx=fx*fx*(3.0f-2.0f*fx), sy=fy*fy*(3.0f-2.0f*fy);
+    float n00=ys_noise_corner(ix,iy,phase,base_seed,salt);
+    float n10=ys_noise_corner(ix+1,iy,phase,base_seed,salt);
+    float n01=ys_noise_corner(ix,iy+1,phase,base_seed,salt);
+    float n11=ys_noise_corner(ix+1,iy+1,phase,base_seed,salt);
+    float nx0=n00+(n10-n00)*sx, nx1=n01+(n11-n01)*sx;
+    return nx0+(nx1-nx0)*sy;
+}
+__DEVICE__ float ys_gauge_base(int gauge_kind) {
+    if (gauge_kind == 0) return 2.65f;
+    if (gauge_kind == 1) return 1.75f;
+    if (gauge_kind == 2) return 1.05f;
+    if (gauge_kind == 3) return 0.72f;
+    return 1.0f;
+}
+__DEVICE__ float ys_grain_cell(int gauge_kind,int size_pct,int image_h) {
+    float cell=ys_gauge_base(gauge_kind)*((float)size_pct*0.01f)*((float)image_h/2160.0f);
+    return _fmaxf(cell,0.18f);
+}
+__DEVICE__ float ys_grain_fractal(float x,float y,float cell,uint phase,uint base_seed,uint salt,float roughness) {
+    float a=ys_value_noise(x/cell,y/cell,phase,base_seed,salt);
+    float b=ys_value_noise(x/(cell*0.55f)+13.7f,y/(cell*0.55f)+7.1f,phase,base_seed,salt+17u);
+    float c=ys_value_noise(x/(cell*1.9f)+3.9f,y/(cell*1.9f)+19.3f,phase,base_seed,salt+41u);
+    float layered=0.64f*a+0.25f*b+0.11f*c;
+    return a+(layered-a)*ys_sat(roughness);
+}
+__DEVICE__ float3 ys_grain_noise(int x,int y,int h,int gauge_kind,int size_pct,int rough_pct,int color_pct,
+    int cadence,uint base_seed) {
+    float cell=ys_grain_cell(gauge_kind,size_pct,h);
+    uint phase=ys_grain_phase(cadence);
+    float rough=(float)rough_pct*0.01f, color_mix=(float)color_pct*0.01f;
+    float shared=ys_grain_fractal((float)x,(float)y,cell,phase,base_seed,11u,rough);
+    float nr=ys_grain_fractal((float)x+2.1f,(float)y+7.3f,cell*1.08f,phase,base_seed,101u,rough);
+    float ng=ys_grain_fractal((float)x+11.7f,(float)y+3.2f,cell,phase,base_seed,211u,rough);
+    float nb=ys_grain_fractal((float)x+5.4f,(float)y+15.1f,cell*0.92f,phase,base_seed,307u,rough);
+    return make_float3(shared+(nr-shared)*color_mix,shared+(ng-shared)*color_mix,shared+(nb-shared)*color_mix);
+}
+__DEVICE__ float ys_grain_exposure_weight(float3 image,int shadow_pct,int mid_pct,int high_pct) {
+    float y=ys_Y(image);
+    if (y <= 1.0e-10f) return 0.0f;
+    float ev=ys_stops(y,0.18f);
+    float sh=1.0f-ys_smooth(-3.5f,-0.5f,ev);
+    float hi=ys_smooth(0.75f,5.0f,ev);
+    float mid=_fmaxf(0.0f,1.0f-sh-hi);
+    return sh*((float)shadow_pct*0.01f)+mid*((float)mid_pct*0.01f)+hi*((float)high_pct*0.01f);
+}
+__DEVICE__ float3 ys_apply_density_grain(float3 image,float3 noise,float weight,int amount_pct) {
+    float density=0.00045f*(float)amount_pct*weight;
+    return make_float3(image.x*_powf(10.0f,-density*noise.x),
+                       image.y*_powf(10.0f,-density*noise.y),
+                       image.z*_powf(10.0f,-density*noise.z));
+}
+__DEVICE__ float3 ys_abs3(float3 v) { return make_float3(_fabs(v.x),_fabs(v.y),_fabs(v.z)); }
+__DEVICE__ float3 ys_local_balanced_blur(__TEXTURE__ tex_r,__TEXTURE__ tex_g,__TEXTURE__ tex_b,
+    int w,int h,int x,int y,YSSpatialParams p,int radius_ref) {
+    int r=(int)(_fmaxf(1.0f,(float)radius_ref*((float)h/2160.0f))+0.5f);
+    int d=(int)((float)r*0.70710678f+0.5f);
+    float3 center=ys_sample_balanced(tex_r,tex_g,tex_b,w,h,x,y,p);
+    float3 sum=ys_scale(center,4.0f);
+    sum=ys_add3(sum,ys_scale(ys_sample_balanced(tex_r,tex_g,tex_b,w,h,x+r,y,p),2.0f));
+    sum=ys_add3(sum,ys_scale(ys_sample_balanced(tex_r,tex_g,tex_b,w,h,x-r,y,p),2.0f));
+    sum=ys_add3(sum,ys_scale(ys_sample_balanced(tex_r,tex_g,tex_b,w,h,x,y+r,p),2.0f));
+    sum=ys_add3(sum,ys_scale(ys_sample_balanced(tex_r,tex_g,tex_b,w,h,x,y-r,p),2.0f));
+    sum=ys_add3(sum,ys_sample_balanced(tex_r,tex_g,tex_b,w,h,x+d,y+d,p));
+    sum=ys_add3(sum,ys_sample_balanced(tex_r,tex_g,tex_b,w,h,x-d,y+d,p));
+    sum=ys_add3(sum,ys_sample_balanced(tex_r,tex_g,tex_b,w,h,x+d,y-d,p));
+    sum=ys_add3(sum,ys_sample_balanced(tex_r,tex_g,tex_b,w,h,x-d,y-d,p));
+    return ys_scale(sum,1.0f/16.0f);
+}
+__DEVICE__ float3 ys_micro_soften(float3 center,float3 blur,float amount) {
+    float yc=ys_Y(center), yb=ys_Y(blur);
+    if (yc <= 1.0e-10f) return center;
+    return ys_scale(center,(yc+(yb-yc)*ys_sat(amount))/yc);
+}
+__DEVICE__ float3 ys_texture_debug_signed(float3 signal,float gain_value) {
+    return ys_clip(make_float3(0.5f+signal.x*gain_value,0.5f+signal.y*gain_value,0.5f+signal.z*gain_value));
+}
+
 __DEVICE__ float ys_vignette(int w,int h,int x,int y,float radius,float feather,float roundness,float cx,float cy) {
     float aspect = (float)w/(float)h;
     float nx = (2.0f*((float)x+0.5f)/(float)w-1.0f-cx)*aspect;
@@ -696,8 +823,10 @@ __DEVICE__ float ys_vignette(int w,int h,int x,int y,float radius,float feather,
 }
 
 typedef struct {
-    float3 source; float3 balanced; float3 optical; float3 negative; float3 look; float3 print; float3 lens;
-    float3 halation; float3 bloom; float3 glow; float3 veil; float3 pre; float3 output; float compression;
+    float3 source; float3 balanced; float3 optical; float3 negative; float3 look; float3 print;
+    float3 texture; float3 lens; float3 halation; float3 bloom; float3 glow; float3 veil;
+    float3 grain_signal; float3 grain_delta; float grain_weight; float3 lens_delta;
+    float3 pre; float3 output; float compression;
 } YSStages;
 typedef struct {
     int mode; int tap; int stage; int span; int step; int legend;
@@ -1190,6 +1319,18 @@ __DEVICE__ float3 transform(int p_Width,int p_Height,int p_X,int p_Y,
     if (!ys_safe(s.source)) return ys_error(p_X,p_Y);
     s.balanced = ys_balance_m2(s.source,exposure,warm,tint,printer_r,printer_g,printer_b,
         wb_mode,wb_temp,wb_duv,wb_strength);
+    s.lens_delta=make_float3(0.0f,0.0f,0.0f);
+    if (texture_on && (lens_soft > 0 || micro_soft > 0)) {
+        YSSpatialParams lp;
+        lp.enc=input_mode; lp.ev_adj=exposure; lp.warm_adj=warm; lp.tint_adj=tint;
+        lp.dens_r=printer_r; lp.dens_g=printer_g; lp.dens_b=printer_b;
+        lp.wb_kind=wb_mode; lp.wb_kelvin=wb_temp; lp.wb_offset=wb_duv; lp.wb_mix=wb_strength;
+        float3 original=s.balanced;
+        float3 blur=ys_local_balanced_blur(p_TexR,p_TexG,p_TexB,p_Width,p_Height,p_X,p_Y,lp,lens_radius);
+        if (micro_soft > 0) s.balanced=ys_micro_soften(s.balanced,blur,(float)micro_soft*0.01f);
+        if (lens_soft > 0) s.balanced=ys_mix(s.balanced,blur,(float)lens_soft*0.01f);
+        s.lens_delta=make_float3(s.balanced.x-original.x,s.balanced.y-original.y,s.balanced.z-original.z);
+    }
     s.halation=make_float3(0.0f,0.0f,0.0f);
     s.bloom=make_float3(0.0f,0.0f,0.0f);
     s.glow=make_float3(0.0f,0.0f,0.0f);
@@ -1253,13 +1394,25 @@ __DEVICE__ float3 transform(int p_Width,int p_Height,int p_X,int p_Y,
             : ys_advanced_print(s.look,print_contrast,print_toe,print_shoulder,print_density,print_sat,
                 adv_print_black,adv_print_white,adv_print_sep,adv_print_warm,adv_print_color);
     }
-    s.lens = ys_scale(s.print,_exp2f(-vignette_stops*ys_vignette(p_Width,p_Height,p_X,p_Y,vignette_radius,vignette_soft,vignette_round,vignette_x,vignette_y)));
-    if (diag_mode == 0 && guide_mode == 0 && optics_view == 0 && output_mode != 2) return ys_encode_working(s.lens,output_mode);
+    s.texture=s.print;
+    s.grain_signal=make_float3(0.0f,0.0f,0.0f);
+    s.grain_delta=make_float3(0.0f,0.0f,0.0f);
+    s.grain_weight=0.0f;
+    if (texture_on && grain_amount > 0) {
+        float3 gn=ys_grain_noise(p_X,p_Y,p_Height,grain_gauge,grain_size,grain_rough,grain_color,grain_motion,(uint)grain_seed);
+        float gw=ys_grain_exposure_weight(s.print,grain_shadow,grain_mid,grain_high);
+        s.grain_weight=gw;
+        s.grain_signal=ys_scale(gn,gw*((float)grain_amount*0.01f));
+        s.texture=ys_apply_density_grain(s.print,gn,gw,grain_amount);
+        s.grain_delta=make_float3(s.texture.x-s.print.x,s.texture.y-s.print.y,s.texture.z-s.print.z);
+    }
+    s.lens = ys_scale(s.texture,_exp2f(-vignette_stops*ys_vignette(p_Width,p_Height,p_X,p_Y,vignette_radius,vignette_soft,vignette_round,vignette_x,vignette_y)));
+    if (diag_mode == 0 && guide_mode == 0 && optics_view == 0 && texture_view == 0 && output_mode != 2) return ys_encode_working(s.lens,output_mode);
     s.pre = ys_pre_gamut(s.lens,output_gray);
     float factor = gamut_on ? ys_gamut_factor(s.pre,gamut_knee) : 1.0f;
     s.compression = 1.0f-factor;
     s.output = ys_gamma24(ys_gamut(s.pre,factor));
-    if (diag_mode == 0 && guide_mode == 0 && optics_view == 0) return output_mode == 2 ? s.output : ys_encode_working(s.lens,output_mode);
+    if (diag_mode == 0 && guide_mode == 0 && optics_view == 0 && texture_view == 0) return output_mode == 2 ? s.output : ys_encode_working(s.lens,output_mode);
     // Diagnostic colors need an unmanaged terminal Rec709 path. Never silently pass
     // display-coded overlays into a DWG working chain and call them calibrated.
     if (output_mode != 2) {
@@ -1280,6 +1433,12 @@ __DEVICE__ float3 transform(int p_Width,int p_Height,int p_X,int p_Y,
         else if (optics_view == 4) c=s.veil;
         else if (optics_view == 5) c=ys_add3(s.halation,ys_add3(s.bloom,ys_add3(s.glow,s.veil)));
         result=ys_warning(ys_optics_view(c,diag_gain,output_gray,gamut_on,gamut_knee),p_Height,p_X,p_Y);
+    }
+    if (texture_view != 0) {
+        if (texture_view == 1) result=ys_warning(ys_texture_debug_signed(s.grain_signal,0.25f*diag_gain),p_Height,p_X,p_Y);
+        else if (texture_view == 2) result=ys_warning(ys_gray(ys_sat(s.grain_weight*0.5f)),p_Height,p_X,p_Y);
+        else if (texture_view == 3) result=ys_warning(ys_optics_view(ys_abs3(s.lens_delta),diag_gain,output_gray,gamut_on,gamut_knee),p_Height,p_X,p_Y);
+        else result=ys_warning(ys_optics_view(ys_add3(ys_abs3(s.grain_delta),ys_abs3(s.lens_delta)),diag_gain,output_gray,gamut_on,gamut_knee),p_Height,p_X,p_Y);
     }
     if (guide_mode == 0) return result;
     YSGuideParams gp;
