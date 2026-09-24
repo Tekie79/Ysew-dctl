@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.4.0-alpha.1 - 2026-09-24
+
+- Added opt-in two-ring Halation, Bloom, Glow and Veiling Glare.
+- Added Draft/Standard/High texture-sampling tiers and 2160-line radius scaling.
+- Added independent thresholds, radii, halation tint and Optics View diagnostics.
+- Switched the DCTL entry point to texture sampling while preserving the disabled M3 path.
+- Added CPU texture/image tests. Spatial kernels remain original approximations, not measured PSFs.
+
 ## 0.3.0-alpha.1 - 2026-09-24
 
 M3 advanced film-response implementation on `develop`.

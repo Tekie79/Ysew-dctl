@@ -1,4 +1,4 @@
-// Yekermo Sew Film Lab 0.3.0-alpha.1 - M3 advanced parametric negative and print model.
+// Yekermo Sew Film Lab 0.4.0-alpha.1 - M4 spatial optics: halation, bloom, glow and veiling glare.
 // Original parametric creative models, NOT measured film-stock emulations.
 // Input must already be decoded RGB with the selected scene encoding.
 // See docs/RESOLVE_SETUP.md and docs/DIAGNOSTICS.md before installation.
@@ -95,6 +95,26 @@ DEFINE_UI_PARAMS(adv_print_sep, Print Sep, DCTLUI_SLIDER_FLOAT, 0.18, 0.0, 1.0, 
 DEFINE_UI_PARAMS(adv_print_warm, Print Warm, DCTLUI_SLIDER_FLOAT, 0.0, -1.0, 1.0, 0.01)
 DEFINE_UI_PARAMS(adv_print_color, Print Color, DCTLUI_SLIDER_FLOAT, 1.0, 0.0, 1.5, 0.01)
 
+// M4 spatial optics. Disabled by default; radii are reference pixels at 2160 lines.
+DEFINE_UI_PARAMS(optics_on, Optics, DCTLUI_CHECK_BOX, 0)
+DEFINE_UI_PARAMS(optics_quality, Optics Quality, DCTLUI_COMBO_BOX, 1, {OPT_DRAFT, OPT_STANDARD, OPT_HIGH}, {Draft, Standard, High})
+DEFINE_UI_PARAMS(optics_mix, Optics Mix, DCTLUI_SLIDER_FLOAT, 1.0, 0.0, 2.0, 0.01)
+DEFINE_UI_PARAMS(optics_soft, Optic Soft, DCTLUI_SLIDER_FLOAT, 0.75, 0.05, 3.0, 0.05)
+DEFINE_UI_PARAMS(halation_amount, Halation, DCTLUI_SLIDER_FLOAT, 0.0, 0.0, 2.0, 0.01)
+DEFINE_UI_PARAMS(halation_radius, Hal Radius, DCTLUI_SLIDER_FLOAT, 18.0, 1.0, 120.0, 1.0)
+DEFINE_UI_PARAMS(halation_threshold, Hal Threshold, DCTLUI_SLIDER_FLOAT, 2.0, -2.0, 8.0, 0.1)
+DEFINE_UI_PARAMS(halation_tint, Hal Tint, DCTLUI_SLIDER_FLOAT, 0.35, 0.0, 1.0, 0.01)
+DEFINE_UI_PARAMS(bloom_amount, Bloom, DCTLUI_SLIDER_FLOAT, 0.0, 0.0, 2.0, 0.01)
+DEFINE_UI_PARAMS(bloom_radius, Bloom Radius, DCTLUI_SLIDER_FLOAT, 28.0, 1.0, 180.0, 1.0)
+DEFINE_UI_PARAMS(bloom_threshold, Bloom Threshold, DCTLUI_SLIDER_FLOAT, 1.5, -2.0, 8.0, 0.1)
+DEFINE_UI_PARAMS(glow_amount, Glow, DCTLUI_SLIDER_FLOAT, 0.0, 0.0, 2.0, 0.01)
+DEFINE_UI_PARAMS(glow_radius, Glow Radius, DCTLUI_SLIDER_FLOAT, 60.0, 1.0, 300.0, 1.0)
+DEFINE_UI_PARAMS(glow_threshold, Glow Threshold, DCTLUI_SLIDER_FLOAT, 0.5, -3.0, 8.0, 0.1)
+DEFINE_UI_PARAMS(veil_amount, Veiling Glare, DCTLUI_SLIDER_FLOAT, 0.0, 0.0, 1.0, 0.01)
+DEFINE_UI_PARAMS(veil_radius, Veil Radius, DCTLUI_SLIDER_FLOAT, 140.0, 4.0, 600.0, 2.0)
+DEFINE_UI_PARAMS(veil_threshold, Veil Threshold, DCTLUI_SLIDER_FLOAT, 0.0, -4.0, 8.0, 0.1)
+DEFINE_UI_PARAMS(optics_view, Optics View, DCTLUI_COMBO_BOX, 0, {OV_OFF, OV_HAL, OV_BLOOM, OV_GLOW, OV_VEIL, OV_SUM}, {Off, Halation, Bloom, Glow, Veil, Sum})
+
 DEFINE_UI_TOOLTIP(Input, "RGB encoding arriving at this node. Camera log choices require the decoder or upstream converter to output that exact gamut and curve. ProRes RAW is not auto-detected.")
 DEFINE_UI_TOOLTIP(Output, "DWG choices return working RGB for one external output transform. 709 Gamma 2.4 performs internal SDR rendering. Never apply a second output conversion.")
 DEFINE_UI_TOOLTIP(Exposure, "Photographic exposure adjustment in stops. Plus one doubles scene-linear RGB.")
@@ -144,6 +164,24 @@ DEFINE_UI_TOOLTIP(Print Whites, "Advanced print highlight-density trim in stops.
 DEFINE_UI_TOOLTIP(Print Sep, "Advanced print log-ratio color separation amount.")
 DEFINE_UI_TOOLTIP(Print Warm, "Luminance-preserving warm print bias weighted toward the upper midtones and highlights.")
 DEFINE_UI_TOOLTIP(Print Color, "Master print chroma scale before the display render.")
+DEFINE_UI_TOOLTIP(Optics, "Enable M4 spatial sampling. Off preserves the M3 pointwise pipeline and avoids neighborhood texture reads.")
+DEFINE_UI_TOOLTIP(Optics Quality, "Draft samples 4 directions, Standard 8 and High 16 at two radii. Higher quality substantially increases texture reads.")
+DEFINE_UI_TOOLTIP(Optics Mix, "Master gain for all spatial optical contributions.")
+DEFINE_UI_TOOLTIP(Optic Soft, "Shared highlight-source feather in exposure stops around each effect threshold.")
+DEFINE_UI_TOOLTIP(Halation, "Red-orange bright-edge spread derived from balanced scene exposure and injected after the negative response.")
+DEFINE_UI_TOOLTIP(Hal Radius, "Halation radius in reference pixels at 2160 image lines; scales with image height.")
+DEFINE_UI_TOOLTIP(Hal Threshold, "Scene exposure threshold in stops relative to 18 percent gray for halation.")
+DEFINE_UI_TOOLTIP(Hal Tint, "Zero is redder and one moves the contribution toward orange.")
+DEFINE_UI_TOOLTIP(Bloom, "Broadband bright-edge spread added before the negative response.")
+DEFINE_UI_TOOLTIP(Bloom Radius, "Bloom radius in reference pixels at 2160 image lines.")
+DEFINE_UI_TOOLTIP(Bloom Threshold, "Scene exposure threshold in stops relative to 18 percent gray for bloom.")
+DEFINE_UI_TOOLTIP(Glow, "Larger partially neutralized optical glow added before the negative response.")
+DEFINE_UI_TOOLTIP(Glow Radius, "Glow radius in reference pixels at 2160 image lines.")
+DEFINE_UI_TOOLTIP(Glow Threshold, "Scene exposure threshold in stops relative to 18 percent gray for glow.")
+DEFINE_UI_TOOLTIP(Veiling Glare, "Large-radius neutral-weighted local glare around bright regions; not a global frame integral.")
+DEFINE_UI_TOOLTIP(Veil Radius, "Veiling-glare radius in reference pixels at 2160 image lines.")
+DEFINE_UI_TOOLTIP(Veil Threshold, "Scene exposure threshold in stops relative to 18 percent gray for veiling glare.")
+DEFINE_UI_TOOLTIP(Optics View, "Contribution view for M4 effects. Requires internal Rec709 output and uses Diag Gain for inspection.")
 
 // Pure helpers: never refer to UI variables outside transform().
 __DEVICE__ float ys_clamp(float x, float a, float b) { return _fminf(_fmaxf(x, a), b); }
@@ -551,6 +589,104 @@ __DEVICE__ float3 ys_advanced_print(float3 v,float contrast,float toe,float shou
     return out;
 }
 
+
+typedef struct {
+    int enc;
+    float ev_adj; float warm_adj; float tint_adj; float dens_r; float dens_g; float dens_b;
+    int wb_kind; float wb_kelvin; float wb_offset; float wb_mix;
+} YSSpatialParams;
+__DEVICE__ int ys_boundi(int v,int lo,int hi) { return v < lo ? lo : (v > hi ? hi : v); }
+__DEVICE__ float3 ys_tex_raw(__TEXTURE__ tex_r,__TEXTURE__ tex_g,__TEXTURE__ tex_b,
+    int w,int h,int x,int y) {
+    int xx=ys_boundi(x,0,w-1), yy=ys_boundi(y,0,h-1);
+    return make_float3(_tex2D(tex_r,xx,yy),_tex2D(tex_g,xx,yy),_tex2D(tex_b,xx,yy));
+}
+__DEVICE__ float3 ys_sample_balanced(__TEXTURE__ tex_r,__TEXTURE__ tex_g,__TEXTURE__ tex_b,
+    int w,int h,int x,int y,YSSpatialParams p) {
+    float3 raw=ys_tex_raw(tex_r,tex_g,tex_b,w,h,x,y);
+    float3 scene=ys_input(raw,p.enc);
+    return ys_balance_m2(scene,p.ev_adj,p.warm_adj,p.tint_adj,p.dens_r,p.dens_g,p.dens_b,
+        p.wb_kind,p.wb_kelvin,p.wb_offset,p.wb_mix);
+}
+__DEVICE__ float3 ys_pos3(float3 v) {
+    return make_float3(_fmaxf(v.x,0.0f),_fmaxf(v.y,0.0f),_fmaxf(v.z,0.0f));
+}
+__DEVICE__ float3 ys_add3(float3 a,float3 b) {
+    return make_float3(a.x+b.x,a.y+b.y,a.z+b.z);
+}
+__DEVICE__ float3 ys_sub_pos(float3 a,float3 b) {
+    return make_float3(_fmaxf(a.x-b.x,0.0f),_fmaxf(a.y-b.y,0.0f),_fmaxf(a.z-b.z,0.0f));
+}
+__DEVICE__ float ys_highlight_weight(float3 v,float threshold_ev,float softness) {
+    float y=ys_Y(v);
+    if (y <= 1.0e-12f) return 0.0f;
+    return ys_smooth(threshold_ev-softness,threshold_ev+softness,ys_stops(y,0.18f));
+}
+__DEVICE__ float3 ys_highlight_color(float3 v,float threshold_ev,float softness) {
+    return ys_scale(ys_pos3(v),ys_highlight_weight(v,threshold_ev,softness));
+}
+__DEVICE__ float3 ys_highlight_at(__TEXTURE__ tex_r,__TEXTURE__ tex_g,__TEXTURE__ tex_b,
+    int w,int h,int x,int y,YSSpatialParams p,float threshold_ev,float softness) {
+    return ys_highlight_color(ys_sample_balanced(tex_r,tex_g,tex_b,w,h,x,y,p),threshold_ev,softness);
+}
+__DEVICE__ float3 ys_ring_source(__TEXTURE__ tex_r,__TEXTURE__ tex_g,__TEXTURE__ tex_b,
+    int w,int h,int x,int y,YSSpatialParams p,int radius,int quality,float threshold_ev,float softness) {
+    int r=radius < 1 ? 1 : radius;
+    int d=(int)((float)r*0.70710678f+0.5f);
+    int a=(int)((float)r*0.92387953f+0.5f);
+    int b=(int)((float)r*0.38268343f+0.5f);
+    float3 sum=make_float3(0.0f,0.0f,0.0f);
+    sum=ys_add3(sum,ys_highlight_at(tex_r,tex_g,tex_b,w,h,x+r,y,p,threshold_ev,softness));
+    sum=ys_add3(sum,ys_highlight_at(tex_r,tex_g,tex_b,w,h,x-r,y,p,threshold_ev,softness));
+    sum=ys_add3(sum,ys_highlight_at(tex_r,tex_g,tex_b,w,h,x,y+r,p,threshold_ev,softness));
+    sum=ys_add3(sum,ys_highlight_at(tex_r,tex_g,tex_b,w,h,x,y-r,p,threshold_ev,softness));
+    int count=4;
+    if (quality >= 1) {
+        sum=ys_add3(sum,ys_highlight_at(tex_r,tex_g,tex_b,w,h,x+d,y+d,p,threshold_ev,softness));
+        sum=ys_add3(sum,ys_highlight_at(tex_r,tex_g,tex_b,w,h,x-d,y+d,p,threshold_ev,softness));
+        sum=ys_add3(sum,ys_highlight_at(tex_r,tex_g,tex_b,w,h,x+d,y-d,p,threshold_ev,softness));
+        sum=ys_add3(sum,ys_highlight_at(tex_r,tex_g,tex_b,w,h,x-d,y-d,p,threshold_ev,softness));
+        count=8;
+    }
+    if (quality >= 2) {
+        sum=ys_add3(sum,ys_highlight_at(tex_r,tex_g,tex_b,w,h,x+a,y+b,p,threshold_ev,softness));
+        sum=ys_add3(sum,ys_highlight_at(tex_r,tex_g,tex_b,w,h,x-a,y+b,p,threshold_ev,softness));
+        sum=ys_add3(sum,ys_highlight_at(tex_r,tex_g,tex_b,w,h,x+a,y-b,p,threshold_ev,softness));
+        sum=ys_add3(sum,ys_highlight_at(tex_r,tex_g,tex_b,w,h,x-a,y-b,p,threshold_ev,softness));
+        sum=ys_add3(sum,ys_highlight_at(tex_r,tex_g,tex_b,w,h,x+b,y+a,p,threshold_ev,softness));
+        sum=ys_add3(sum,ys_highlight_at(tex_r,tex_g,tex_b,w,h,x-b,y+a,p,threshold_ev,softness));
+        sum=ys_add3(sum,ys_highlight_at(tex_r,tex_g,tex_b,w,h,x+b,y-a,p,threshold_ev,softness));
+        sum=ys_add3(sum,ys_highlight_at(tex_r,tex_g,tex_b,w,h,x-b,y-a,p,threshold_ev,softness));
+        count=16;
+    }
+    return ys_scale(sum,1.0f/(float)count);
+}
+__DEVICE__ float3 ys_spread_source(__TEXTURE__ tex_r,__TEXTURE__ tex_g,__TEXTURE__ tex_b,
+    int w,int h,int x,int y,YSSpatialParams p,float radius_ref,int quality,
+    float threshold_ev,float softness) {
+    float scale=(float)h/2160.0f;
+    int outer=(int)(_fmaxf(1.0f,radius_ref*scale)+0.5f);
+    int inner=(int)(_fmaxf(1.0f,(float)outer*0.48f)+0.5f);
+    float3 nearv=ys_ring_source(tex_r,tex_g,tex_b,w,h,x,y,p,inner,quality,threshold_ev,softness);
+    float3 farv=ys_ring_source(tex_r,tex_g,tex_b,w,h,x,y,p,outer,quality,threshold_ev,softness);
+    float3 blur=ys_mix(nearv,farv,0.62f);
+    float3 center=ys_highlight_at(tex_r,tex_g,tex_b,w,h,x,y,p,threshold_ev,softness);
+    return ys_sub_pos(blur,center);
+}
+__DEVICE__ float3 ys_halation_color(float3 spread,float tint_value) {
+    float lum=_fmaxf(ys_Y709(ys_to709(spread)),0.0f);
+    float3 red=make_float3(1.0f,0.055f,0.012f);
+    float3 orange=make_float3(1.0f,0.30f,0.045f);
+    return ys_scale(ys_mix(red,orange,ys_sat(tint_value)),lum);
+}
+__DEVICE__ float3 ys_glow_color(float3 spread,float neutral_mix) {
+    float y=_fmaxf(ys_Y(spread),0.0f);
+    return ys_mix(spread,ys_gray(y),ys_sat(neutral_mix));
+}
+__DEVICE__ float3 ys_optics_view(float3 contribution,float gain_value,float gray_code,int compress,float knee) {
+    return ys_view(ys_scale(ys_pos3(contribution),gain_value),gray_code,compress,knee);
+}
+
 __DEVICE__ float ys_vignette(int w,int h,int x,int y,float radius,float feather,float roundness,float cx,float cy) {
     float aspect = (float)w/(float)h;
     float nx = (2.0f*((float)x+0.5f)/(float)w-1.0f-cx)*aspect;
@@ -559,7 +695,10 @@ __DEVICE__ float ys_vignette(int w,int h,int x,int y,float radius,float feather,
     return ys_smooth(radius,radius+feather,_sqrtf(nx*nx+ny*ny));
 }
 
-typedef struct { float3 source; float3 balanced; float3 negative; float3 look; float3 print; float3 lens; float3 pre; float3 output; float compression; } YSStages;
+typedef struct {
+    float3 source; float3 balanced; float3 optical; float3 negative; float3 look; float3 print; float3 lens;
+    float3 halation; float3 bloom; float3 glow; float3 veil; float3 pre; float3 output; float compression;
+} YSStages;
 typedef struct {
     int mode; int tap; int stage; int span; int step; int legend;
     float gray; float evlo; float evhi; float evsoft;
@@ -1042,22 +1181,56 @@ __DEVICE__ float3 ys_graphic(float3 image,YSDiag d,YSGuideParams p,int mode,floa
     return ys_warning(ys_mix(image,panel,opacity),h,x,y);
 }
 
-__DEVICE__ float3 transform(int p_Width,int p_Height,int p_X,int p_Y,float p_R,float p_G,float p_B) {
-    float3 raw = make_float3(p_R,p_G,p_B);
+__DEVICE__ float3 transform(int p_Width,int p_Height,int p_X,int p_Y,
+    __TEXTURE__ p_TexR,__TEXTURE__ p_TexG,__TEXTURE__ p_TexB) {
+    float3 raw = ys_tex_raw(p_TexR,p_TexG,p_TexB,p_Width,p_Height,p_X,p_Y);
     if (p_Width <= 0 || p_Height <= 0 || !ys_safe(raw)) return ys_error(p_X,p_Y);
     YSStages s;
     s.source = ys_input(raw,input_mode);
     if (!ys_safe(s.source)) return ys_error(p_X,p_Y);
     s.balanced = ys_balance_m2(s.source,exposure,warm,tint,printer_r,printer_g,printer_b,
         wb_mode,wb_temp,wb_duv,wb_strength);
-    s.negative = s.balanced;
+    s.halation=make_float3(0.0f,0.0f,0.0f);
+    s.bloom=make_float3(0.0f,0.0f,0.0f);
+    s.glow=make_float3(0.0f,0.0f,0.0f);
+    s.veil=make_float3(0.0f,0.0f,0.0f);
+    s.optical=s.balanced;
+    if (optics_on && optics_mix > 0.0f) {
+        YSSpatialParams sp;
+        sp.enc=input_mode; sp.ev_adj=exposure; sp.warm_adj=warm; sp.tint_adj=tint;
+        sp.dens_r=printer_r; sp.dens_g=printer_g; sp.dens_b=printer_b;
+        sp.wb_kind=wb_mode; sp.wb_kelvin=wb_temp; sp.wb_offset=wb_duv; sp.wb_mix=wb_strength;
+        if (bloom_amount > 0.0f) {
+            float3 spread=ys_spread_source(p_TexR,p_TexG,p_TexB,p_Width,p_Height,p_X,p_Y,sp,
+                bloom_radius,optics_quality,bloom_threshold,optics_soft);
+            s.bloom=ys_scale(spread,optics_mix*bloom_amount);
+        }
+        if (glow_amount > 0.0f) {
+            float3 spread=ys_spread_source(p_TexR,p_TexG,p_TexB,p_Width,p_Height,p_X,p_Y,sp,
+                glow_radius,optics_quality,glow_threshold,optics_soft);
+            s.glow=ys_scale(ys_glow_color(spread,0.42f),optics_mix*glow_amount);
+        }
+        if (veil_amount > 0.0f) {
+            float3 spread=ys_spread_source(p_TexR,p_TexG,p_TexB,p_Width,p_Height,p_X,p_Y,sp,
+                veil_radius,optics_quality,veil_threshold,optics_soft);
+            s.veil=ys_scale(ys_glow_color(spread,0.78f),optics_mix*veil_amount);
+        }
+        if (halation_amount > 0.0f) {
+            float3 spread=ys_spread_source(p_TexR,p_TexG,p_TexB,p_Width,p_Height,p_X,p_Y,sp,
+                halation_radius,optics_quality,halation_threshold,optics_soft);
+            s.halation=ys_scale(ys_halation_color(spread,halation_tint),optics_mix*halation_amount);
+        }
+        s.optical=ys_add3(s.optical,ys_add3(s.bloom,ys_add3(s.glow,s.veil)));
+    }
+    s.negative = s.optical;
     if (negative_on) {
         s.negative = film_model == 0
-            ? ys_interaction(ys_saturation(ys_curve(s.balanced,neg_contrast,neg_toe,neg_shoulder),neg_sat),crosstalk)
-            : ys_advanced_negative(s.balanced,neg_contrast,neg_toe,neg_shoulder,neg_sat,crosstalk,
+            ? ys_interaction(ys_saturation(ys_curve(s.optical,neg_contrast,neg_toe,neg_shoulder),neg_sat),crosstalk)
+            : ys_advanced_negative(s.optical,neg_contrast,neg_toe,neg_shoulder,neg_sat,crosstalk,
                 adv_neg_density,adv_neg_color,adv_neg_sep,adv_neg_shadow,adv_neg_high,
                 adv_neg_warm,adv_neg_green,adv_neg_cool);
     }
+    if (optics_on && halation_amount > 0.0f) s.negative=ys_add3(s.negative,s.halation);
     float range_center = range_pick_on ? ys_picker_hue(make_float3(range_pick.r,range_pick.g,range_pick.b),range_hue) : range_hue;
     float skin_center = skin_pick_on ? ys_picker_hue(make_float3(skin_pick.r,skin_pick.g,skin_pick.b),skin_hue) : skin_hue;
     float skin = 0.0f;
@@ -1072,12 +1245,12 @@ __DEVICE__ float3 transform(int p_Width,int p_Height,int p_X,int p_Y,float p_R,f
                 adv_print_black,adv_print_white,adv_print_sep,adv_print_warm,adv_print_color);
     }
     s.lens = ys_scale(s.print,_exp2f(-vignette_stops*ys_vignette(p_Width,p_Height,p_X,p_Y,vignette_radius,vignette_soft,vignette_round,vignette_x,vignette_y)));
-    if (diag_mode == 0 && guide_mode == 0 && output_mode != 2) return ys_encode_working(s.lens,output_mode);
+    if (diag_mode == 0 && guide_mode == 0 && optics_view == 0 && output_mode != 2) return ys_encode_working(s.lens,output_mode);
     s.pre = ys_pre_gamut(s.lens,output_gray);
     float factor = gamut_on ? ys_gamut_factor(s.pre,gamut_knee) : 1.0f;
     s.compression = 1.0f-factor;
     s.output = ys_gamma24(ys_gamut(s.pre,factor));
-    if (diag_mode == 0 && guide_mode == 0) return output_mode == 2 ? s.output : ys_encode_working(s.lens,output_mode);
+    if (diag_mode == 0 && guide_mode == 0 && optics_view == 0) return output_mode == 2 ? s.output : ys_encode_working(s.lens,output_mode);
     // Diagnostic colors need an unmanaged terminal Rec709 path. Never silently pass
     // display-coded overlays into a DWG working chain and call them calibrated.
     if (output_mode != 2) {
@@ -1091,6 +1264,14 @@ __DEVICE__ float3 transform(int p_Width,int p_Height,int p_X,int p_Y,float p_R,f
     d.skinh=skin_center; d.skinw=skin_width; d.skinsmin=skin_sat_min; d.skinsmax=skin_sat_max;
     d.neutral=neutral_tol; d.gain=diag_gain; d.opacity=diag_overlay; d.split=split_pos;
     float3 result = diag_mode == 0 ? s.output : ys_diagnostic(s,d,output_gray,gamut_on,gamut_knee,p_Width,p_Height,p_X,p_Y);
+    if (optics_view != 0) {
+        float3 c=s.halation;
+        if (optics_view == 2) c=s.bloom;
+        else if (optics_view == 3) c=s.glow;
+        else if (optics_view == 4) c=s.veil;
+        else if (optics_view == 5) c=ys_add3(s.halation,ys_add3(s.bloom,ys_add3(s.glow,s.veil)));
+        result=ys_warning(ys_optics_view(c,diag_gain,output_gray,gamut_on,gamut_knee),p_Height,p_X,p_Y);
+    }
     if (guide_mode == 0) return result;
     YSGuideParams gp;
     gp.balance_ev=exposure; gp.balance_w=warm; gp.balance_t=tint;

@@ -80,3 +80,10 @@ completed with `OK`. The reproducible-package step also passed for both jobs.
 This result validates the CPU/shader regression harness only. Resolve Studio 21.1,
 Metal execution, actual footage, GPU timing, persistence and export/re-import remain
 host acceptance items.
+
+## M4 technical implementation
+
+Version `0.4.0-alpha.1` adds the texture entry point, CPU texture emulation and spatial
+tests for constant-field invariance, impulse spread, halation tint/order, threshold
+rejection, deterministic quality tiers, contribution-view guarding and disabled/zero-
+amount compatibility. Resolve/Metal compilation and performance remain final-test gates.

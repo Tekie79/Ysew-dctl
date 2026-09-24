@@ -2,7 +2,7 @@
 
 Custom DCTL development for the **Yekermo Sew** television series.
 
-**Version:** `0.3.0-alpha.1` | **Development branch:** `develop` | **Milestone:** M3 advanced film model
+**Version:** `0.4.0-alpha.1` | **Development branch:** `develop` | **Milestone:** M4 spatial optics
 
 This is executable source, not a look LUT or a finished film-stock emulator. The first vertical slice implements scene transforms, balancing, original parametric negative/print responses, provisional seasonal looks, vignette, SDR rendering, and 26 diagnostic modes. Alpha.1 failed the user's first Resolve control-load test. Alpha.2 repairs the declarations and adds optional graphical aids; its 76 CPU/source tests pass, but **Resolve retesting is pending. Do not use it as a production master grade yet.**
 
@@ -61,3 +61,9 @@ density, density-inspired log-ratio color separation, exposure-dependent shadow/
 chroma, broad hue-family density biases, and independent print shadow/highlight trims.
 Legacy remains the default for saved-grade compatibility. See
 [M3 advanced film model](docs/M3_FILM_MODEL.md).
+
+## M4 spatial optics
+
+Opt-in Halation, Bloom, Glow and Veiling Glare now use neighboring-pixel texture
+sampling with Draft/Standard/High quality tiers. All amounts default to zero and
+Optics defaults Off. See [M4 spatial optics](docs/M4_SPATIAL_OPTICS.md).

@@ -1,10 +1,20 @@
 // CPU adapter only: never a substitute for Resolve's UI parser or GPU compiler.
 #pragma once
 #include <cmath>
+#include <vector>
 struct float3 { float x, y, z; };
 struct UIPicker { float r, g, b; };
+struct YSTexture { const float* data; int width; int height; float constant_value; };
 inline float3 make_float3(float x, float y, float z) { return {x,y,z}; }
+inline float ys_tex2d(YSTexture tex,int x,int y) {
+    if (!tex.data) return tex.constant_value;
+    int xx=x<0?0:(x>=tex.width?tex.width-1:x);
+    int yy=y<0?0:(y>=tex.height?tex.height-1:y);
+    return tex.data[yy*tex.width+xx];
+}
 #define __DEVICE__ inline
+#define __TEXTURE__ YSTexture
+#define _tex2D(tex,x,y) ys_tex2d(tex,x,y)
 #define _fminf std::fmin
 #define _fmaxf std::fmax
 #define _fabs std::fabs

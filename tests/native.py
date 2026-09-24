@@ -84,12 +84,27 @@ extern "C" void reset_controls() {{ {reset} }}
 extern "C" void set_control(int id,float value) {{ (void)value; switch(id) {{ {''.join(setters)} }} }}
 extern "C" void set_picker(int id,float r,float g,float b) {{ (void)r; (void)g; (void)b; switch(id) {{ {''.join(pickers)} }} }}
 extern "C" void pixel(float r,float g,float b,int w,int h,int x,int y,float* out) {{
-    float3 v=transform(w,h,x,y,r,g,b); out[0]=v.x; out[1]=v.y; out[2]=v.z;
+    YSTexture tr{{nullptr,w,h,r}},tg{{nullptr,w,h,g}},tb{{nullptr,w,h,b}};
+    float3 v=transform(w,h,x,y,tr,tg,tb); out[0]=v.x; out[1]=v.y; out[2]=v.z;
 }}
 extern "C" void render(int w,int h,float* out) {{
+    std::vector<float> rr(w*h),gg(w*h),bb(w*h);
     for(int y=0;y<h;++y) for(int x=0;x<w;++x) {{
         float gray=0.18f*std::exp2(((float)x/(float)(w-1)*2.0f-1.0f)*6.0f);
-        float3 v=transform(w,h,x,y,gray,gray,gray);
+        int i=y*w+x; rr[i]=gray; gg[i]=gray; bb[i]=gray;
+    }}
+    YSTexture tr{{rr.data(),w,h,0}},tg{{gg.data(),w,h,0}},tb{{bb.data(),w,h,0}};
+    for(int y=0;y<h;++y) for(int x=0;x<w;++x) {{
+        float3 v=transform(w,h,x,y,tr,tg,tb);
+        int i=3*(y*w+x); out[i]=v.x; out[i+1]=v.y; out[i+2]=v.z;
+    }}
+}}
+extern "C" void render_image(int w,int h,const float* rgb,float* out) {{
+    std::vector<float> rr(w*h),gg(w*h),bb(w*h);
+    for(int i=0;i<w*h;++i) {{ rr[i]=rgb[3*i]; gg[i]=rgb[3*i+1]; bb[i]=rgb[3*i+2]; }}
+    YSTexture tr{{rr.data(),w,h,0}},tg{{gg.data(),w,h,0}},tb{{bb.data(),w,h,0}};
+    for(int y=0;y<h;++y) for(int x=0;x<w;++x) {{
+        float3 v=transform(w,h,x,y,tr,tg,tb);
         int i=3*(y*w+x); out[i]=v.x; out[i+1]=v.y; out[i+2]=v.z;
     }}
 }}
@@ -111,6 +126,8 @@ extern "C" void render(int w,int h,float* out) {{
         self.lib.pixel.restype = None
         self.lib.render.argtypes = [C.c_int,C.c_int,C.POINTER(C.c_float)]
         self.lib.render.restype = None
+        self.lib.render_image.argtypes = [C.c_int,C.c_int,C.POINTER(C.c_float),C.POINTER(C.c_float)]
+        self.lib.render_image.restype = None
         if helpers:
             self.lib.scalar.argtypes = [C.c_int]+[C.c_float]*4
             self.lib.scalar.restype = C.c_float
@@ -147,3 +164,9 @@ extern "C" void render(int w,int h,float* out) {{
         if w<2 or h<1:
             raise ValueError('Invalid render dimensions')
         out=(C.c_float*(w*h*3))(); self.lib.render(w,h,out); return out
+
+    def render_image(self,pixels,w,h):
+        if len(pixels)!=w*h*3:
+            raise ValueError('Expected interleaved RGB image data')
+        inp=(C.c_float*(w*h*3))(*pixels); out=(C.c_float*(w*h*3))()
+        self.lib.render_image(w,h,inp,out); return tuple(out)

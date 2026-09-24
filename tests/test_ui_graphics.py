@@ -17,10 +17,10 @@ from native import Shader
 class UISchemaTests(unittest.TestCase):
     def test_control_type_inventory(self):
         ui=parse_ui(SOURCE.read_text())
-        self.assertEqual(len(ui),81)
+        self.assertEqual(len(ui),99)
         self.assertEqual(Counter(c.kind for c in ui),{
-            'DCTLUI_SLIDER_FLOAT':62,'DCTLUI_SLIDER_INT':1,
-            'DCTLUI_COMBO_BOX':10,'DCTLUI_CHECK_BOX':6,'DCTLUI_COLOR_PICKER':2})
+            'DCTLUI_SLIDER_FLOAT':77,'DCTLUI_SLIDER_INT':1,
+            'DCTLUI_COMBO_BOX':12,'DCTLUI_CHECK_BOX':7,'DCTLUI_COLOR_PICKER':2})
 
     def test_short_unquoted_labels(self):
         for c in parse_ui(SOURCE.read_text()):
@@ -91,7 +91,7 @@ class UISchemaTests(unittest.TestCase):
 
     def test_all_optional_features_default_off(self):
         ui={c.name:c for c in parse_ui(SOURCE.read_text())}
-        for key in ['range_pick_on','skin_pick_on','guide_mode']:
+        for key in ['range_pick_on','skin_pick_on','guide_mode','optics_on','optics_view']:
             self.assertEqual(ui[key].default,'0')
 
 class GraphicsTests(unittest.TestCase):

@@ -35,3 +35,7 @@ Alpha.1 failed control loading in the user-reported Studio 21.1 environment. Alp
 13. M3 advanced film behavior is parametric. Do not call it Kodak, Fuji, 2383, 3513 or a measured stock unless licensed measurement data and a separate validated profile are actually added.
 14. Preserve Film Model=Legacy as the default for existing grades. M3 UI controls are append-only; tests/ui_m2_compat.json freezes the first 67 controls.
 15. Hue-family and density-separation controls must preserve neutral behavior where documented and must be stress-tested with signed wide-gamut inputs.
+
+16. M4 spatial optics use finite neighborhood texture sampling. Never describe the ring kernel as a measured lens PSF, full Gaussian convolution or physically exact film-base scattering.
+17. Optics must default Off and all spatial effect amounts default zero. Preserve the first 81 M3 controls.
+18. Final Resolve testing must include GPU timing, frame boundaries, resolution scaling, cache/render consistency and real bright practicals/windows.
