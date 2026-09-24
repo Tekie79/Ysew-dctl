@@ -206,18 +206,12 @@
     "enums": [
       "LOOK_NEUTRAL",
       "LOOK_FALL",
-      "LOOK_WINTER",
-      "LOOK_NIGHT",
-      "LOOK_EXT_DAY",
-      "LOOK_EXT_DUSK"
+      "LOOK_WINTER"
     ],
     "choices": [
       "Neutral",
       "Fall Interior",
-      "Winter Interior",
-      "Night",
-      "Exterior Day",
-      "Exterior Dusk"
+      "Winter Interior"
     ]
   },
   {
@@ -527,10 +521,7 @@
       "D_RGB_HEADROOM",
       "D_CAL_EV",
       "D_CAL_NEUTRAL",
-      "D_CAL_COMBINED",
-      "D_QC_PRE",
-      "D_QC_FINAL",
-      "D_QC_MASTER"
+      "D_CAL_COMBINED"
     ],
     "choices": [
       "Off",
@@ -565,10 +556,7 @@
       "RGB Headroom",
       "Cal Exposure",
       "Cal Neutral",
-      "Cal Combined",
-      "QC Pre Gamut",
-      "QC Final Range",
-      "QC Master"
+      "Cal Combined"
     ]
   },
   {
@@ -1725,32 +1713,6 @@
       "10",
       "1",
       "200",
-      "1"
-    ],
-    "enums": [],
-    "choices": []
-  },
-  {
-    "name": "qc_margin",
-    "label": "QC Margin x1k",
-    "kind": "DCTLUI_SLIDER_INT",
-    "values": [
-      "10",
-      "1",
-      "100",
-      "1"
-    ],
-    "enums": [],
-    "choices": []
-  },
-  {
-    "name": "qc_comp",
-    "label": "QC Comp x1k",
-    "kind": "DCTLUI_SLIDER_INT",
-    "values": [
-      "50",
-      "1",
-      "500",
       "1"
     ],
     "enums": [],

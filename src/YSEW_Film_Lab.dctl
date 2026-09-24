@@ -1,4 +1,4 @@
-// Yekermo Sew Film Lab 0.6.0-alpha.1 - M6 advanced gamut, volume and scene-calibration diagnostics.
+// Yekermo Sew Film Lab 0.7.0-alpha.1 - M7 show looks, mastering QC and consistency workflow.
 // Original parametric creative models, NOT measured film-stock emulations.
 // Input must already be decoded RGB with the selected scene encoding.
 // See docs/RESOLVE_SETUP.md and docs/DIAGNOSTICS.md before installation.
@@ -20,7 +20,7 @@ DEFINE_UI_PARAMS(neg_toe, Neg Toe, DCTLUI_SLIDER_FLOAT, 0.08, 0.0, 0.4, 0.01)
 DEFINE_UI_PARAMS(neg_shoulder, Neg Shoulder, DCTLUI_SLIDER_FLOAT, 0.16, 0.0, 0.4, 0.01)
 DEFINE_UI_PARAMS(neg_sat, Neg Saturation, DCTLUI_SLIDER_FLOAT, 0.98, 0.0, 1.5, 0.01)
 DEFINE_UI_PARAMS(crosstalk, Neg Crosstalk, DCTLUI_SLIDER_FLOAT, 0.025, 0.0, 0.2, 0.001)
-DEFINE_UI_PARAMS(look_mode, Show Look, DCTLUI_COMBO_BOX, 0, {LOOK_NEUTRAL, LOOK_FALL, LOOK_WINTER}, {Neutral, Fall Interior, Winter Interior})
+DEFINE_UI_PARAMS(look_mode, Show Look, DCTLUI_COMBO_BOX, 0, {LOOK_NEUTRAL, LOOK_FALL, LOOK_WINTER, LOOK_NIGHT, LOOK_EXT_DAY, LOOK_EXT_DUSK}, {Neutral, Fall Interior, Winter Interior, Night, Exterior Day, Exterior Dusk})
 DEFINE_UI_PARAMS(look_mix, Look Mix, DCTLUI_SLIDER_FLOAT, 1.0, 0.0, 1.0, 0.01)
 DEFINE_UI_PARAMS(skin_protect, Skin Protect, DCTLUI_SLIDER_FLOAT, 0.75, 0.0, 1.0, 0.01)
 DEFINE_UI_PARAMS(skin_hue, Skin Hue, DCTLUI_SLIDER_FLOAT, 28.0, 0.0, 360.0, 1.0)
@@ -42,7 +42,7 @@ DEFINE_UI_PARAMS(vignette_y, Vig Y, DCTLUI_SLIDER_FLOAT, 0.0, -1.0, 1.0, 0.01)
 DEFINE_UI_PARAMS(output_gray, Output Gray, DCTLUI_SLIDER_FLOAT, 0.42, 0.25, 0.65, 0.005)
 DEFINE_UI_PARAMS(gamut_on, Gamut Map, DCTLUI_CHECK_BOX, 1)
 DEFINE_UI_PARAMS(gamut_knee, Gamut Knee, DCTLUI_SLIDER_FLOAT, 0.8, 0.1, 0.95, 0.01)
-DEFINE_UI_PARAMS(diag_mode, Diagnostics, DCTLUI_COMBO_BOX, 0, {D_OFF, D_FALSE, D_EVGRAY, D_ZONE, D_EVMATTE, D_EVOVER, D_RGBEV, D_YPRIME, D_YFALSE, D_LIN_Y, D_HUE, D_SAT, D_CHROMA, D_COLMATTE, D_COLISO, D_SKIN, D_SKINEV, D_NEUTRAL, D_LOW, D_HIGH, D_CHROMATICITY, D_VOLUME, D_COMPRESSION, D_BEFORE, D_DIFF, D_STAGE, D_INVALID, D_TARGET_GAMUT, D_GAMUT_OCC, D_RGB_HEADROOM, D_CAL_EV, D_CAL_NEUTRAL, D_CAL_COMBINED}, {Off, Scene False Color, Scene EV Gray, Scene Zones, EV Matte, EV Overlay, Scene RGB EV, Output Y Prime, Output Luma Color, Output Linear Y, Hue Map, HSV Saturation, RGB Chroma, Color Matte, Color Isolate, Skin Matte, Skin EV, Neutral Bias, Nonpositive RGB, Pre Gamut Limits, 709 Chromaticity, SDR Volume, Gamut Amount, Before After, Difference, Stage View, Invalid Input, Target Gamut, Gamut Occupancy, RGB Headroom, Cal Exposure, Cal Neutral, Cal Combined})
+DEFINE_UI_PARAMS(diag_mode, Diagnostics, DCTLUI_COMBO_BOX, 0, {D_OFF, D_FALSE, D_EVGRAY, D_ZONE, D_EVMATTE, D_EVOVER, D_RGBEV, D_YPRIME, D_YFALSE, D_LIN_Y, D_HUE, D_SAT, D_CHROMA, D_COLMATTE, D_COLISO, D_SKIN, D_SKINEV, D_NEUTRAL, D_LOW, D_HIGH, D_CHROMATICITY, D_VOLUME, D_COMPRESSION, D_BEFORE, D_DIFF, D_STAGE, D_INVALID, D_TARGET_GAMUT, D_GAMUT_OCC, D_RGB_HEADROOM, D_CAL_EV, D_CAL_NEUTRAL, D_CAL_COMBINED, D_QC_PRE, D_QC_FINAL, D_QC_MASTER}, {Off, Scene False Color, Scene EV Gray, Scene Zones, EV Matte, EV Overlay, Scene RGB EV, Output Y Prime, Output Luma Color, Output Linear Y, Hue Map, HSV Saturation, RGB Chroma, Color Matte, Color Isolate, Skin Matte, Skin EV, Neutral Bias, Nonpositive RGB, Pre Gamut Limits, 709 Chromaticity, SDR Volume, Gamut Amount, Before After, Difference, Stage View, Invalid Input, Target Gamut, Gamut Occupancy, RGB Headroom, Cal Exposure, Cal Neutral, Cal Combined, QC Pre Gamut, QC Final Range, QC Master})
 DEFINE_UI_PARAMS(diag_tap, Measure, DCTLUI_COMBO_BOX, 0, {TAP_SOURCE, TAP_BALANCE}, {Source, Balanced})
 DEFINE_UI_PARAMS(inspect_stage, Stage, DCTLUI_COMBO_BOX, 0, {ST_SOURCE, ST_BALANCE, ST_NEG, ST_LOOK, ST_PRINT, ST_LENS, ST_PRE, ST_OUT}, {Source, Balance, Negative, Look, Print, Vignette, Pre Gamut, Final})
 DEFINE_UI_PARAMS(reference_gray, Ref Gray, DCTLUI_SLIDER_FLOAT, 0.18, 0.01, 0.5, 0.005)
@@ -140,6 +140,10 @@ DEFINE_UI_PARAMS(cal_target, Cal Target x1k, DCTLUI_SLIDER_INT, 180, 1, 4000, 1)
 DEFINE_UI_PARAMS(cal_tol, Cal Tol x100, DCTLUI_SLIDER_INT, 15, 1, 200, 1)
 DEFINE_UI_PARAMS(cal_neutral, Cal Neutral x1k, DCTLUI_SLIDER_INT, 10, 1, 200, 1)
 
+// M7 Rec709 mastering-QC thresholds. Diagnostics only; normal output is unchanged.
+DEFINE_UI_PARAMS(qc_margin, QC Margin x1k, DCTLUI_SLIDER_INT, 10, 1, 100, 1)
+DEFINE_UI_PARAMS(qc_comp, QC Comp x1k, DCTLUI_SLIDER_INT, 50, 1, 500, 1)
+
 DEFINE_UI_TOOLTIP(Input, "RGB encoding arriving at this node. Camera log choices require the decoder or upstream converter to output that exact gamut and curve. ProRes RAW is not auto-detected.")
 DEFINE_UI_TOOLTIP(Output, "DWG choices return working RGB for one external output transform. 709 Gamma 2.4 performs internal SDR rendering. Never apply a second output conversion.")
 DEFINE_UI_TOOLTIP(Exposure, "Photographic exposure adjustment in stops. Plus one doubles scene-linear RGB.")
@@ -228,6 +232,8 @@ DEFINE_UI_TOOLTIP(Cal Profile, "Scene reference used by M6 calibration diagnosti
 DEFINE_UI_TOOLTIP(Cal Target x1k, "Custom scene-linear luminance reference. 180 means 0.180. Used only when Cal Profile is Custom.")
 DEFINE_UI_TOOLTIP(Cal Tol x100, "Exposure tolerance in hundredths of a stop. 15 means plus or minus 0.15 stop.")
 DEFINE_UI_TOOLTIP(Cal Neutral x1k, "D65 xy chromaticity-distance tolerance in thousandths. 10 means 0.010 xy distance.")
+DEFINE_UI_TOOLTIP(QC Margin x1k, "Rec709 mastering-QC near-boundary margin in linear RGB. 10 means 0.010 from a 0 or 1 cube face.")
+DEFINE_UI_TOOLTIP(QC Comp x1k, "Gamut-compression warning threshold. 50 means compression amount above 0.050 is flagged amber in QC Master.")
 
 // Pure helpers: never refer to UI variables outside transform().
 __DEVICE__ float ys_clamp(float x, float a, float b) { return _fminf(_fmaxf(x, a), b); }
@@ -623,6 +629,9 @@ __DEVICE__ float3 ys_show(float3 v,int mode,float amount,float protect,float ski
     float rr = -0.035f*sh+0.04f*hi, gg = 0.0f, bb = 0.055f*sh-0.025f*hi;
     float sat = 0.94f;
     if (mode == 2) { rr = -0.08f*sh+0.025f*hi; gg = 0.008f*sh; bb = 0.12f*sh; sat = 0.90f; }
+    else if (mode == 3) { rr = -0.060f*sh+0.030f*hi; gg = -0.006f*sh; bb = 0.110f*sh-0.040f*hi; sat = 0.86f; }
+    else if (mode == 4) { rr = -0.018f*sh+0.018f*hi; gg = 0.006f*sh; bb = 0.032f*sh-0.012f*hi; sat = 0.96f; }
+    else if (mode == 5) { rr = -0.075f*sh+0.055f*hi; gg = 0.004f*sh; bb = 0.135f*sh-0.065f*hi; sat = 0.88f; }
     float3 out = make_float3(v.x*_exp2f(rr),v.y*_exp2f(gg),v.z*_exp2f(bb));
     float oy = ys_Y(out), iy = ys_Y(v);
     if (oy > 1.0e-8f && iy > 1.0e-8f) out = ys_scale(out,iy/oy);
@@ -926,6 +935,7 @@ typedef struct {
     float neutral; float gain; float opacity; float split;
     int target_kind; float target_margin;
     int cal_kind; float cal_target_value; float cal_tol_ev; float cal_neutral_xy;
+    float qc_margin_value; float qc_comp_value;
 } YSDiag;
 __DEVICE__ float ys_quantize(float ev,int step) {
     if (step == 0) return ev;
@@ -1104,6 +1114,20 @@ __DEVICE__ float3 ys_diagnostic(YSStages s,YSDiag d,float gray_code,int compress
         else if (!ev_ok && !n_ok) result=make_float3(0.95f,0.05f,0.15f);
         else if (!ev_ok) result=ys_cal_ev_color(err,d.cal_tol_ev);
         else result=make_float3(0.80f,0.15f,0.85f);
+    }
+    else if (d.mode == 33) {
+        result=ys_target_status(s.pre,d.qc_margin_value);
+    }
+    else if (d.mode == 34) {
+        float3 lin=make_float3(_powf(rgb.x,2.4f),_powf(rgb.y,2.4f),_powf(rgb.z,2.4f));
+        result=ys_target_status(lin,d.qc_margin_value);
+    }
+    else if (d.mode == 35) {
+        float head=ys_target_headroom(s.pre);
+        if (head < -1.0e-5f) result=make_float3(1.0f,0.05f,0.10f);
+        else if (s.compression > d.qc_comp_value) result=make_float3(1.0f,0.55f,0.0f);
+        else if (head < d.qc_margin_value) result=make_float3(1.0f,0.82f,0.05f);
+        else result=make_float3(0.10f,0.72f,0.20f);
     }
     return ys_legend(result,w,h,x,y,d);
 }
@@ -1557,6 +1581,7 @@ __DEVICE__ float3 transform(int p_Width,int p_Height,int p_X,int p_Y,
     d.target_kind=diag_gamut; d.target_margin=(float)gamut_margin*0.001f;
     d.cal_kind=cal_profile; d.cal_target_value=ys_cal_target_value(cal_profile,cal_target);
     d.cal_tol_ev=(float)cal_tol*0.01f; d.cal_neutral_xy=(float)cal_neutral*0.001f;
+    d.qc_margin_value=(float)qc_margin*0.001f; d.qc_comp_value=(float)qc_comp*0.001f;
     float3 result = diag_mode == 0 ? s.output : ys_diagnostic(s,d,output_gray,gamut_on,gamut_knee,p_Width,p_Height,p_X,p_Y);
     if (optics_view != 0) {
         float3 c=s.halation;

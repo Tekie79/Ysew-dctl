@@ -17,9 +17,9 @@ from native import Shader
 class UISchemaTests(unittest.TestCase):
     def test_control_type_inventory(self):
         ui=parse_ui(SOURCE.read_text())
-        self.assertEqual(len(ui),120)
+        self.assertEqual(len(ui),122)
         self.assertEqual(Counter(c.kind for c in ui),{
-            'DCTLUI_SLIDER_FLOAT':64,'DCTLUI_SLIDER_INT':29,
+            'DCTLUI_SLIDER_FLOAT':64,'DCTLUI_SLIDER_INT':31,
             'DCTLUI_COMBO_BOX':17,'DCTLUI_CHECK_BOX':8,'DCTLUI_COLOR_PICKER':2})
 
     def test_short_unquoted_labels(self):
