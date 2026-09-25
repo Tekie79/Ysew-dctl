@@ -89,13 +89,24 @@ needed unless a new crash/GPU/build failure warrants one. The exact Resolve buil
 and explicitly selected GPU backend remain helpful but are not substitutes for
 showing the repaired controls.
 
-Host status: alpha.1 control-load failure reported; **alpha.3 Resolve retest pending**.
+Host status: alpha.1 control-load failure reported; **alpha.4 Resolve retest pending**.
 
 ## Studio layout order
 
-For the full Film Lab alpha.3 control-load check, confirm this top-to-bottom order:
+For the full Film Lab alpha.4 control-load check, confirm this top-to-bottom order:
 
 `Input -> Balance/WB -> Negative -> Show Look/Skin -> Print -> Optics -> Texture/Grain ->
 Vignette -> Diagnostics/Calibration/QC -> Output`.
 
 Input must be first and Output must be last.
+
+## Timeline frame probe
+
+Load `YSEW_Timeline_Frame_Probe.dctl` separately.
+
+- If it compiles and the noise changes as the timeline advances, record PASS.
+- If it fails on `TIMELINE_FRAME_INDEX`, record the complete build error. Film Lab alpha.4
+  should still compile because its main grain path has a static compatibility fallback.
+
+This probe result determines whether Every Frame / Hold grain modes can be accepted on the
+current Resolve/Metal host.

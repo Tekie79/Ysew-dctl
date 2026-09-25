@@ -27,7 +27,7 @@
   },
   {
     "name": "exposure",
-    "label": "Exposure",
+    "label": "BAL Exposure",
     "kind": "DCTLUI_SLIDER_FLOAT",
     "values": [
       "0.0",

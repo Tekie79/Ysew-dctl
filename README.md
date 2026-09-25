@@ -2,7 +2,7 @@
 
 Custom DCTL development for the **Yekermo Sew** television series.
 
-**Version:** `0.7.0-alpha.3` | **Development branch:** `develop` | **Milestone:** M7 show consistency and Rec.709 mastering
+**Version:** `0.7.0-alpha.4` | **Development branch:** `develop` | **Milestone:** M7 show consistency and Rec.709 mastering
 
 This is executable source, not a look LUT or a measured film-stock emulator. The develop branch now contains the M1-M7 technical feature set: camera/working-space transforms, balance/CAT02, parametric negative and print response, Yekermo Sew candidate looks, spatial optics, temporal grain/texture, advanced diagnostics, Rec.709 mastering QC, shot-consistency tooling and deterministic packaging. **Comprehensive Resolve/Metal, creative and delivery acceptance is still pending; do not treat this alpha as a production master grade.**
 
@@ -103,7 +103,7 @@ developer documentation explicitly requires the main function definition exactly
 Alpha.2 changes only the entry declaration formatting and related validation; pipeline math is
 unchanged.
 
-Use `dist/YSEW_Film_Lab_M7_A3.dctl` for the next host test. If it still fails, test
+Use `dist/YSEW_Film_Lab_M7_A4.dctl` for the next host test. If it still fails, test
 `dist/YSEW_Texture_Probe.dctl` to isolate host acceptance of the documented texture signature.
 
 ## Alpha.3 Studio inspector layout
@@ -131,3 +131,19 @@ the final control. The Skin and Range color pickers are now placed beside their 
 
 This is an intentional alpha/pre-release control-order change. After alpha.3, the inspector
 order is frozen unless a separate migration/version is created.
+
+## Alpha.4 Metal frame-key compatibility
+
+Resolve Studio 21.1 / Metal accepted the alpha.3 texture entry signature and advanced to Metal
+compilation, but the host reported `TIMELINE_FRAME_INDEX` as undeclared in the texture-DCTL
+path. Blackmagic documentation describes this key for ResolveFX DCTL, so alpha.4 treats the
+observed behavior as a host/path discrepancy rather than removing the feature globally.
+
+The main DCTL now uses the timeline key when it is exposed and otherwise compiles with a
+deterministic static grain phase. A separate `YSEW_Timeline_Frame_Probe.dctl` directly uses
+the documented key in a pointwise DCTL so we can determine whether the limitation is specific
+to texture transforms on Resolve 21.1 Metal.
+
+Alpha.4 also makes the first visible Balance control read `BAL Exposure`; other category
+starts already use natural anchors such as Negative, Show Look, Print, Optics, Texture,
+Vignette and Diagnostics. Input remains first and Output remains last.

@@ -237,3 +237,28 @@ The DCTL/layout code freeze for host testing is commit
 `f024f2e2d8a7dc74c08073c307d37d0edaa5696e`. Later documentation-only commits do not alter
 the shader. Resolve Studio 21.1 host compilation remains unverified until the alpha.3 texture
 probe and full DCTL are loaded.
+
+## M7 alpha.4 Resolve 21.1 Metal frame-key repair
+
+Alpha.3 passed the main texture-transform argument validation in Resolve Studio 21.1 and reached
+Metal compilation. The next host blocker was:
+
+```text
+Metal Error Code: 3 Domain: MTLLibraryErrorDomain
+program_source:3055:18: error: use of undeclared identifier ...
+uint f=(uint)TIMELINE_FRAME_INDEX;
+```
+
+Blackmagic's published DCTL documentation describes `TIMELINE_FRAME_INDEX` as available in
+the ResolveFX DCTL plugin and documents it with `RAND(uint)`. The observed Resolve 21.1 Metal
+texture compilation path did not expose that key.
+
+Alpha.4 therefore uses the key only when exposed by preprocessing and otherwise falls back to a
+deterministic static grain phase. The separate pointwise `YSEW_Timeline_Frame_Probe.dctl`
+directly references the documented key and should be tested independently. If that probe passes
+while Film Lab uses the fallback, the discrepancy is texture-path specific. If the probe fails
+with the same undeclared-key error, the current Resolve/Metal host does not expose the documented
+key in this installation/context.
+
+The fallback is a compatibility measure, not final temporal-grain acceptance. Every Frame /
+Hold modes must remain a documented limitation on a host where the key is unavailable.

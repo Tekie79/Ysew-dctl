@@ -1,4 +1,4 @@
-// Yekermo Sew Film Lab 0.7.0-alpha.3 - Studio UI layout and Resolve-host signature repair.
+// Yekermo Sew Film Lab 0.7.0-alpha.4 - Resolve 21.1 Metal frame-key fallback and Studio UI anchors.
 // Original parametric creative models, NOT measured film-stock emulations.
 // Input must already be decoded RGB with the selected scene encoding.
 // See docs/RESOLVE_SETUP.md and docs/DIAGNOSTICS.md before installation.
@@ -10,7 +10,7 @@
 DEFINE_UI_PARAMS(input_mode, Input, DCTLUI_COMBO_BOX, 0, {IN_DI, IN_DWG, IN_709_LINEAR, IN_LOGC4, IN_SLOG3_CINE, IN_SLOG3_G3, IN_LOG3G10}, {DWG Intermediate, DWG Linear, 709 Scene Linear, ARRI LogC4, Sony SLog3 Cine, Sony SLog3 G3, RED Log3G10})
 
 // ==================== BALANCE / WHITE BALANCE ====================
-DEFINE_UI_PARAMS(exposure, Exposure, DCTLUI_SLIDER_FLOAT, 0.0, -10.0, 10.0, 0.01)
+DEFINE_UI_PARAMS(exposure, BAL Exposure, DCTLUI_SLIDER_FLOAT, 0.0, -10.0, 10.0, 0.01)
 DEFINE_UI_PARAMS(wb_mode, WB Method, DCTLUI_COMBO_BOX, 0, {WB_LEGACY, WB_CAT02, WB_OFF}, {Legacy, CAT02, Off})
 DEFINE_UI_PARAMS(wb_temp, WB Temp K, DCTLUI_SLIDER_FLOAT, 6504.0, 1667.0, 25000.0, 1.0)
 DEFINE_UI_PARAMS(wb_duv, WB Duv, DCTLUI_SLIDER_FLOAT, 0.0, -0.05, 0.05, 0.0005)
@@ -150,7 +150,7 @@ DEFINE_UI_PARAMS(output_mode, Output, DCTLUI_COMBO_BOX, 2, {OUT_DI, OUT_DWG, OUT
 
 DEFINE_UI_TOOLTIP(Input, "RGB encoding arriving at this node. Camera log choices require the decoder or upstream converter to output that exact gamut and curve. ProRes RAW is not auto-detected.")
 DEFINE_UI_TOOLTIP(Output, "DWG choices return working RGB for one external output transform. 709 Gamma 2.4 performs internal SDR rendering. Never apply a second output conversion.")
-DEFINE_UI_TOOLTIP(Exposure, "Photographic exposure adjustment in stops. Plus one doubles scene-linear RGB.")
+DEFINE_UI_TOOLTIP(BAL Exposure, "Photographic exposure adjustment in stops. Plus one doubles scene-linear RGB.")
 DEFINE_UI_TOOLTIP(Warmth, "Relative red-blue balance. This is not calibrated color temperature in Kelvin.")
 DEFINE_UI_TOOLTIP(Tint, "Relative magenta-green balance. Zero is neutral.")
 DEFINE_UI_TOOLTIP(Density R, "Red density points. Positive darkens. One point attenuates by 10 to the power of minus 0.025.")
@@ -224,7 +224,7 @@ DEFINE_UI_TOOLTIP(Grain Color, "Blend from correlated monochrome grain toward in
 DEFINE_UI_TOOLTIP(Grain Shadow, "Relative grain amplitude in deep shadows, percent.")
 DEFINE_UI_TOOLTIP(Grain Mid, "Relative grain amplitude around middle exposure, percent.")
 DEFINE_UI_TOOLTIP(Grain High, "Relative grain amplitude in strong highlights, percent.")
-DEFINE_UI_TOOLTIP(Grain Motion, "Static or timeline-frame deterministic cadence using TIMELINE_FRAME_INDEX and RAND.")
+DEFINE_UI_TOOLTIP(Grain Motion, "Temporal cadence when the host exposes TIMELINE_FRAME_INDEX. Resolve 21.1 Metal texture builds fall back to a deterministic static phase until host support is confirmed.")
 DEFINE_UI_TOOLTIP(Grain Seed, "Deterministic spatial and temporal grain seed.")
 DEFINE_UI_TOOLTIP(Lens Soft, "Broadband local RGB softness before the negative, percent.")
 DEFINE_UI_TOOLTIP(Lens Radius, "Lens-softness radius in reference pixels at 2160 image lines.")
@@ -823,8 +823,20 @@ __DEVICE__ float3 ys_optics_view(float3 contribution,float gain_value,float gray
 }
 
 
+// Resolve 21.1 Metal texture-DCTL host compatibility:
+// The documented TIMELINE_FRAME_INDEX key is not exposed by the observed Metal texture
+// compilation path. Use it when the preprocessor exposes the key; otherwise compile with
+// a deterministic static phase. A dedicated probe keeps the host discrepancy testable.
+#ifdef TIMELINE_FRAME_INDEX
+#define YS_TIMELINE_FRAME_INDEX TIMELINE_FRAME_INDEX
+#define YS_HAS_TIMELINE_FRAME_INDEX 1
+#else
+#define YS_TIMELINE_FRAME_INDEX 1
+#define YS_HAS_TIMELINE_FRAME_INDEX 0
+#endif
+
 __DEVICE__ uint ys_grain_phase(int cadence) {
-    uint f=(uint)TIMELINE_FRAME_INDEX;
+    uint f=(uint)YS_TIMELINE_FRAME_INDEX;
     if (cadence == 0) return 0u;
     if (cadence == 2) return f/2u;
     if (cadence == 3) return f/3u;

@@ -10,7 +10,7 @@ from ui_schema import controls, parse_ui  # controls is also used by the native 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / 'src/YSEW_Film_Lab.dctl'
 TARGET = ROOT / 'dist/YSEW_Film_Lab.dctl'
-VERSION = '0.7.0-alpha.3'
+VERSION = '0.7.0-alpha.4'
 
 
 def validate(text: str) -> None:
@@ -42,7 +42,7 @@ def outputs() -> dict[Path, bytes]:
         validate(data.decode('ascii'))
         files[ROOT/'dist'/source.name] = data
     # Keep prior version-distinct files immutable; the current milestone gets its own alias.
-    files[ROOT/'dist/YSEW_Film_Lab_M7_A3.dctl'] = SOURCE.read_bytes()
+    files[ROOT/'dist/YSEW_Film_Lab_M7_A4.dctl'] = SOURCE.read_bytes()
     return files
 
 

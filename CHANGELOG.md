@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.7.0-alpha.4 - 2026-09-25
+
+Resolve 21.1 Metal frame-key compatibility.
+
+- Resolve alpha.3 reached Metal compilation, proving the texture entry signature repair worked.
+- Added a compile-time fallback when `TIMELINE_FRAME_INDEX` is not exposed by the Metal texture-DCTL path.
+- Preserved temporal grain on hosts/backends where the documented frame key is exposed; fallback is deterministic/static.
+- Added `YSEW_Timeline_Frame_Probe.dctl` to test the documented frame key independently in a pointwise ResolveFX DCTL.
+- Renamed the first Balance control to `BAL Exposure` so the section start is visible in the inspector.
+- Input remains first and Output remains last.
+
 ## 0.7.0-alpha.3 - 2026-09-25
 
 Studio inspector layout and host-signature hardening.

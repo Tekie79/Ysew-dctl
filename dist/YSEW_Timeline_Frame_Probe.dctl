@@ -1,0 +1,10 @@
+// YSEW timeline-frame probe for ResolveFX DCTL.
+// Purpose: determine whether TIMELINE_FRAME_INDEX is exposed by the host in a pointwise DCTL.
+DEFINE_UI_PARAMS(probe_gain, Gain, DCTLUI_SLIDER_FLOAT, 1.0, 0.0, 1.0, 0.01)
+__DEVICE__ float3 transform(int p_Width, int p_Height, int p_X, int p_Y, float p_R, float p_G, float p_B)
+{
+    uint frameSeed = (uint)TIMELINE_FRAME_INDEX;
+    float n = RAND(frameSeed + (uint)p_X + (uint)p_Y * (uint)p_Width);
+    float k = 1.0f + (n - 0.5f) * 0.1f * probe_gain;
+    return make_float3(p_R * k, p_G * k, p_B * k);
+}

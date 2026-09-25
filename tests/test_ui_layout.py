@@ -136,6 +136,9 @@ class StudioUILayoutTests(unittest.TestCase):
         cls.names=[c.name for c in parse_ui((ROOT/'src/YSEW_Film_Lab.dctl').read_text())]
     def test_exact_studio_order(self): self.assertEqual(self.names,EXPECTED)
     def test_input_first(self): self.assertEqual(self.names[0],'input_mode')
+    def test_balance_anchor_label(self):
+        ui={c.name:c for c in parse_ui((ROOT/'src/YSEW_Film_Lab.dctl').read_text())}
+        self.assertEqual(ui['exposure'].label,'BAL Exposure')
     def test_output_last(self): self.assertEqual(self.names[-1],'output_mode')
     def test_output_block_last(self): self.assertEqual(self.names[-4:],['output_gray','gamut_on','gamut_knee','output_mode'])
     def test_workflow_anchors(self):
