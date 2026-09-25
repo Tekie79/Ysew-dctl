@@ -21,11 +21,12 @@ def validate(text: str) -> None:
     # This targeted guard is not a substitute for a Metal/OpenCL compilation.
     if re.search(r'\b(?:float|int|float3)\s+(?:half|kernel|constant|thread|device|sampler)\b', shader):
         raise ValueError('GPU-reserved type/address-space name used as a local identifier')
+    exact_point_signature = '__DEVICE__ float3 transform(int p_Width, int p_Height, int p_X, int p_Y, float p_R, float p_G, float p_B)'
     exact_texture_signature = '__DEVICE__ float3 transform(int p_Width, int p_Height, int p_X, int p_Y, __TEXTURE__ p_TexR, __TEXTURE__ p_TexG, __TEXTURE__ p_TexB)'
     if text.count('__DEVICE__ float3 transform(') != 1:
         raise ValueError('Expected exactly one Transform DCTL entry point')
-    if exact_texture_signature not in text:
-        raise ValueError('Main texture Transform DCTL signature must match Blackmagic documentation exactly')
+    if exact_point_signature not in text and exact_texture_signature not in text:
+        raise ValueError('Main Transform DCTL signature must match one of Blackmagic documentation signatures exactly')
     if '// Pure helpers:' in text:
         helper_text = text.split('// Pure helpers:', 1)[1].split('__DEVICE__ float3 transform(', 1)[0]
         code = re.sub(r'//[^\n]*', '', helper_text)
