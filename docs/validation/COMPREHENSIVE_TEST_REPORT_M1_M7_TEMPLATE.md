@@ -2,7 +2,7 @@
 
 Test date:  
 Tester:  
-Film Lab version: `0.7.0-alpha.3`  
+Film Lab version: `0.7.0-alpha.5`  
 Git commit / develop HEAD at test start:   
 DCTL SHA-256:  
 Release ZIP SHA-256:  

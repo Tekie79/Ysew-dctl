@@ -1,10 +1,10 @@
 # Yekermo Sew Film Lab — Comprehensive M1-M7 Resolve Acceptance Plan
 
-Version under test: `0.7.0-alpha.4`  
+Version under test: `0.7.0-alpha.5`  
 Branch: `develop`  
 DCTL code freeze commit: `f024f2e2d8a7dc74c08073c307d37d0edaa5696e`  
 Plan: record the current documentation-only `develop` HEAD at test start  
-Primary DCTL: `dist/YSEW_Film_Lab_M7_A4.dctl`
+Primary DCTL: `dist/YSEW_Film_Lab_M7_A5.dctl`
 
 This is the formal end-of-development acceptance plan for milestones M1-M7. It replaces the
 earlier incremental smoke tests. CPU/GCC/Clang validation has already passed; this plan tests the

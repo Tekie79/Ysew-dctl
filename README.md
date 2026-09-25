@@ -2,7 +2,7 @@
 
 Custom DCTL development for the **Yekermo Sew** television series.
 
-**Version:** `0.7.0-alpha.4` | **Development branch:** `develop` | **Milestone:** M7 show consistency and Rec.709 mastering
+**Version:** `0.7.0-alpha.5` | **Development branch:** `develop` | **Milestone:** M7 show consistency and Rec.709 mastering
 
 This is executable source, not a look LUT or a measured film-stock emulator. The develop branch now contains the M1-M7 technical feature set: camera/working-space transforms, balance/CAT02, parametric negative and print response, Yekermo Sew candidate looks, spatial optics, temporal grain/texture, advanced diagnostics, Rec.709 mastering QC, shot-consistency tooling and deterministic packaging. **Comprehensive Resolve/Metal, creative and delivery acceptance is still pending; do not treat this alpha as a production master grade.**
 
@@ -103,7 +103,7 @@ developer documentation explicitly requires the main function definition exactly
 Alpha.2 changes only the entry declaration formatting and related validation; pipeline math is
 unchanged.
 
-Use `dist/YSEW_Film_Lab_M7_A4.dctl` for the next host test. If it still fails, test
+Use `dist/YSEW_Film_Lab_M7_A5.dctl` for the next host test. If it still fails, test
 `dist/YSEW_Texture_Probe.dctl` to isolate host acceptance of the documented texture signature.
 
 ## Alpha.3 Studio inspector layout
@@ -154,3 +154,25 @@ Because DCTL does not provide native group headers, alpha.4 makes each section s
 obvious with uppercase anchor controls: `INPUT`, `BAL Exposure`, `NEGATIVE`, `SHOW LOOK`,
 `PRINT`, `OPTICS`, `TEXTURE`, `VIGNETTE`, `DIAGNOSTICS`, then the final Output block
 (`OUT Gray` ... `OUTPUT`). These are real controls, not dummy headers.
+
+## Alpha.5 category-prefixed controls
+
+Alpha.5 makes grouping visible on **every control**, not only at section starts. This is important
+because the Resolve 21.1 host has not consistently rendered the large Film Lab combo/check
+surface even though a small texture-UI probe renders all documented control types.
+
+Examples:
+
+```text
+BAL Exposure      BAL Temp K      BAL Density R
+NEG Contrast      NEG Density     NEG Shadow Sat
+LOOK Preset       LOOK Skin Hue
+PRT Contrast      PRT Density
+HAL Amount        BLM Amount      GLW Amount
+GRN Amount        GRN Size x100   LENS Soft
+VIG Radius
+DIAG EV Min       RNG Hue         CAL Profile       QC Margin x1k
+OUT Gray          OUT Gamut Map   OUTPUT
+```
+
+The actual workflow order is unchanged: Input first, Output last.

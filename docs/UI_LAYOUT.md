@@ -1,6 +1,6 @@
 # Yekermo Sew Film Lab — Studio inspector layout
 
-Version: `0.7.0-alpha.3`
+Version: `0.7.0-alpha.5`
 
 Resolve DCTL provides parameter widgets but not native group boxes, tabs or collapsible inspector
 sections. Film Lab therefore uses a deliberate workflow order instead of fake header controls.
@@ -26,3 +26,20 @@ Alpha.3 deliberately changes declaration order before Film Lab has a successful 
 acceptance. After alpha.3, this Studio order is frozen for saved-grade stability. A later major
 inspector redesign must use a new version/migration rather than silently reshuffle the existing
 parameter declarations.
+
+
+## Category prefixes
+
+Every displayed label now carries a compact category code:
+
+- `BAL` balance / white balance
+- `NEG` negative
+- `LOOK` show look / skin
+- `PRT` print
+- `OPT`, `HAL`, `BLM`, `GLW`, `VEIL` optics
+- `TEX`, `GRN`, `LENS` texture / grain
+- `VIG` vignette
+- `DIAG`, `RNG`, `CAL`, `QC`, `GUIDE` diagnostics
+- `OUT` output
+
+This makes slider grouping visible even when section-anchor combo/check controls are not rendered.

@@ -28,7 +28,7 @@ class M7WorkflowTests(unittest.TestCase):
           'gamut_occupancy_p95':0.72,'black_level_p02':0.018,'highlight_level_p98':0.86}
         base['exposure_median_ev']+=offset
         return {'version':1,'shot_id':shot,'episode':'E01','scene':'S01','frame':100,'stage':'FINAL_REC709',
-                'working_space':'DWG_LINEAR','film_lab_version':'0.7.0-alpha.4','show_profile':'fall_interior','metrics':base}
+                'working_space':'DWG_LINEAR','film_lab_version':'0.7.0-alpha.5','show_profile':'fall_interior','metrics':base}
 
     def test_shot_match_pass_warn_fail(self):
         profile=shot_match.validate_tolerances(shot_match.load_json(ROOT/'presets/yekermo_sew_consistency_v1.json'))
@@ -63,6 +63,6 @@ class M7WorkflowTests(unittest.TestCase):
             manifest=json.loads(z.read(prefix+'manifest.json'))
             self.assertFalse(manifest['production_ready'])
             self.assertEqual(manifest['host_acceptance'],'pending_comprehensive_resolve_test')
-            self.assertIn('dist/YSEW_Film_Lab_M7_A4.dctl',manifest['files'])
+            self.assertIn('dist/YSEW_Film_Lab_M7_A5.dctl',manifest['files'])
 
 if __name__=='__main__': unittest.main(verbosity=2)

@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.7.0-alpha.5 - 2026-09-25
+
+Category-prefixed Studio control labels.
+
+- Added short category prefixes to every Film Lab control so related sliders remain visually grouped even if a host omits a section-anchor widget.
+- Preserved control IDs, types, defaults, numeric ranges, enum ordering and pipeline math.
+- Workflow order remains Input -> Balance/WB -> Negative -> Look/Skin -> Print -> Optics -> Texture/Grain -> Vignette -> Diagnostics/Calibration/QC -> Output.
+- Input remains first and Output remains last.
+- Bumped host-test alias to `YSEW_Film_Lab_M7_A5.dctl`.
+
 ## 0.7.0-alpha.4 - 2026-09-25
 
 Resolve 21.1 Metal frame-key compatibility.
