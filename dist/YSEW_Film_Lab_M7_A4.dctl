@@ -7,7 +7,7 @@
 // UI numeric arguments use plain literals; float suffixes are for shader code only.
 
 // ==================== INPUT ====================
-DEFINE_UI_PARAMS(input_mode, Input, DCTLUI_COMBO_BOX, 0, {IN_DI, IN_DWG, IN_709_LINEAR, IN_LOGC4, IN_SLOG3_CINE, IN_SLOG3_G3, IN_LOG3G10}, {DWG Intermediate, DWG Linear, 709 Scene Linear, ARRI LogC4, Sony SLog3 Cine, Sony SLog3 G3, RED Log3G10})
+DEFINE_UI_PARAMS(input_mode, INPUT, DCTLUI_COMBO_BOX, 0, {IN_DI, IN_DWG, IN_709_LINEAR, IN_LOGC4, IN_SLOG3_CINE, IN_SLOG3_G3, IN_LOG3G10}, {DWG Intermediate, DWG Linear, 709 Scene Linear, ARRI LogC4, Sony SLog3 Cine, Sony SLog3 G3, RED Log3G10})
 
 // ==================== BALANCE / WHITE BALANCE ====================
 DEFINE_UI_PARAMS(exposure, BAL Exposure, DCTLUI_SLIDER_FLOAT, 0.0, -10.0, 10.0, 0.01)
@@ -22,7 +22,7 @@ DEFINE_UI_PARAMS(printer_g, Density G, DCTLUI_SLIDER_FLOAT, 0.0, -12.0, 12.0, 0.
 DEFINE_UI_PARAMS(printer_b, Density B, DCTLUI_SLIDER_FLOAT, 0.0, -12.0, 12.0, 0.1)
 
 // ==================== NEGATIVE ====================
-DEFINE_UI_PARAMS(negative_on, Negative, DCTLUI_CHECK_BOX, 1)
+DEFINE_UI_PARAMS(negative_on, NEGATIVE, DCTLUI_CHECK_BOX, 1)
 DEFINE_UI_PARAMS(film_model, Film Model, DCTLUI_COMBO_BOX, 0, {FILM_LEGACY, FILM_YS_ADV}, {Legacy, YS Advanced})
 DEFINE_UI_PARAMS(neg_contrast, Neg Contrast, DCTLUI_SLIDER_FLOAT, 1.08, 0.5, 2.0, 0.01)
 DEFINE_UI_PARAMS(neg_toe, Neg Toe, DCTLUI_SLIDER_FLOAT, 0.08, 0.0, 0.4, 0.01)
@@ -39,7 +39,7 @@ DEFINE_UI_PARAMS(adv_neg_green, Neg Green, DCTLUI_SLIDER_FLOAT, 0.0, -1.0, 1.0, 
 DEFINE_UI_PARAMS(adv_neg_cool, Neg Cool, DCTLUI_SLIDER_FLOAT, 0.0, -1.0, 1.0, 0.01)
 
 // ==================== SHOW LOOK / SKIN ====================
-DEFINE_UI_PARAMS(look_mode, Show Look, DCTLUI_COMBO_BOX, 0, {LOOK_NEUTRAL, LOOK_FALL, LOOK_WINTER, LOOK_NIGHT, LOOK_EXT_DAY, LOOK_EXT_DUSK}, {Neutral, Fall Interior, Winter Interior, Night, Exterior Day, Exterior Dusk})
+DEFINE_UI_PARAMS(look_mode, SHOW LOOK, DCTLUI_COMBO_BOX, 0, {LOOK_NEUTRAL, LOOK_FALL, LOOK_WINTER, LOOK_NIGHT, LOOK_EXT_DAY, LOOK_EXT_DUSK}, {Neutral, Fall Interior, Winter Interior, Night, Exterior Day, Exterior Dusk})
 DEFINE_UI_PARAMS(look_mix, Look Mix, DCTLUI_SLIDER_FLOAT, 1.0, 0.0, 1.0, 0.01)
 DEFINE_UI_PARAMS(skin_protect, Skin Protect, DCTLUI_SLIDER_FLOAT, 0.75, 0.0, 1.0, 0.01)
 DEFINE_UI_PARAMS(skin_pick, Skin Color, DCTLUI_COLOR_PICKER, 0.70, 0.42, 0.175)
@@ -50,7 +50,7 @@ DEFINE_UI_PARAMS(skin_sat_min, Skin Sat Min, DCTLUI_SLIDER_FLOAT, 0.06, 0.0, 1.0
 DEFINE_UI_PARAMS(skin_sat_max, Skin Sat Max, DCTLUI_SLIDER_FLOAT, 0.9, 0.0, 1.0, 0.01)
 
 // ==================== PRINT ====================
-DEFINE_UI_PARAMS(print_on, Print, DCTLUI_CHECK_BOX, 1)
+DEFINE_UI_PARAMS(print_on, PRINT, DCTLUI_CHECK_BOX, 1)
 DEFINE_UI_PARAMS(print_contrast, Print Contrast, DCTLUI_SLIDER_FLOAT, 1.06, 0.5, 2.0, 0.01)
 DEFINE_UI_PARAMS(print_toe, Print Toe, DCTLUI_SLIDER_FLOAT, 0.04, 0.0, 0.4, 0.01)
 DEFINE_UI_PARAMS(print_shoulder, Print Shoulder, DCTLUI_SLIDER_FLOAT, 0.12, 0.0, 0.4, 0.01)
@@ -63,7 +63,7 @@ DEFINE_UI_PARAMS(adv_print_warm, Print Warm, DCTLUI_SLIDER_FLOAT, 0.0, -1.0, 1.0
 DEFINE_UI_PARAMS(adv_print_color, Print Color, DCTLUI_SLIDER_FLOAT, 1.0, 0.0, 1.5, 0.01)
 
 // ==================== OPTICS ====================
-DEFINE_UI_PARAMS(optics_on, Optics, DCTLUI_CHECK_BOX, 0)
+DEFINE_UI_PARAMS(optics_on, OPTICS, DCTLUI_CHECK_BOX, 0)
 DEFINE_UI_PARAMS(optics_quality, Optics Quality, DCTLUI_COMBO_BOX, 1, {OPT_DRAFT, OPT_STANDARD, OPT_HIGH}, {Draft, Standard, High})
 DEFINE_UI_PARAMS(optics_mix, Optics Mix, DCTLUI_SLIDER_FLOAT, 1.0, 0.0, 2.0, 0.01)
 DEFINE_UI_PARAMS(optics_soft, Soft x100, DCTLUI_SLIDER_INT, 75, 5, 300, 5)
@@ -83,7 +83,7 @@ DEFINE_UI_PARAMS(veil_threshold, Veil EV x10, DCTLUI_SLIDER_INT, 0, -40, 80, 1)
 DEFINE_UI_PARAMS(optics_view, Optics View, DCTLUI_COMBO_BOX, 0, {OV_OFF, OV_HAL, OV_BLOOM, OV_GLOW, OV_VEIL, OV_SUM}, {Off, Halation, Bloom, Glow, Veil, Sum})
 
 // ==================== TEXTURE / GRAIN ====================
-DEFINE_UI_PARAMS(texture_on, Texture, DCTLUI_CHECK_BOX, 0)
+DEFINE_UI_PARAMS(texture_on, TEXTURE, DCTLUI_CHECK_BOX, 0)
 DEFINE_UI_PARAMS(grain_gauge, Grain Gauge, DCTLUI_COMBO_BOX, 2, {GAUGE_8, GAUGE_16, GAUGE_35, GAUGE_65, GAUGE_CUSTOM}, {8mm, 16mm, 35mm, 65mm, Custom})
 DEFINE_UI_PARAMS(grain_amount, Grain Percent, DCTLUI_SLIDER_INT, 0, 0, 200, 1)
 DEFINE_UI_PARAMS(grain_size, Grain Size x100, DCTLUI_SLIDER_INT, 100, 50, 300, 1)
@@ -100,7 +100,7 @@ DEFINE_UI_PARAMS(micro_soft, Micro Soft, DCTLUI_SLIDER_INT, 0, 0, 100, 1)
 DEFINE_UI_PARAMS(texture_view, Texture View, DCTLUI_COMBO_BOX, 0, {TV_OFF, TV_GRAIN, TV_WEIGHT, TV_LENS, TV_COMBINED}, {Off, Grain, Weight, Lens, Combined})
 
 // ==================== VIGNETTE ====================
-DEFINE_UI_PARAMS(vignette_stops, Vignette, DCTLUI_SLIDER_FLOAT, 0.0, 0.0, 3.0, 0.01)
+DEFINE_UI_PARAMS(vignette_stops, VIGNETTE, DCTLUI_SLIDER_FLOAT, 0.0, 0.0, 3.0, 0.01)
 DEFINE_UI_PARAMS(vignette_radius, Vig Radius, DCTLUI_SLIDER_FLOAT, 0.7, 0.0, 2.0, 0.01)
 DEFINE_UI_PARAMS(vignette_soft, Vig Softness, DCTLUI_SLIDER_FLOAT, 0.7, 0.01, 2.0, 0.01)
 DEFINE_UI_PARAMS(vignette_round, Vig Shape, DCTLUI_SLIDER_FLOAT, 0.0, 0.0, 1.0, 0.01)
@@ -108,7 +108,7 @@ DEFINE_UI_PARAMS(vignette_x, Vig X, DCTLUI_SLIDER_FLOAT, 0.0, -1.0, 1.0, 0.01)
 DEFINE_UI_PARAMS(vignette_y, Vig Y, DCTLUI_SLIDER_FLOAT, 0.0, -1.0, 1.0, 0.01)
 
 // ==================== DIAGNOSTICS / CALIBRATION / QC ====================
-DEFINE_UI_PARAMS(diag_mode, Diagnostics, DCTLUI_COMBO_BOX, 0, {D_OFF, D_FALSE, D_EVGRAY, D_ZONE, D_EVMATTE, D_EVOVER, D_RGBEV, D_YPRIME, D_YFALSE, D_LIN_Y, D_HUE, D_SAT, D_CHROMA, D_COLMATTE, D_COLISO, D_SKIN, D_SKINEV, D_NEUTRAL, D_LOW, D_HIGH, D_CHROMATICITY, D_VOLUME, D_COMPRESSION, D_BEFORE, D_DIFF, D_STAGE, D_INVALID, D_TARGET_GAMUT, D_GAMUT_OCC, D_RGB_HEADROOM, D_CAL_EV, D_CAL_NEUTRAL, D_CAL_COMBINED, D_QC_PRE, D_QC_FINAL, D_QC_MASTER}, {Off, Scene False Color, Scene EV Gray, Scene Zones, EV Matte, EV Overlay, Scene RGB EV, Output Y Prime, Output Luma Color, Output Linear Y, Hue Map, HSV Saturation, RGB Chroma, Color Matte, Color Isolate, Skin Matte, Skin EV, Neutral Bias, Nonpositive RGB, Pre Gamut Limits, 709 Chromaticity, SDR Volume, Gamut Amount, Before After, Difference, Stage View, Invalid Input, Target Gamut, Gamut Occupancy, RGB Headroom, Cal Exposure, Cal Neutral, Cal Combined, QC Pre Gamut, QC Final Range, QC Master})
+DEFINE_UI_PARAMS(diag_mode, DIAGNOSTICS, DCTLUI_COMBO_BOX, 0, {D_OFF, D_FALSE, D_EVGRAY, D_ZONE, D_EVMATTE, D_EVOVER, D_RGBEV, D_YPRIME, D_YFALSE, D_LIN_Y, D_HUE, D_SAT, D_CHROMA, D_COLMATTE, D_COLISO, D_SKIN, D_SKINEV, D_NEUTRAL, D_LOW, D_HIGH, D_CHROMATICITY, D_VOLUME, D_COMPRESSION, D_BEFORE, D_DIFF, D_STAGE, D_INVALID, D_TARGET_GAMUT, D_GAMUT_OCC, D_RGB_HEADROOM, D_CAL_EV, D_CAL_NEUTRAL, D_CAL_COMBINED, D_QC_PRE, D_QC_FINAL, D_QC_MASTER}, {Off, Scene False Color, Scene EV Gray, Scene Zones, EV Matte, EV Overlay, Scene RGB EV, Output Y Prime, Output Luma Color, Output Linear Y, Hue Map, HSV Saturation, RGB Chroma, Color Matte, Color Isolate, Skin Matte, Skin EV, Neutral Bias, Nonpositive RGB, Pre Gamut Limits, 709 Chromaticity, SDR Volume, Gamut Amount, Before After, Difference, Stage View, Invalid Input, Target Gamut, Gamut Occupancy, RGB Headroom, Cal Exposure, Cal Neutral, Cal Combined, QC Pre Gamut, QC Final Range, QC Master})
 DEFINE_UI_PARAMS(diag_tap, Measure, DCTLUI_COMBO_BOX, 0, {TAP_SOURCE, TAP_BALANCE}, {Source, Balanced})
 DEFINE_UI_PARAMS(inspect_stage, Stage, DCTLUI_COMBO_BOX, 0, {ST_SOURCE, ST_BALANCE, ST_NEG, ST_LOOK, ST_PRINT, ST_LENS, ST_PRE, ST_OUT}, {Source, Balance, Negative, Look, Print, Vignette, Pre Gamut, Final})
 DEFINE_UI_PARAMS(reference_gray, Ref Gray, DCTLUI_SLIDER_FLOAT, 0.18, 0.01, 0.5, 0.005)
@@ -143,29 +143,29 @@ DEFINE_UI_PARAMS(guide_mode, Visual Guide, DCTLUI_COMBO_BOX, 0, {G_NONE, G_TONE,
 DEFINE_UI_PARAMS(guide_opacity, Guide Opacity, DCTLUI_SLIDER_FLOAT, 0.95, 0.25, 1.0, 0.01)
 
 // ==================== OUTPUT ====================
-DEFINE_UI_PARAMS(output_gray, Output Gray, DCTLUI_SLIDER_FLOAT, 0.42, 0.25, 0.65, 0.005)
+DEFINE_UI_PARAMS(output_gray, OUT Gray, DCTLUI_SLIDER_FLOAT, 0.42, 0.25, 0.65, 0.005)
 DEFINE_UI_PARAMS(gamut_on, Gamut Map, DCTLUI_CHECK_BOX, 1)
 DEFINE_UI_PARAMS(gamut_knee, Gamut Knee, DCTLUI_SLIDER_FLOAT, 0.8, 0.1, 0.95, 0.01)
-DEFINE_UI_PARAMS(output_mode, Output, DCTLUI_COMBO_BOX, 2, {OUT_DI, OUT_DWG, OUT_709}, {DWG Intermediate, DWG Linear, 709 Gamma 2.4})
+DEFINE_UI_PARAMS(output_mode, OUTPUT, DCTLUI_COMBO_BOX, 2, {OUT_DI, OUT_DWG, OUT_709}, {DWG Intermediate, DWG Linear, 709 Gamma 2.4})
 
-DEFINE_UI_TOOLTIP(Input, "RGB encoding arriving at this node. Camera log choices require the decoder or upstream converter to output that exact gamut and curve. ProRes RAW is not auto-detected.")
-DEFINE_UI_TOOLTIP(Output, "DWG choices return working RGB for one external output transform. 709 Gamma 2.4 performs internal SDR rendering. Never apply a second output conversion.")
+DEFINE_UI_TOOLTIP(INPUT, "RGB encoding arriving at this node. Camera log choices require the decoder or upstream converter to output that exact gamut and curve. ProRes RAW is not auto-detected.")
+DEFINE_UI_TOOLTIP(OUTPUT, "DWG choices return working RGB for one external output transform. 709 Gamma 2.4 performs internal SDR rendering. Never apply a second output conversion.")
 DEFINE_UI_TOOLTIP(BAL Exposure, "Photographic exposure adjustment in stops. Plus one doubles scene-linear RGB.")
 DEFINE_UI_TOOLTIP(Warmth, "Relative red-blue balance. This is not calibrated color temperature in Kelvin.")
 DEFINE_UI_TOOLTIP(Tint, "Relative magenta-green balance. Zero is neutral.")
 DEFINE_UI_TOOLTIP(Density R, "Red density points. Positive darkens. One point attenuates by 10 to the power of minus 0.025.")
 DEFINE_UI_TOOLTIP(Density G, "Green density points. Positive darkens. One point attenuates by 10 to the power of minus 0.025.")
 DEFINE_UI_TOOLTIP(Density B, "Blue density points. Positive darkens. One point attenuates by 10 to the power of minus 0.025.")
-DEFINE_UI_TOOLTIP(Negative, "Enable the prototype negative response. Disable for numerical input and output checks.")
+DEFINE_UI_TOOLTIP(NEGATIVE, "Enable the prototype negative response. Disable for numerical input and output checks.")
 DEFINE_UI_TOOLTIP(Neg Crosstalk, "Density-dependent RGB interaction proxy. Not measured spectral dye behavior.")
-DEFINE_UI_TOOLTIP(Show Look, "Neutral or provisional Yekermo Sew Fall and Winter interior looks. Creative approval is pending.")
+DEFINE_UI_TOOLTIP(SHOW LOOK, "Neutral or provisional Yekermo Sew Fall and Winter interior looks. Creative approval is pending.")
 DEFINE_UI_TOOLTIP(Skin Protect, "Reduces only the show-look contribution on chromatic skin candidates. Not semantic face detection.")
 DEFINE_UI_TOOLTIP(Skin Width, "Hue half-width in degrees around Skin Hue or the enabled Skin Color swatch.")
-DEFINE_UI_TOOLTIP(Print, "Enable the prototype print response. Disable for numerical input and output checks.")
-DEFINE_UI_TOOLTIP(Vignette, "Edge attenuation in stops. Zero leaves the image unchanged. The visual guide shows its boundaries.")
+DEFINE_UI_TOOLTIP(PRINT, "Enable the prototype print response. Disable for numerical input and output checks.")
+DEFINE_UI_TOOLTIP(VIGNETTE, "Edge attenuation in stops. Zero leaves the image unchanged. The visual guide shows its boundaries.")
 DEFINE_UI_TOOLTIP(Vig Shape, "Zero follows the frame aspect ratio. One produces a circle in square-pixel image geometry.")
-DEFINE_UI_TOOLTIP(Output Gray, "Encoded neutral 0.18 target with balance and creative stages bypassed. Default 0.42 is a design choice, not a universal gray standard.")
-DEFINE_UI_TOOLTIP(Diagnostics, "Image-space diagnostic view. Use a terminal internal Rec709 path. Switch Off before export. A warning stripe is intentional.")
+DEFINE_UI_TOOLTIP(OUT Gray, "Encoded neutral 0.18 target with balance and creative stages bypassed. Default 0.42 is a design choice, not a universal gray standard.")
+DEFINE_UI_TOOLTIP(DIAGNOSTICS, "Image-space diagnostic view. Use a terminal internal Rec709 path. Switch Off before export. A warning stripe is intentional.")
 DEFINE_UI_TOOLTIP(Measure, "Source measures decoded RGB before balance. Balanced measures after exposure and balance but before the look.")
 DEFINE_UI_TOOLTIP(Stage, "Stage inspected when Diagnostics is Stage View. Intermediate RGB is converted through the internal viewing transform.")
 DEFINE_UI_TOOLTIP(Ref Gray, "Scene-linear reference for relative exposure. Default 0.18. Not a sensor clipping or noise-floor calibration.")
@@ -197,7 +197,7 @@ DEFINE_UI_TOOLTIP(Print Whites, "Advanced print highlight-density trim in stops.
 DEFINE_UI_TOOLTIP(Print Sep, "Advanced print log-ratio color separation amount.")
 DEFINE_UI_TOOLTIP(Print Warm, "Luminance-preserving warm print bias weighted toward the upper midtones and highlights.")
 DEFINE_UI_TOOLTIP(Print Color, "Master print chroma scale before the display render.")
-DEFINE_UI_TOOLTIP(Optics, "Enable M4 spatial sampling. Off preserves the M3 pointwise pipeline and avoids neighborhood texture reads.")
+DEFINE_UI_TOOLTIP(OPTICS, "Enable M4 spatial sampling. Off preserves the M3 pointwise pipeline and avoids neighborhood texture reads.")
 DEFINE_UI_TOOLTIP(Optics Quality, "Draft samples 4 directions, Standard 8 and High 16 at two radii. Higher quality substantially increases texture reads.")
 DEFINE_UI_TOOLTIP(Optics Mix, "Master gain for all spatial optical contributions.")
 DEFINE_UI_TOOLTIP(Soft x100, "Shared highlight feather in hundredths of a stop. 75 means 0.75 stop.")
@@ -215,7 +215,7 @@ DEFINE_UI_TOOLTIP(Veil Percent, "Veiling-glare amount in percent. This remains a
 DEFINE_UI_TOOLTIP(Veil Radius, "Veiling-glare radius in reference pixels at 2160 image lines.")
 DEFINE_UI_TOOLTIP(Veil EV x10, "Veiling-glare threshold in tenths of a stop relative to 18 percent gray.")
 DEFINE_UI_TOOLTIP(Optics View, "Contribution view for M4 effects. Requires internal Rec709 output and uses Diag Gain for inspection.")
-DEFINE_UI_TOOLTIP(Texture, "Enable M5 lens softness and film grain. Off preserves the M4 pipeline and skips texture processing.")
+DEFINE_UI_TOOLTIP(TEXTURE, "Enable M5 lens softness and film grain. Off preserves the M4 pipeline and skips texture processing.")
 DEFINE_UI_TOOLTIP(Grain Gauge, "Base spatial grain-size preset. Gauge names are artistic scale presets, not measured stock scans.")
 DEFINE_UI_TOOLTIP(Grain Percent, "Master grain density amplitude in percent. Grain is multiplicative in a density-style domain after print.")
 DEFINE_UI_TOOLTIP(Grain Size x100, "Multiplier for the selected gauge grain size. 100 is the preset base size.")

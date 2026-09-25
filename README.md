@@ -147,3 +147,10 @@ to texture transforms on Resolve 21.1 Metal.
 Alpha.4 also makes the first visible Balance control read `BAL Exposure`; other category
 starts already use natural anchors such as Negative, Show Look, Print, Optics, Texture,
 Vignette and Diagnostics. Input remains first and Output remains last.
+
+### Visible section anchors
+
+Because DCTL does not provide native group headers, alpha.4 makes each section start visually
+obvious with uppercase anchor controls: `INPUT`, `BAL Exposure`, `NEGATIVE`, `SHOW LOOK`,
+`PRINT`, `OPTICS`, `TEXTURE`, `VIGNETTE`, `DIAGNOSTICS`, then the final Output block
+(`OUT Gray` ... `OUTPUT`). These are real controls, not dummy headers.

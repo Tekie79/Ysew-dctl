@@ -10,6 +10,7 @@ Resolve 21.1 Metal frame-key compatibility.
 - Added `YSEW_Timeline_Frame_Probe.dctl` to test the documented frame key independently in a pointwise ResolveFX DCTL.
 - Renamed the first Balance control to `BAL Exposure` so the section start is visible in the inspector.
 - Input remains first and Output remains last.
+- Visible section anchors are uppercase so grouping is apparent in Resolve without fake/dummy header controls.
 
 ## 0.7.0-alpha.3 - 2026-09-25
 

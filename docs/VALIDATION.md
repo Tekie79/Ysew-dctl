@@ -262,3 +262,9 @@ key in this installation/context.
 
 The fallback is a compatibility measure, not final temporal-grain acceptance. Every Frame /
 Hold modes must remain a documented limitation on a host where the key is unavailable.
+
+### Alpha.4 visible grouping
+
+Source comments do not render in Resolve. Alpha.4 therefore makes the first real control of each
+workflow section visually distinct with uppercase labels. This keeps grouping inside DCTL's
+supported UI primitives rather than adding dummy editable parameters.
