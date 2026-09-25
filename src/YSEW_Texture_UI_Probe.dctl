@@ -1,0 +1,22 @@
+// Yekermo Sew Resolve 21 texture-UI capability probe.
+// One control of every documented DCTL UI type, using the same texture Transform signature as Film Lab.
+DEFINE_UI_PARAMS(test_float, Float Slider, DCTLUI_SLIDER_FLOAT, 0.5, 0.0, 1.0, 0.01)
+DEFINE_UI_PARAMS(test_int, Int Slider, DCTLUI_SLIDER_INT, 2, 0, 4, 1)
+DEFINE_UI_PARAMS(test_value, Value Box, DCTLUI_VALUE_BOX, 1.0)
+DEFINE_UI_PARAMS(test_check, Check Box, DCTLUI_CHECK_BOX, 1)
+DEFINE_UI_PARAMS(test_combo, Combo Box, DCTLUI_COMBO_BOX, 1, {OPT_A, OPT_B, OPT_C}, {Option A, Option B, Option C})
+DEFINE_UI_PARAMS(test_color, Color Picker, DCTLUI_COLOR_PICKER, 0.8, 0.3, 0.1)
+
+__DEVICE__ float3 transform(int p_Width, int p_Height, int p_X, int p_Y, __TEXTURE__ p_TexR, __TEXTURE__ p_TexG, __TEXTURE__ p_TexB)
+{
+    float3 c = make_float3(_tex2D(p_TexR,p_X,p_Y), _tex2D(p_TexG,p_X,p_Y), _tex2D(p_TexB,p_X,p_Y));
+    float gain = test_float * test_value;
+    if (!test_check) gain = 1.0f;
+    if (test_combo == OPT_A) gain *= 0.8f;
+    else if (test_combo == OPT_C) gain *= 1.2f;
+    float tint = (float)test_int * 0.01f;
+    c.x = c.x * gain + test_color.x * tint;
+    c.y = c.y * gain + test_color.y * tint;
+    c.z = c.z * gain + test_color.z * tint;
+    return c;
+}
