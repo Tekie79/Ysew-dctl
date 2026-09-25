@@ -1,4 +1,4 @@
-// Yekermo Sew Film Lab 0.7.0-alpha.1 - M7 show looks, mastering QC and consistency workflow.
+// Yekermo Sew Film Lab 0.7.0-alpha.2 - Resolve-host entry-signature repair.
 // Original parametric creative models, NOT measured film-stock emulations.
 // Input must already be decoded RGB with the selected scene encoding.
 // See docs/RESOLVE_SETUP.md and docs/DIAGNOSTICS.md before installation.
@@ -1463,8 +1463,7 @@ __DEVICE__ float3 ys_graphic(float3 image,YSDiag d,YSGuideParams p,int mode,floa
     return ys_warning(ys_mix(image,panel,opacity),h,x,y);
 }
 
-__DEVICE__ float3 transform(int p_Width,int p_Height,int p_X,int p_Y,
-    __TEXTURE__ p_TexR,__TEXTURE__ p_TexG,__TEXTURE__ p_TexB) {
+__DEVICE__ float3 transform(int p_Width, int p_Height, int p_X, int p_Y, __TEXTURE__ p_TexR, __TEXTURE__ p_TexG, __TEXTURE__ p_TexB) {
     float3 raw = ys_tex_raw(p_TexR,p_TexG,p_TexB,p_Width,p_Height,p_X,p_Y);
     if (p_Width <= 0 || p_Height <= 0 || !ys_safe(raw)) return ys_error(p_X,p_Y);
     YSStages s;

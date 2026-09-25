@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.7.0-alpha.2 - 2026-09-25
+
+Resolve-host entry-signature repair.
+
+- Replaced the M7 texture transform declaration with Blackmagic's documented signature verbatim on one line, including parameter names and spacing.
+- Added strict build lint that rejects any deviation from that texture entry signature.
+- Added a minimal `YSEW_Texture_Probe.dctl` using the same documented signature.
+- No film/color/diagnostic/optics/grain math changed.
+
 ## 0.7.0-alpha.1 - 2026-09-24
 
 M7 show-consistency and Rec.709 mastering implementation on `develop`.

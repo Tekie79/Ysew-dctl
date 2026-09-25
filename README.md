@@ -2,7 +2,7 @@
 
 Custom DCTL development for the **Yekermo Sew** television series.
 
-**Version:** `0.7.0-alpha.1` | **Development branch:** `develop` | **Milestone:** M7 show consistency and Rec.709 mastering
+**Version:** `0.7.0-alpha.2` | **Development branch:** `develop` | **Milestone:** M7 show consistency and Rec.709 mastering
 
 This is executable source, not a look LUT or a measured film-stock emulator. The develop branch now contains the M1-M7 technical feature set: camera/working-space transforms, balance/CAT02, parametric negative and print response, Yekermo Sew candidate looks, spatial optics, temporal grain/texture, advanced diagnostics, Rec.709 mastering QC, shot-consistency tooling and deterministic packaging. **Comprehensive Resolve/Metal, creative and delivery acceptance is still pending; do not treat this alpha as a production master grade.**
 
@@ -93,3 +93,15 @@ profiles; numerical reference/shot and episode-batch comparison; Rec.709 masteri
 diagnostics; and deterministic release packaging. Candidate profiles remain pending director
 review. See [M7 show/mastering](docs/M7_SHOW_MASTERING.md) and the
 [comprehensive delivery checklist](docs/DELIVERY_QC.md).
+
+## Alpha.2 host-signature repair
+
+Resolve Studio 21.1 rejected the M7 texture entry point with
+`wrong argument int p_Width in Transform DCTL`. The M7 source used the documented parameter
+types/names but formatted the entry across two lines without Blackmagic's exact spacing. The
+developer documentation explicitly requires the main function definition exactly as shown.
+Alpha.2 changes only the entry declaration formatting and related validation; pipeline math is
+unchanged.
+
+Use `dist/YSEW_Film_Lab_M7_A2.dctl` for the next host test. If it still fails, test
+`dist/YSEW_Texture_Probe.dctl` to isolate host acceptance of the documented texture signature.

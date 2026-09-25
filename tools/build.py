@@ -10,7 +10,7 @@ from ui_schema import controls, parse_ui  # controls is also used by the native 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / 'src/YSEW_Film_Lab.dctl'
 TARGET = ROOT / 'dist/YSEW_Film_Lab.dctl'
-VERSION = '0.7.0-alpha.1'
+VERSION = '0.7.0-alpha.2'
 
 
 def validate(text: str) -> None:
@@ -21,8 +21,11 @@ def validate(text: str) -> None:
     # This targeted guard is not a substitute for a Metal/OpenCL compilation.
     if re.search(r'\b(?:float|int|float3)\s+(?:half|kernel|constant|thread|device|sampler)\b', shader):
         raise ValueError('GPU-reserved type/address-space name used as a local identifier')
+    exact_texture_signature = '__DEVICE__ float3 transform(int p_Width, int p_Height, int p_X, int p_Y, __TEXTURE__ p_TexR, __TEXTURE__ p_TexG, __TEXTURE__ p_TexB)'
     if text.count('__DEVICE__ float3 transform(') != 1:
         raise ValueError('Expected exactly one Transform DCTL entry point')
+    if exact_texture_signature not in text:
+        raise ValueError('Main texture Transform DCTL signature must match Blackmagic documentation exactly')
     if '// Pure helpers:' in text:
         helper_text = text.split('// Pure helpers:', 1)[1].split('__DEVICE__ float3 transform(', 1)[0]
         code = re.sub(r'//[^\n]*', '', helper_text)
@@ -38,7 +41,7 @@ def outputs() -> dict[Path, bytes]:
         validate(data.decode('ascii'))
         files[ROOT/'dist'/source.name] = data
     # Keep prior version-distinct files immutable; the current milestone gets its own alias.
-    files[ROOT/'dist/YSEW_Film_Lab_M7.dctl'] = SOURCE.read_bytes()
+    files[ROOT/'dist/YSEW_Film_Lab_M7_A2.dctl'] = SOURCE.read_bytes()
     return files
 
 

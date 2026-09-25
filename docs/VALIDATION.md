@@ -180,3 +180,25 @@ This CI result completes M7's automated/source validation only. Resolve Studio 2
 actual ProRes RAW converter output, representative Yekermo Sew creative approval, GPU
 performance, temporal cache/render behavior and Rec.709 delivery export/re-import are still
 the final acceptance gates.
+
+## M7 alpha.2 Resolve host-signature repair
+
+On 2026-09-25 the owner reported an immediate Resolve Studio 21.1 build failure:
+
+```text
+DCTL Error: wrong argument int p_Width in Transform DCTL.
+DCTL Error: main DCTL function has wrong arguments.
+```
+
+The M7 texture entry was semantically equivalent to Blackmagic's documented texture transform,
+but was split across lines and did not reproduce the documented definition verbatim. Blackmagic's
+DCTL documentation states that the main entry function definition should be used exactly as
+shown, including parameter types and names.
+
+Version `0.7.0-alpha.2` changes the declaration to the exact documented one-line form and adds
+a minimal texture-entry probe. This is a host-compatibility fix; processing math is unchanged.
+
+Host retest remains required. If the full alpha.2 file fails but the probe passes, the issue is
+elsewhere in the full shader. If the probe fails with the same argument error, capture the probe
+error because it establishes a Resolve-21.1-specific host discrepancy against the documented
+signature.

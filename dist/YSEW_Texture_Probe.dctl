@@ -1,0 +1,11 @@
+// Resolve host texture-entry probe for Yekermo Sew Film Lab.
+// This intentionally uses Blackmagic's documented Transform DCTL signature verbatim.
+DEFINE_UI_PARAMS(probe_enable, Enabled, DCTLUI_CHECK_BOX, 1)
+__DEVICE__ float3 transform(int p_Width, int p_Height, int p_X, int p_Y, __TEXTURE__ p_TexR, __TEXTURE__ p_TexG, __TEXTURE__ p_TexB)
+{
+    float r = _tex2D(p_TexR, p_X, p_Y);
+    float g = _tex2D(p_TexG, p_X, p_Y);
+    float b = _tex2D(p_TexB, p_X, p_Y);
+    float3 out = probe_enable ? make_float3(r, g, b) : make_float3(0.0f, 0.0f, 0.0f);
+    return out;
+}

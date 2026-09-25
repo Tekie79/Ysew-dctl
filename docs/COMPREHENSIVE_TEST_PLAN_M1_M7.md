@@ -1,10 +1,10 @@
 # Yekermo Sew Film Lab — Comprehensive M1-M7 Resolve Acceptance Plan
 
-Version under test: `0.7.0-alpha.1`  
+Version under test: `0.7.0-alpha.2`  
 Branch: `develop`  
 DCTL code freeze commit: `86bdd8c4ef0023ee9c4e042919efe68d83ec7165`  
 Plan: record the current documentation-only `develop` HEAD at test start  
-Primary DCTL: `dist/YSEW_Film_Lab_M7.dctl`
+Primary DCTL: `dist/YSEW_Film_Lab_M7_A2.dctl`
 
 This is the formal end-of-development acceptance plan for milestones M1-M7. It replaces the
 earlier incremental smoke tests. CPU/GCC/Clang validation has already passed; this plan tests the
@@ -223,6 +223,14 @@ output gamut/gamma, upstream node settings and the DCTL Input selection.
 
 Install a fresh copy as `YSEW_Film_Lab_M7.dctl`; refresh/restart Resolve as needed and add a
 fresh ResolveFX DCTL instance.
+
+Before evaluating the full UI, first load `YSEW_Texture_Probe.dctl`.
+
+**Probe PASS:** the file compiles, the Enabled checkbox appears, and Enabled=1 is a visual
+passthrough. If the probe fails with the same main-function argument error, stop and capture
+that complete dialog.
+
+Then load `YSEW_Film_Lab_M7_A2.dctl`.
 
 **PASS:**
 
