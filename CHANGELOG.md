@@ -13,6 +13,7 @@ Studio inspector layout and host-signature hardening.
 - Added a strict Studio-layout regression test.
 - Updated pointwise UI probes to Blackmagic's documented Transform signature formatting.
 - Bumped the host-test alias to `YSEW_Film_Lab_M7_A3.dctl`.
+- Alpha.3 CI passes 171 tests under both GCC and Clang; deterministic package hash matches across both jobs.
 
 ## 0.7.0-alpha.2 - 2026-09-25
 

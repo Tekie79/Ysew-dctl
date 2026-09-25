@@ -220,3 +220,20 @@ and natural enable/menu anchors rather than dummy header controls.
 
 This is a pre-release UI-order break. Alpha.3 becomes the layout freeze for the comprehensive
 Resolve test.
+
+### Alpha.3 CI result
+
+GitHub Actions run `36094588591` passed on the documentation/layout head. The native suite
+executed **171 tests with GCC** and **171 tests with Clang**, both with `OK`. The deterministic
+release package also matched across both jobs:
+
+```text
+YSEW_Film_Lab_0.7.0-alpha.3.zip
+sha256 03874e98979f592a4295c094a8b1ed4c5b7b4da68a35776e9068b4862dc0ad14
+bytes 45741
+```
+
+The DCTL/layout code freeze for host testing is commit
+`f024f2e2d8a7dc74c08073c307d37d0edaa5696e`. Later documentation-only commits do not alter
+the shader. Resolve Studio 21.1 host compilation remains unverified until the alpha.3 texture
+probe and full DCTL are loaded.
