@@ -21,3 +21,9 @@ does not, the limitation is specific to the texture-transform DCTL path.
 
 Do not continue the full comprehensive test until Input/Output ownership is selectable in the
 main Film Lab UI or an explicit compatibility UI is implemented.
+
+## Resolve 21.1 probe repair
+
+The first probe revision incorrectly treated the color-picker parameter as a `float3` and used
+`.x/.y/.z`. Resolve exposes a picker as `DCTLColorPickerParam`; use its `.r/.g/.b`
+members. Film Lab itself already uses `.r/.g/.b`, so this repair changes only the probe.

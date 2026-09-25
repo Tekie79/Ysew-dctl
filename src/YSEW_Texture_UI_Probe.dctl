@@ -15,8 +15,8 @@ __DEVICE__ float3 transform(int p_Width, int p_Height, int p_X, int p_Y, __TEXTU
     if (test_combo == OPT_A) gain *= 0.8f;
     else if (test_combo == OPT_C) gain *= 1.2f;
     float tint = (float)test_int * 0.01f;
-    c.x = c.x * gain + test_color.x * tint;
-    c.y = c.y * gain + test_color.y * tint;
-    c.z = c.z * gain + test_color.z * tint;
+    c.x = c.x * gain + test_color.r * tint;
+    c.y = c.y * gain + test_color.g * tint;
+    c.z = c.z * gain + test_color.b * tint;
     return c;
 }
