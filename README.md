@@ -2,7 +2,7 @@
 
 Custom DCTL development for the **Yekermo Sew** television series.
 
-**Version:** `0.7.0-alpha.2` | **Development branch:** `develop` | **Milestone:** M7 show consistency and Rec.709 mastering
+**Version:** `0.7.0-alpha.3` | **Development branch:** `develop` | **Milestone:** M7 show consistency and Rec.709 mastering
 
 This is executable source, not a look LUT or a measured film-stock emulator. The develop branch now contains the M1-M7 technical feature set: camera/working-space transforms, balance/CAT02, parametric negative and print response, Yekermo Sew candidate looks, spatial optics, temporal grain/texture, advanced diagnostics, Rec.709 mastering QC, shot-consistency tooling and deterministic packaging. **Comprehensive Resolve/Metal, creative and delivery acceptance is still pending; do not treat this alpha as a production master grade.**
 
@@ -103,5 +103,31 @@ developer documentation explicitly requires the main function definition exactly
 Alpha.2 changes only the entry declaration formatting and related validation; pipeline math is
 unchanged.
 
-Use `dist/YSEW_Film_Lab_M7_A2.dctl` for the next host test. If it still fails, test
+Use `dist/YSEW_Film_Lab_M7_A3.dctl` for the next host test. If it still fails, test
 `dist/YSEW_Texture_Probe.dctl` to isolate host acceptance of the documented texture signature.
+
+## Alpha.3 Studio inspector layout
+
+Alpha.3 establishes the pre-release inspector order before comprehensive host acceptance.
+Resolve DCTL does not expose native group boxes, tabs or collapsible inspector sections, so
+Film Lab groups controls by workflow order and natural section anchors rather than fake
+editable header controls.
+
+```text
+INPUT
+BALANCE / WHITE BALANCE
+NEGATIVE
+SHOW LOOK / SKIN
+PRINT
+OPTICS
+TEXTURE / GRAIN
+VIGNETTE
+DIAGNOSTICS / CALIBRATION / QC
+OUTPUT
+```
+
+`Input` is the first control. The complete Output block is last, with `Output` itself as
+the final control. The Skin and Range color pickers are now placed beside their related controls.
+
+This is an intentional alpha/pre-release control-order change. After alpha.3, the inspector
+order is frozen unless a separate migration/version is created.

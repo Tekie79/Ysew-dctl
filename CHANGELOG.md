@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.7.0-alpha.3 - 2026-09-25
+
+Studio inspector layout and host-signature hardening.
+
+- Reordered all 122 controls into workflow categories.
+- Input is now the first control and Output is the final control.
+- Group order: Balance/WB, Negative, Show Look/Skin, Print, Optics, Texture/Grain, Vignette, Diagnostics/Calibration/QC, Output.
+- Moved Skin Color beside skin controls and Range Color beside diagnostic range controls.
+- Preserved all control IDs, types, defaults and combo enum ordering; only declaration order changed.
+- Updated compatibility tests to resolve controls by stable ID for this intentional pre-release reorder.
+- Added a strict Studio-layout regression test.
+- Updated pointwise UI probes to Blackmagic's documented Transform signature formatting.
+- Bumped the host-test alias to `YSEW_Film_Lab_M7_A3.dctl`.
+
 ## 0.7.0-alpha.2 - 2026-09-25
 
 Resolve-host entry-signature repair.

@@ -202,3 +202,21 @@ Host retest remains required. If the full alpha.2 file fails but the probe passe
 elsewhere in the full shader. If the probe fails with the same argument error, capture the probe
 error because it establishes a Resolve-21.1-specific host discrepancy against the documented
 signature.
+
+## M7 alpha.3 Studio inspector layout
+
+Version `0.7.0-alpha.3` intentionally reorders the inspector before successful host
+acceptance. No image-processing math, control IDs, types, defaults or combo enum ordering are
+changed by the layout work.
+
+The intended sequence is:
+
+`Input -> Balance/WB -> Negative -> Show Look/Skin -> Print -> Optics -> Texture/Grain ->
+Vignette -> Diagnostics/Calibration/QC -> Output`.
+
+Input is first and Output is last. Because Resolve DCTL does not expose native group boxes,
+tabs or collapsible parameter containers, grouping is represented by contiguous control order
+and natural enable/menu anchors rather than dummy header controls.
+
+This is a pre-release UI-order break. Alpha.3 becomes the layout freeze for the comprehensive
+Resolve test.

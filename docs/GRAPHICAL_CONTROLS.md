@@ -60,3 +60,14 @@ Guides modify output pixels when enabled. Disable **Visual Guide** and
 interlock. Do not grade or export an additional output conversion after the
 internal Rec.709 renderer. Future OFX widgets could avoid rendered overlays, but
 that is not the architecture of this build.
+
+## Studio inspector placement
+
+In alpha.3, graphical aids sit beside the category they describe:
+
+- Skin Color / Pick Skin Hue are inside Show Look / Skin.
+- Range Color / Pick Range Hue are inside Diagnostics / Color Range.
+- Visual Guide / Guide Opacity are at the end of Diagnostics immediately before Output.
+
+DCTL does not provide native draggable custom panels or collapsible inspector groups, so these
+remain supported Resolve controls plus rendered viewer guides.

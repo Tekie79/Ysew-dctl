@@ -1,10 +1,10 @@
 # Yekermo Sew Film Lab — Comprehensive M1-M7 Resolve Acceptance Plan
 
-Version under test: `0.7.0-alpha.2`  
+Version under test: `0.7.0-alpha.3`  
 Branch: `develop`  
 DCTL code freeze commit: `86bdd8c4ef0023ee9c4e042919efe68d83ec7165`  
 Plan: record the current documentation-only `develop` HEAD at test start  
-Primary DCTL: `dist/YSEW_Film_Lab_M7_A2.dctl`
+Primary DCTL: `dist/YSEW_Film_Lab_M7_A3.dctl`
 
 This is the formal end-of-development acceptance plan for milestones M1-M7. It replaces the
 earlier incremental smoke tests. CPU/GCC/Clang validation has already passed; this plan tests the
@@ -235,6 +235,9 @@ Then load `YSEW_Film_Lab_M7_A2.dctl`.
 **PASS:**
 
 - no DCTL compiler/build error;
+- Input is the first Film Lab control;
+- Output is the final Film Lab control;
+- controls appear in the documented Studio workflow order;
 - all combo boxes, checkboxes, float/int sliders and both color pickers are visible;
 - labels are concise and not surrounded by literal quotes;
 - Input, Output, Diagnostics, Show Look, Film Model, Optics, Texture, Diag Gamut and M7 QC
