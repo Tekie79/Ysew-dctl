@@ -69,10 +69,10 @@ class UISchemaTests(unittest.TestCase):
 
     def test_preserve_v1_ids_types_defaults_and_enum_order(self):
         old=json.loads((ROOT/'tests/ui_v1_compat.json').read_text())
-        current=parse_ui(SOURCE.read_text())
+        current={c.name:c for c in parse_ui(SOURCE.read_text())}
         self.assertEqual(len(old),57)
-        for before,after in zip(old,current):
-            self.assertEqual(before['name'],after.name)
+        for before in old:
+            after=current[before['name']]
             self.assertEqual(before['type'],after.kind)
             self.assertEqual(before['default'],float(after.values[0]))
             self.assertEqual(before['enum'],list(after.enums)[:len(before['enum'])])

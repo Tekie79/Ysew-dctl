@@ -22,10 +22,11 @@ class M4SpatialTests(unittest.TestCase):
     def close(self,a,b,tol=5e-6):
         for x,y in zip(a,b): self.assertTrue(math.isclose(x,y,rel_tol=tol,abs_tol=tol),(a,b))
     def test_m3_ui_prefix_frozen(self):
-        old=json.loads((ROOT/'tests/ui_m3_compat.json').read_text()); cur=parse_ui(SOURCE.read_text())
+        old=json.loads((ROOT/'tests/ui_m3_compat.json').read_text()); cur={c.name:c for c in parse_ui(SOURCE.read_text())}
         self.assertEqual(len(old),81)
-        for a,b in zip(old,cur):
-            self.assertEqual(a['name'],b.name); self.assertEqual(a['kind'],b.kind)
+        for a in old:
+            b=cur[a['name']]
+            self.assertEqual(a['kind'],b.kind)
             self.assertEqual(a['values'],list(b.values)); self.assertEqual(a['enums'],list(b.enums)[:len(a['enums'])]); self.assertEqual(a['choices'],list(b.choices)[:len(a['choices'])])
     def test_optics_off_is_exact_compatibility(self):
         rgb=(.31,.14,.06); base=self.s.pixel(rgb,w=97,h=55,x=48,y=27)

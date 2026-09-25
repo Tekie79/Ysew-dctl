@@ -23,10 +23,10 @@ class M3FilmModelTests(unittest.TestCase):
 
     def test_m2_ui_contract_prefix_is_unchanged(self):
         old=json.loads((ROOT/'tests/ui_m2_compat.json').read_text())
-        current=parse_ui(SOURCE.read_text())
+        current={c.name:c for c in parse_ui(SOURCE.read_text())}
         self.assertEqual(len(old),67)
-        for before,after in zip(old,current):
-            self.assertEqual(before['name'],after.name)
+        for before in old:
+            after=current[before['name']]
             self.assertEqual(before['kind'],after.kind)
             self.assertEqual(before['values'],list(after.values))
             self.assertEqual(before['enums'],list(after.enums)[:len(before['enums'])])

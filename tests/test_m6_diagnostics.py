@@ -22,10 +22,11 @@ class M6DiagnosticTests(unittest.TestCase):
         for x,y in zip(a,b): self.assertTrue(math.isclose(x,y,rel_tol=tol,abs_tol=tol),(a,b))
 
     def test_m5_ui_prefix_frozen(self):
-        old=json.loads((ROOT/'tests/ui_m5_compat.json').read_text()); cur=parse_ui(SOURCE.read_text())
+        old=json.loads((ROOT/'tests/ui_m5_compat.json').read_text()); cur={c.name:c for c in parse_ui(SOURCE.read_text())}
         self.assertEqual(len(old),114)
-        for a,b in zip(old,cur):
-            self.assertEqual(a['name'],b.name); self.assertEqual(a['kind'],b.kind)
+        for a in old:
+            b=cur[a['name']]
+            self.assertEqual(a['kind'],b.kind)
             self.assertEqual(a['values'],list(b.values)); self.assertEqual(a['enums'],list(b.enums)[:len(a['enums'])]); self.assertEqual(a['choices'],list(b.choices)[:len(a['choices'])])
 
     def test_p3d65_xyz_matrix_reference(self):

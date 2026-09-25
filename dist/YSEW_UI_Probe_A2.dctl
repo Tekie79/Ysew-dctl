@@ -4,7 +4,7 @@ DEFINE_UI_PARAMS(probe_steps, Steps, DCTLUI_SLIDER_INT, 6, 2, 16, 1)
 DEFINE_UI_PARAMS(probe_view, View, DCTLUI_COMBO_BOX, 0, {P_INPUT, P_GRAY, P_STEPS}, {Input, Gray, Steps})
 DEFINE_UI_PARAMS(probe_on, Enabled, DCTLUI_CHECK_BOX, 1)
 
-__DEVICE__ float3 transform(int p_Width,int p_Height,int p_X,int p_Y,float p_R,float p_G,float p_B) {
+__DEVICE__ float3 transform(int p_Width, int p_Height, int p_X, int p_Y, float p_R, float p_G, float p_B) {
     if (p_Width <= 0 || p_Height <= 0 || p_X < 0 || p_Y < 0 || !probe_on) return make_float3(p_R,p_G,p_B);
     if (probe_view == 1) return make_float3(0.18f*probe_gain,0.18f*probe_gain,0.18f*probe_gain);
     if (probe_view == 2) {

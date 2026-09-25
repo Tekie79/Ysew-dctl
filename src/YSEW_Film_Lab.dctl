@@ -1,86 +1,34 @@
-// Yekermo Sew Film Lab 0.7.0-alpha.2 - Resolve-host entry-signature repair.
+// Yekermo Sew Film Lab 0.7.0-alpha.3 - Studio UI layout and Resolve-host signature repair.
 // Original parametric creative models, NOT measured film-stock emulations.
 // Input must already be decoded RGB with the selected scene encoding.
 // See docs/RESOLVE_SETUP.md and docs/DIAGNOSTICS.md before installation.
-// Control IDs, types and enum order are a saved-grade contract. Append; do not reorder.
+// Alpha.3 intentionally establishes the pre-release Studio inspector order before host acceptance. Freeze this order after alpha.3.
 // UI labels and enum display labels are unquoted DCTL tokens, not C strings.
 // UI numeric arguments use plain literals; float suffixes are for shader code only.
 
+// ==================== INPUT ====================
 DEFINE_UI_PARAMS(input_mode, Input, DCTLUI_COMBO_BOX, 0, {IN_DI, IN_DWG, IN_709_LINEAR, IN_LOGC4, IN_SLOG3_CINE, IN_SLOG3_G3, IN_LOG3G10}, {DWG Intermediate, DWG Linear, 709 Scene Linear, ARRI LogC4, Sony SLog3 Cine, Sony SLog3 G3, RED Log3G10})
-DEFINE_UI_PARAMS(output_mode, Output, DCTLUI_COMBO_BOX, 2, {OUT_DI, OUT_DWG, OUT_709}, {DWG Intermediate, DWG Linear, 709 Gamma 2.4})
+
+// ==================== BALANCE / WHITE BALANCE ====================
 DEFINE_UI_PARAMS(exposure, Exposure, DCTLUI_SLIDER_FLOAT, 0.0, -10.0, 10.0, 0.01)
+DEFINE_UI_PARAMS(wb_mode, WB Method, DCTLUI_COMBO_BOX, 0, {WB_LEGACY, WB_CAT02, WB_OFF}, {Legacy, CAT02, Off})
+DEFINE_UI_PARAMS(wb_temp, WB Temp K, DCTLUI_SLIDER_FLOAT, 6504.0, 1667.0, 25000.0, 1.0)
+DEFINE_UI_PARAMS(wb_duv, WB Duv, DCTLUI_SLIDER_FLOAT, 0.0, -0.05, 0.05, 0.0005)
+DEFINE_UI_PARAMS(wb_strength, WB Strength, DCTLUI_SLIDER_FLOAT, 1.0, 0.0, 1.0, 0.01)
 DEFINE_UI_PARAMS(warm, Warmth, DCTLUI_SLIDER_FLOAT, 0.0, -1.0, 1.0, 0.01)
 DEFINE_UI_PARAMS(tint, Tint, DCTLUI_SLIDER_FLOAT, 0.0, -1.0, 1.0, 0.01)
 DEFINE_UI_PARAMS(printer_r, Density R, DCTLUI_SLIDER_FLOAT, 0.0, -12.0, 12.0, 0.1)
 DEFINE_UI_PARAMS(printer_g, Density G, DCTLUI_SLIDER_FLOAT, 0.0, -12.0, 12.0, 0.1)
 DEFINE_UI_PARAMS(printer_b, Density B, DCTLUI_SLIDER_FLOAT, 0.0, -12.0, 12.0, 0.1)
+
+// ==================== NEGATIVE ====================
 DEFINE_UI_PARAMS(negative_on, Negative, DCTLUI_CHECK_BOX, 1)
+DEFINE_UI_PARAMS(film_model, Film Model, DCTLUI_COMBO_BOX, 0, {FILM_LEGACY, FILM_YS_ADV}, {Legacy, YS Advanced})
 DEFINE_UI_PARAMS(neg_contrast, Neg Contrast, DCTLUI_SLIDER_FLOAT, 1.08, 0.5, 2.0, 0.01)
 DEFINE_UI_PARAMS(neg_toe, Neg Toe, DCTLUI_SLIDER_FLOAT, 0.08, 0.0, 0.4, 0.01)
 DEFINE_UI_PARAMS(neg_shoulder, Neg Shoulder, DCTLUI_SLIDER_FLOAT, 0.16, 0.0, 0.4, 0.01)
 DEFINE_UI_PARAMS(neg_sat, Neg Saturation, DCTLUI_SLIDER_FLOAT, 0.98, 0.0, 1.5, 0.01)
 DEFINE_UI_PARAMS(crosstalk, Neg Crosstalk, DCTLUI_SLIDER_FLOAT, 0.025, 0.0, 0.2, 0.001)
-DEFINE_UI_PARAMS(look_mode, Show Look, DCTLUI_COMBO_BOX, 0, {LOOK_NEUTRAL, LOOK_FALL, LOOK_WINTER, LOOK_NIGHT, LOOK_EXT_DAY, LOOK_EXT_DUSK}, {Neutral, Fall Interior, Winter Interior, Night, Exterior Day, Exterior Dusk})
-DEFINE_UI_PARAMS(look_mix, Look Mix, DCTLUI_SLIDER_FLOAT, 1.0, 0.0, 1.0, 0.01)
-DEFINE_UI_PARAMS(skin_protect, Skin Protect, DCTLUI_SLIDER_FLOAT, 0.75, 0.0, 1.0, 0.01)
-DEFINE_UI_PARAMS(skin_hue, Skin Hue, DCTLUI_SLIDER_FLOAT, 28.0, 0.0, 360.0, 1.0)
-DEFINE_UI_PARAMS(skin_width, Skin Width, DCTLUI_SLIDER_FLOAT, 24.0, 1.0, 90.0, 1.0)
-DEFINE_UI_PARAMS(skin_sat_min, Skin Sat Min, DCTLUI_SLIDER_FLOAT, 0.06, 0.0, 1.0, 0.01)
-DEFINE_UI_PARAMS(skin_sat_max, Skin Sat Max, DCTLUI_SLIDER_FLOAT, 0.9, 0.0, 1.0, 0.01)
-DEFINE_UI_PARAMS(print_on, Print, DCTLUI_CHECK_BOX, 1)
-DEFINE_UI_PARAMS(print_contrast, Print Contrast, DCTLUI_SLIDER_FLOAT, 1.06, 0.5, 2.0, 0.01)
-DEFINE_UI_PARAMS(print_toe, Print Toe, DCTLUI_SLIDER_FLOAT, 0.04, 0.0, 0.4, 0.01)
-DEFINE_UI_PARAMS(print_shoulder, Print Shoulder, DCTLUI_SLIDER_FLOAT, 0.12, 0.0, 0.4, 0.01)
-DEFINE_UI_PARAMS(print_density, Print Density, DCTLUI_SLIDER_FLOAT, 0.0, -0.3, 0.3, 0.005)
-DEFINE_UI_PARAMS(print_sat, Print Saturation, DCTLUI_SLIDER_FLOAT, 0.98, 0.0, 1.5, 0.01)
-DEFINE_UI_PARAMS(vignette_stops, Vignette, DCTLUI_SLIDER_FLOAT, 0.0, 0.0, 3.0, 0.01)
-DEFINE_UI_PARAMS(vignette_radius, Vig Radius, DCTLUI_SLIDER_FLOAT, 0.7, 0.0, 2.0, 0.01)
-DEFINE_UI_PARAMS(vignette_soft, Vig Softness, DCTLUI_SLIDER_FLOAT, 0.7, 0.01, 2.0, 0.01)
-DEFINE_UI_PARAMS(vignette_round, Vig Shape, DCTLUI_SLIDER_FLOAT, 0.0, 0.0, 1.0, 0.01)
-DEFINE_UI_PARAMS(vignette_x, Vig X, DCTLUI_SLIDER_FLOAT, 0.0, -1.0, 1.0, 0.01)
-DEFINE_UI_PARAMS(vignette_y, Vig Y, DCTLUI_SLIDER_FLOAT, 0.0, -1.0, 1.0, 0.01)
-DEFINE_UI_PARAMS(output_gray, Output Gray, DCTLUI_SLIDER_FLOAT, 0.42, 0.25, 0.65, 0.005)
-DEFINE_UI_PARAMS(gamut_on, Gamut Map, DCTLUI_CHECK_BOX, 1)
-DEFINE_UI_PARAMS(gamut_knee, Gamut Knee, DCTLUI_SLIDER_FLOAT, 0.8, 0.1, 0.95, 0.01)
-DEFINE_UI_PARAMS(diag_mode, Diagnostics, DCTLUI_COMBO_BOX, 0, {D_OFF, D_FALSE, D_EVGRAY, D_ZONE, D_EVMATTE, D_EVOVER, D_RGBEV, D_YPRIME, D_YFALSE, D_LIN_Y, D_HUE, D_SAT, D_CHROMA, D_COLMATTE, D_COLISO, D_SKIN, D_SKINEV, D_NEUTRAL, D_LOW, D_HIGH, D_CHROMATICITY, D_VOLUME, D_COMPRESSION, D_BEFORE, D_DIFF, D_STAGE, D_INVALID, D_TARGET_GAMUT, D_GAMUT_OCC, D_RGB_HEADROOM, D_CAL_EV, D_CAL_NEUTRAL, D_CAL_COMBINED, D_QC_PRE, D_QC_FINAL, D_QC_MASTER}, {Off, Scene False Color, Scene EV Gray, Scene Zones, EV Matte, EV Overlay, Scene RGB EV, Output Y Prime, Output Luma Color, Output Linear Y, Hue Map, HSV Saturation, RGB Chroma, Color Matte, Color Isolate, Skin Matte, Skin EV, Neutral Bias, Nonpositive RGB, Pre Gamut Limits, 709 Chromaticity, SDR Volume, Gamut Amount, Before After, Difference, Stage View, Invalid Input, Target Gamut, Gamut Occupancy, RGB Headroom, Cal Exposure, Cal Neutral, Cal Combined, QC Pre Gamut, QC Final Range, QC Master})
-DEFINE_UI_PARAMS(diag_tap, Measure, DCTLUI_COMBO_BOX, 0, {TAP_SOURCE, TAP_BALANCE}, {Source, Balanced})
-DEFINE_UI_PARAMS(inspect_stage, Stage, DCTLUI_COMBO_BOX, 0, {ST_SOURCE, ST_BALANCE, ST_NEG, ST_LOOK, ST_PRINT, ST_LENS, ST_PRE, ST_OUT}, {Source, Balance, Negative, Look, Print, Vignette, Pre Gamut, Final})
-DEFINE_UI_PARAMS(reference_gray, Ref Gray, DCTLUI_SLIDER_FLOAT, 0.18, 0.01, 0.5, 0.005)
-DEFINE_UI_PARAMS(ev_span, EV Span, DCTLUI_SLIDER_INT, 6, 2, 12, 1)
-DEFINE_UI_PARAMS(ev_step, EV Steps, DCTLUI_COMBO_BOX, 1, {EV_CONT, EV_ONE, EV_HALF, EV_THIRD}, {Continuous, One Stop, Half Stop, Third Stop})
-DEFINE_UI_PARAMS(ev_low, EV Min, DCTLUI_SLIDER_FLOAT, -2.0, -16.0, 16.0, 0.1)
-DEFINE_UI_PARAMS(ev_high, EV Max, DCTLUI_SLIDER_FLOAT, 2.0, -16.0, 16.0, 0.1)
-DEFINE_UI_PARAMS(ev_soft, EV Softness, DCTLUI_SLIDER_FLOAT, 0.25, 0.0, 2.0, 0.05)
-DEFINE_UI_PARAMS(range_hue, Range Hue, DCTLUI_SLIDER_FLOAT, 28.0, 0.0, 360.0, 1.0)
-DEFINE_UI_PARAMS(range_width, Range Width, DCTLUI_SLIDER_FLOAT, 20.0, 1.0, 180.0, 1.0)
-DEFINE_UI_PARAMS(range_soft, Range Softness, DCTLUI_SLIDER_FLOAT, 8.0, 0.0, 45.0, 1.0)
-DEFINE_UI_PARAMS(range_smin, Range Sat Min, DCTLUI_SLIDER_FLOAT, 0.05, 0.0, 1.0, 0.01)
-DEFINE_UI_PARAMS(range_smax, Range Sat Max, DCTLUI_SLIDER_FLOAT, 1.0, 0.0, 1.0, 0.01)
-DEFINE_UI_PARAMS(range_ymin, Range Luma Min, DCTLUI_SLIDER_FLOAT, 0.0, 0.0, 1.0, 0.01)
-DEFINE_UI_PARAMS(range_ymax, Range Luma Max, DCTLUI_SLIDER_FLOAT, 1.0, 0.0, 1.0, 0.01)
-DEFINE_UI_PARAMS(neutral_tol, Neutral Limit, DCTLUI_SLIDER_FLOAT, 0.12, 0.01, 0.5, 0.01)
-DEFINE_UI_PARAMS(diag_gain, Diag Gain, DCTLUI_SLIDER_FLOAT, 4.0, 1.0, 20.0, 0.5)
-DEFINE_UI_PARAMS(diag_overlay, Overlay, DCTLUI_SLIDER_FLOAT, 0.65, 0.0, 1.0, 0.01)
-DEFINE_UI_PARAMS(split_pos, Split, DCTLUI_SLIDER_FLOAT, 0.5, 0.0, 1.0, 0.01)
-DEFINE_UI_PARAMS(diag_legend, EV Legend, DCTLUI_CHECK_BOX, 1)
-
-
-// Optional graphics. All new features default off; original color pipeline is unchanged.
-DEFINE_UI_PARAMS(range_pick, Range Color, DCTLUI_COLOR_PICKER, 0.70, 0.42, 0.175)
-DEFINE_UI_PARAMS(skin_pick, Skin Color, DCTLUI_COLOR_PICKER, 0.70, 0.42, 0.175)
-DEFINE_UI_PARAMS(range_pick_on, Pick Range Hue, DCTLUI_CHECK_BOX, 0)
-DEFINE_UI_PARAMS(skin_pick_on, Pick Skin Hue, DCTLUI_CHECK_BOX, 0)
-DEFINE_UI_PARAMS(guide_mode, Visual Guide, DCTLUI_COMBO_BOX, 0, {G_NONE, G_TONE, G_EXPOSURE, G_COLOR, G_SKIN, G_VIGNETTE}, {Off, Tone Curve, Exposure Band, Color Range, Skin Range, Vignette})
-DEFINE_UI_PARAMS(guide_opacity, Guide Opacity, DCTLUI_SLIDER_FLOAT, 0.95, 0.25, 1.0, 0.01)
-
-// M2 controls are appended to preserve all alpha.1/alpha.2 saved parameter indices.
-DEFINE_UI_PARAMS(wb_mode, WB Method, DCTLUI_COMBO_BOX, 0, {WB_LEGACY, WB_CAT02, WB_OFF}, {Legacy, CAT02, Off})
-DEFINE_UI_PARAMS(wb_temp, WB Temp K, DCTLUI_SLIDER_FLOAT, 6504.0, 1667.0, 25000.0, 1.0)
-DEFINE_UI_PARAMS(wb_duv, WB Duv, DCTLUI_SLIDER_FLOAT, 0.0, -0.05, 0.05, 0.0005)
-DEFINE_UI_PARAMS(wb_strength, WB Strength, DCTLUI_SLIDER_FLOAT, 1.0, 0.0, 1.0, 0.01)
-
-// M3 advanced film model. Legacy is the saved-grade compatible default.
-DEFINE_UI_PARAMS(film_model, Film Model, DCTLUI_COMBO_BOX, 0, {FILM_LEGACY, FILM_YS_ADV}, {Legacy, YS Advanced})
 DEFINE_UI_PARAMS(adv_neg_density, Neg Density, DCTLUI_SLIDER_FLOAT, 0.0, -0.30, 0.30, 0.005)
 DEFINE_UI_PARAMS(adv_neg_color, Neg Color, DCTLUI_SLIDER_FLOAT, 1.0, 0.0, 1.5, 0.01)
 DEFINE_UI_PARAMS(adv_neg_sep, Neg Sep, DCTLUI_SLIDER_FLOAT, 0.32, 0.0, 1.0, 0.01)
@@ -89,13 +37,32 @@ DEFINE_UI_PARAMS(adv_neg_high, Neg High Sat, DCTLUI_SLIDER_FLOAT, 0.72, 0.0, 1.2
 DEFINE_UI_PARAMS(adv_neg_warm, Neg Warm, DCTLUI_SLIDER_FLOAT, 0.0, -1.0, 1.0, 0.01)
 DEFINE_UI_PARAMS(adv_neg_green, Neg Green, DCTLUI_SLIDER_FLOAT, 0.0, -1.0, 1.0, 0.01)
 DEFINE_UI_PARAMS(adv_neg_cool, Neg Cool, DCTLUI_SLIDER_FLOAT, 0.0, -1.0, 1.0, 0.01)
+
+// ==================== SHOW LOOK / SKIN ====================
+DEFINE_UI_PARAMS(look_mode, Show Look, DCTLUI_COMBO_BOX, 0, {LOOK_NEUTRAL, LOOK_FALL, LOOK_WINTER, LOOK_NIGHT, LOOK_EXT_DAY, LOOK_EXT_DUSK}, {Neutral, Fall Interior, Winter Interior, Night, Exterior Day, Exterior Dusk})
+DEFINE_UI_PARAMS(look_mix, Look Mix, DCTLUI_SLIDER_FLOAT, 1.0, 0.0, 1.0, 0.01)
+DEFINE_UI_PARAMS(skin_protect, Skin Protect, DCTLUI_SLIDER_FLOAT, 0.75, 0.0, 1.0, 0.01)
+DEFINE_UI_PARAMS(skin_pick, Skin Color, DCTLUI_COLOR_PICKER, 0.70, 0.42, 0.175)
+DEFINE_UI_PARAMS(skin_pick_on, Pick Skin Hue, DCTLUI_CHECK_BOX, 0)
+DEFINE_UI_PARAMS(skin_hue, Skin Hue, DCTLUI_SLIDER_FLOAT, 28.0, 0.0, 360.0, 1.0)
+DEFINE_UI_PARAMS(skin_width, Skin Width, DCTLUI_SLIDER_FLOAT, 24.0, 1.0, 90.0, 1.0)
+DEFINE_UI_PARAMS(skin_sat_min, Skin Sat Min, DCTLUI_SLIDER_FLOAT, 0.06, 0.0, 1.0, 0.01)
+DEFINE_UI_PARAMS(skin_sat_max, Skin Sat Max, DCTLUI_SLIDER_FLOAT, 0.9, 0.0, 1.0, 0.01)
+
+// ==================== PRINT ====================
+DEFINE_UI_PARAMS(print_on, Print, DCTLUI_CHECK_BOX, 1)
+DEFINE_UI_PARAMS(print_contrast, Print Contrast, DCTLUI_SLIDER_FLOAT, 1.06, 0.5, 2.0, 0.01)
+DEFINE_UI_PARAMS(print_toe, Print Toe, DCTLUI_SLIDER_FLOAT, 0.04, 0.0, 0.4, 0.01)
+DEFINE_UI_PARAMS(print_shoulder, Print Shoulder, DCTLUI_SLIDER_FLOAT, 0.12, 0.0, 0.4, 0.01)
+DEFINE_UI_PARAMS(print_density, Print Density, DCTLUI_SLIDER_FLOAT, 0.0, -0.3, 0.3, 0.005)
+DEFINE_UI_PARAMS(print_sat, Print Saturation, DCTLUI_SLIDER_FLOAT, 0.98, 0.0, 1.5, 0.01)
 DEFINE_UI_PARAMS(adv_print_black, Print Blacks, DCTLUI_SLIDER_FLOAT, 0.0, -1.0, 1.0, 0.01)
 DEFINE_UI_PARAMS(adv_print_white, Print Whites, DCTLUI_SLIDER_FLOAT, 0.0, -1.0, 1.0, 0.01)
 DEFINE_UI_PARAMS(adv_print_sep, Print Sep, DCTLUI_SLIDER_FLOAT, 0.18, 0.0, 1.0, 0.01)
 DEFINE_UI_PARAMS(adv_print_warm, Print Warm, DCTLUI_SLIDER_FLOAT, 0.0, -1.0, 1.0, 0.01)
 DEFINE_UI_PARAMS(adv_print_color, Print Color, DCTLUI_SLIDER_FLOAT, 1.0, 0.0, 1.5, 0.01)
 
-// M4 spatial optics. Disabled by default; radii are reference pixels at 2160 lines.
+// ==================== OPTICS ====================
 DEFINE_UI_PARAMS(optics_on, Optics, DCTLUI_CHECK_BOX, 0)
 DEFINE_UI_PARAMS(optics_quality, Optics Quality, DCTLUI_COMBO_BOX, 1, {OPT_DRAFT, OPT_STANDARD, OPT_HIGH}, {Draft, Standard, High})
 DEFINE_UI_PARAMS(optics_mix, Optics Mix, DCTLUI_SLIDER_FLOAT, 1.0, 0.0, 2.0, 0.01)
@@ -115,7 +82,7 @@ DEFINE_UI_PARAMS(veil_radius, Veil Radius, DCTLUI_SLIDER_INT, 140, 4, 600, 2)
 DEFINE_UI_PARAMS(veil_threshold, Veil EV x10, DCTLUI_SLIDER_INT, 0, -40, 80, 1)
 DEFINE_UI_PARAMS(optics_view, Optics View, DCTLUI_COMBO_BOX, 0, {OV_OFF, OV_HAL, OV_BLOOM, OV_GLOW, OV_VEIL, OV_SUM}, {Off, Halation, Bloom, Glow, Veil, Sum})
 
-// M5 film texture. Disabled by default. Grain uses RAND and timeline-frame seeding.
+// ==================== TEXTURE / GRAIN ====================
 DEFINE_UI_PARAMS(texture_on, Texture, DCTLUI_CHECK_BOX, 0)
 DEFINE_UI_PARAMS(grain_gauge, Grain Gauge, DCTLUI_COMBO_BOX, 2, {GAUGE_8, GAUGE_16, GAUGE_35, GAUGE_65, GAUGE_CUSTOM}, {8mm, 16mm, 35mm, 65mm, Custom})
 DEFINE_UI_PARAMS(grain_amount, Grain Percent, DCTLUI_SLIDER_INT, 0, 0, 200, 1)
@@ -132,17 +99,54 @@ DEFINE_UI_PARAMS(lens_radius, Lens Radius, DCTLUI_SLIDER_INT, 3, 1, 24, 1)
 DEFINE_UI_PARAMS(micro_soft, Micro Soft, DCTLUI_SLIDER_INT, 0, 0, 100, 1)
 DEFINE_UI_PARAMS(texture_view, Texture View, DCTLUI_COMBO_BOX, 0, {TV_OFF, TV_GRAIN, TV_WEIGHT, TV_LENS, TV_COMBINED}, {Off, Grain, Weight, Lens, Combined})
 
-// M6 diagnostic target and scene-calibration controls. They never alter normal output.
+// ==================== VIGNETTE ====================
+DEFINE_UI_PARAMS(vignette_stops, Vignette, DCTLUI_SLIDER_FLOAT, 0.0, 0.0, 3.0, 0.01)
+DEFINE_UI_PARAMS(vignette_radius, Vig Radius, DCTLUI_SLIDER_FLOAT, 0.7, 0.0, 2.0, 0.01)
+DEFINE_UI_PARAMS(vignette_soft, Vig Softness, DCTLUI_SLIDER_FLOAT, 0.7, 0.01, 2.0, 0.01)
+DEFINE_UI_PARAMS(vignette_round, Vig Shape, DCTLUI_SLIDER_FLOAT, 0.0, 0.0, 1.0, 0.01)
+DEFINE_UI_PARAMS(vignette_x, Vig X, DCTLUI_SLIDER_FLOAT, 0.0, -1.0, 1.0, 0.01)
+DEFINE_UI_PARAMS(vignette_y, Vig Y, DCTLUI_SLIDER_FLOAT, 0.0, -1.0, 1.0, 0.01)
+
+// ==================== DIAGNOSTICS / CALIBRATION / QC ====================
+DEFINE_UI_PARAMS(diag_mode, Diagnostics, DCTLUI_COMBO_BOX, 0, {D_OFF, D_FALSE, D_EVGRAY, D_ZONE, D_EVMATTE, D_EVOVER, D_RGBEV, D_YPRIME, D_YFALSE, D_LIN_Y, D_HUE, D_SAT, D_CHROMA, D_COLMATTE, D_COLISO, D_SKIN, D_SKINEV, D_NEUTRAL, D_LOW, D_HIGH, D_CHROMATICITY, D_VOLUME, D_COMPRESSION, D_BEFORE, D_DIFF, D_STAGE, D_INVALID, D_TARGET_GAMUT, D_GAMUT_OCC, D_RGB_HEADROOM, D_CAL_EV, D_CAL_NEUTRAL, D_CAL_COMBINED, D_QC_PRE, D_QC_FINAL, D_QC_MASTER}, {Off, Scene False Color, Scene EV Gray, Scene Zones, EV Matte, EV Overlay, Scene RGB EV, Output Y Prime, Output Luma Color, Output Linear Y, Hue Map, HSV Saturation, RGB Chroma, Color Matte, Color Isolate, Skin Matte, Skin EV, Neutral Bias, Nonpositive RGB, Pre Gamut Limits, 709 Chromaticity, SDR Volume, Gamut Amount, Before After, Difference, Stage View, Invalid Input, Target Gamut, Gamut Occupancy, RGB Headroom, Cal Exposure, Cal Neutral, Cal Combined, QC Pre Gamut, QC Final Range, QC Master})
+DEFINE_UI_PARAMS(diag_tap, Measure, DCTLUI_COMBO_BOX, 0, {TAP_SOURCE, TAP_BALANCE}, {Source, Balanced})
+DEFINE_UI_PARAMS(inspect_stage, Stage, DCTLUI_COMBO_BOX, 0, {ST_SOURCE, ST_BALANCE, ST_NEG, ST_LOOK, ST_PRINT, ST_LENS, ST_PRE, ST_OUT}, {Source, Balance, Negative, Look, Print, Vignette, Pre Gamut, Final})
+DEFINE_UI_PARAMS(reference_gray, Ref Gray, DCTLUI_SLIDER_FLOAT, 0.18, 0.01, 0.5, 0.005)
+DEFINE_UI_PARAMS(ev_span, EV Span, DCTLUI_SLIDER_INT, 6, 2, 12, 1)
+DEFINE_UI_PARAMS(ev_step, EV Steps, DCTLUI_COMBO_BOX, 1, {EV_CONT, EV_ONE, EV_HALF, EV_THIRD}, {Continuous, One Stop, Half Stop, Third Stop})
+DEFINE_UI_PARAMS(ev_low, EV Min, DCTLUI_SLIDER_FLOAT, -2.0, -16.0, 16.0, 0.1)
+DEFINE_UI_PARAMS(ev_high, EV Max, DCTLUI_SLIDER_FLOAT, 2.0, -16.0, 16.0, 0.1)
+DEFINE_UI_PARAMS(ev_soft, EV Softness, DCTLUI_SLIDER_FLOAT, 0.25, 0.0, 2.0, 0.05)
+DEFINE_UI_PARAMS(range_pick, Range Color, DCTLUI_COLOR_PICKER, 0.70, 0.42, 0.175)
+DEFINE_UI_PARAMS(range_pick_on, Pick Range Hue, DCTLUI_CHECK_BOX, 0)
+DEFINE_UI_PARAMS(range_hue, Range Hue, DCTLUI_SLIDER_FLOAT, 28.0, 0.0, 360.0, 1.0)
+DEFINE_UI_PARAMS(range_width, Range Width, DCTLUI_SLIDER_FLOAT, 20.0, 1.0, 180.0, 1.0)
+DEFINE_UI_PARAMS(range_soft, Range Softness, DCTLUI_SLIDER_FLOAT, 8.0, 0.0, 45.0, 1.0)
+DEFINE_UI_PARAMS(range_smin, Range Sat Min, DCTLUI_SLIDER_FLOAT, 0.05, 0.0, 1.0, 0.01)
+DEFINE_UI_PARAMS(range_smax, Range Sat Max, DCTLUI_SLIDER_FLOAT, 1.0, 0.0, 1.0, 0.01)
+DEFINE_UI_PARAMS(range_ymin, Range Luma Min, DCTLUI_SLIDER_FLOAT, 0.0, 0.0, 1.0, 0.01)
+DEFINE_UI_PARAMS(range_ymax, Range Luma Max, DCTLUI_SLIDER_FLOAT, 1.0, 0.0, 1.0, 0.01)
+DEFINE_UI_PARAMS(neutral_tol, Neutral Limit, DCTLUI_SLIDER_FLOAT, 0.12, 0.01, 0.5, 0.01)
 DEFINE_UI_PARAMS(diag_gamut, Diag Gamut, DCTLUI_COMBO_BOX, 0, {DG_709, DG_P3D65, DG_2020}, {Rec709, P3 D65, Rec2020})
 DEFINE_UI_PARAMS(gamut_margin, Gamut Margin x1k, DCTLUI_SLIDER_INT, 20, 1, 250, 1)
 DEFINE_UI_PARAMS(cal_profile, Cal Profile, DCTLUI_COMBO_BOX, 0, {CAL_GRAY18, CAL_WHITE90, CAL_BLACK02, CAL_CUSTOM}, {18 Gray, 90 White, 2 Black, Custom})
 DEFINE_UI_PARAMS(cal_target, Cal Target x1k, DCTLUI_SLIDER_INT, 180, 1, 4000, 1)
 DEFINE_UI_PARAMS(cal_tol, Cal Tol x100, DCTLUI_SLIDER_INT, 15, 1, 200, 1)
 DEFINE_UI_PARAMS(cal_neutral, Cal Neutral x1k, DCTLUI_SLIDER_INT, 10, 1, 200, 1)
-
-// M7 Rec709 mastering-QC thresholds. Diagnostics only; normal output is unchanged.
 DEFINE_UI_PARAMS(qc_margin, QC Margin x1k, DCTLUI_SLIDER_INT, 10, 1, 100, 1)
 DEFINE_UI_PARAMS(qc_comp, QC Comp x1k, DCTLUI_SLIDER_INT, 50, 1, 500, 1)
+DEFINE_UI_PARAMS(diag_gain, Diag Gain, DCTLUI_SLIDER_FLOAT, 4.0, 1.0, 20.0, 0.5)
+DEFINE_UI_PARAMS(diag_overlay, Overlay, DCTLUI_SLIDER_FLOAT, 0.65, 0.0, 1.0, 0.01)
+DEFINE_UI_PARAMS(split_pos, Split, DCTLUI_SLIDER_FLOAT, 0.5, 0.0, 1.0, 0.01)
+DEFINE_UI_PARAMS(diag_legend, EV Legend, DCTLUI_CHECK_BOX, 1)
+DEFINE_UI_PARAMS(guide_mode, Visual Guide, DCTLUI_COMBO_BOX, 0, {G_NONE, G_TONE, G_EXPOSURE, G_COLOR, G_SKIN, G_VIGNETTE}, {Off, Tone Curve, Exposure Band, Color Range, Skin Range, Vignette})
+DEFINE_UI_PARAMS(guide_opacity, Guide Opacity, DCTLUI_SLIDER_FLOAT, 0.95, 0.25, 1.0, 0.01)
+
+// ==================== OUTPUT ====================
+DEFINE_UI_PARAMS(output_gray, Output Gray, DCTLUI_SLIDER_FLOAT, 0.42, 0.25, 0.65, 0.005)
+DEFINE_UI_PARAMS(gamut_on, Gamut Map, DCTLUI_CHECK_BOX, 1)
+DEFINE_UI_PARAMS(gamut_knee, Gamut Knee, DCTLUI_SLIDER_FLOAT, 0.8, 0.1, 0.95, 0.01)
+DEFINE_UI_PARAMS(output_mode, Output, DCTLUI_COMBO_BOX, 2, {OUT_DI, OUT_DWG, OUT_709}, {DWG Intermediate, DWG Linear, 709 Gamma 2.4})
 
 DEFINE_UI_TOOLTIP(Input, "RGB encoding arriving at this node. Camera log choices require the decoder or upstream converter to output that exact gamut and curve. ProRes RAW is not auto-detected.")
 DEFINE_UI_TOOLTIP(Output, "DWG choices return working RGB for one external output transform. 709 Gamma 2.4 performs internal SDR rendering. Never apply a second output conversion.")

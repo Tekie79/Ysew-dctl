@@ -26,24 +26,6 @@
     ]
   },
   {
-    "name": "output_mode",
-    "label": "Output",
-    "kind": "DCTLUI_COMBO_BOX",
-    "values": [
-      "2"
-    ],
-    "enums": [
-      "OUT_DI",
-      "OUT_DWG",
-      "OUT_709"
-    ],
-    "choices": [
-      "DWG Intermediate",
-      "DWG Linear",
-      "709 Gamma 2.4"
-    ]
-  },
-  {
     "name": "exposure",
     "label": "Exposure",
     "kind": "DCTLUI_SLIDER_FLOAT",
@@ -51,6 +33,63 @@
       "0.0",
       "-10.0",
       "10.0",
+      "0.01"
+    ],
+    "enums": [],
+    "choices": []
+  },
+  {
+    "name": "wb_mode",
+    "label": "WB Method",
+    "kind": "DCTLUI_COMBO_BOX",
+    "values": [
+      "0"
+    ],
+    "enums": [
+      "WB_LEGACY",
+      "WB_CAT02",
+      "WB_OFF"
+    ],
+    "choices": [
+      "Legacy",
+      "CAT02",
+      "Off"
+    ]
+  },
+  {
+    "name": "wb_temp",
+    "label": "WB Temp K",
+    "kind": "DCTLUI_SLIDER_FLOAT",
+    "values": [
+      "6504.0",
+      "1667.0",
+      "25000.0",
+      "1.0"
+    ],
+    "enums": [],
+    "choices": []
+  },
+  {
+    "name": "wb_duv",
+    "label": "WB Duv",
+    "kind": "DCTLUI_SLIDER_FLOAT",
+    "values": [
+      "0.0",
+      "-0.05",
+      "0.05",
+      "0.0005"
+    ],
+    "enums": [],
+    "choices": []
+  },
+  {
+    "name": "wb_strength",
+    "label": "WB Strength",
+    "kind": "DCTLUI_SLIDER_FLOAT",
+    "values": [
+      "1.0",
+      "0.0",
+      "1.0",
       "0.01"
     ],
     "enums": [],
@@ -132,6 +171,22 @@
     "choices": []
   },
   {
+    "name": "film_model",
+    "label": "Film Model",
+    "kind": "DCTLUI_COMBO_BOX",
+    "values": [
+      "0"
+    ],
+    "enums": [
+      "FILM_LEGACY",
+      "FILM_YS_ADV"
+    ],
+    "choices": [
+      "Legacy",
+      "YS Advanced"
+    ]
+  },
+  {
     "name": "neg_contrast",
     "label": "Neg Contrast",
     "kind": "DCTLUI_SLIDER_FLOAT",
@@ -197,6 +252,110 @@
     "choices": []
   },
   {
+    "name": "adv_neg_density",
+    "label": "Neg Density",
+    "kind": "DCTLUI_SLIDER_FLOAT",
+    "values": [
+      "0.0",
+      "-0.30",
+      "0.30",
+      "0.005"
+    ],
+    "enums": [],
+    "choices": []
+  },
+  {
+    "name": "adv_neg_color",
+    "label": "Neg Color",
+    "kind": "DCTLUI_SLIDER_FLOAT",
+    "values": [
+      "1.0",
+      "0.0",
+      "1.5",
+      "0.01"
+    ],
+    "enums": [],
+    "choices": []
+  },
+  {
+    "name": "adv_neg_sep",
+    "label": "Neg Sep",
+    "kind": "DCTLUI_SLIDER_FLOAT",
+    "values": [
+      "0.32",
+      "0.0",
+      "1.0",
+      "0.01"
+    ],
+    "enums": [],
+    "choices": []
+  },
+  {
+    "name": "adv_neg_shadow",
+    "label": "Neg Shadow Sat",
+    "kind": "DCTLUI_SLIDER_FLOAT",
+    "values": [
+      "0.82",
+      "0.0",
+      "1.25",
+      "0.01"
+    ],
+    "enums": [],
+    "choices": []
+  },
+  {
+    "name": "adv_neg_high",
+    "label": "Neg High Sat",
+    "kind": "DCTLUI_SLIDER_FLOAT",
+    "values": [
+      "0.72",
+      "0.0",
+      "1.25",
+      "0.01"
+    ],
+    "enums": [],
+    "choices": []
+  },
+  {
+    "name": "adv_neg_warm",
+    "label": "Neg Warm",
+    "kind": "DCTLUI_SLIDER_FLOAT",
+    "values": [
+      "0.0",
+      "-1.0",
+      "1.0",
+      "0.01"
+    ],
+    "enums": [],
+    "choices": []
+  },
+  {
+    "name": "adv_neg_green",
+    "label": "Neg Green",
+    "kind": "DCTLUI_SLIDER_FLOAT",
+    "values": [
+      "0.0",
+      "-1.0",
+      "1.0",
+      "0.01"
+    ],
+    "enums": [],
+    "choices": []
+  },
+  {
+    "name": "adv_neg_cool",
+    "label": "Neg Cool",
+    "kind": "DCTLUI_SLIDER_FLOAT",
+    "values": [
+      "0.0",
+      "-1.0",
+      "1.0",
+      "0.01"
+    ],
+    "enums": [],
+    "choices": []
+  },
+  {
     "name": "look_mode",
     "label": "Show Look",
     "kind": "DCTLUI_COMBO_BOX",
@@ -242,6 +401,28 @@
       "0.0",
       "1.0",
       "0.01"
+    ],
+    "enums": [],
+    "choices": []
+  },
+  {
+    "name": "skin_pick",
+    "label": "Skin Color",
+    "kind": "DCTLUI_COLOR_PICKER",
+    "values": [
+      "0.70",
+      "0.42",
+      "0.175"
+    ],
+    "enums": [],
+    "choices": []
+  },
+  {
+    "name": "skin_pick_on",
+    "label": "Pick Skin Hue",
+    "kind": "DCTLUI_CHECK_BOX",
+    "values": [
+      "0"
     ],
     "enums": [],
     "choices": []
@@ -368,744 +549,6 @@
       "0.98",
       "0.0",
       "1.5",
-      "0.01"
-    ],
-    "enums": [],
-    "choices": []
-  },
-  {
-    "name": "vignette_stops",
-    "label": "Vignette",
-    "kind": "DCTLUI_SLIDER_FLOAT",
-    "values": [
-      "0.0",
-      "0.0",
-      "3.0",
-      "0.01"
-    ],
-    "enums": [],
-    "choices": []
-  },
-  {
-    "name": "vignette_radius",
-    "label": "Vig Radius",
-    "kind": "DCTLUI_SLIDER_FLOAT",
-    "values": [
-      "0.7",
-      "0.0",
-      "2.0",
-      "0.01"
-    ],
-    "enums": [],
-    "choices": []
-  },
-  {
-    "name": "vignette_soft",
-    "label": "Vig Softness",
-    "kind": "DCTLUI_SLIDER_FLOAT",
-    "values": [
-      "0.7",
-      "0.01",
-      "2.0",
-      "0.01"
-    ],
-    "enums": [],
-    "choices": []
-  },
-  {
-    "name": "vignette_round",
-    "label": "Vig Shape",
-    "kind": "DCTLUI_SLIDER_FLOAT",
-    "values": [
-      "0.0",
-      "0.0",
-      "1.0",
-      "0.01"
-    ],
-    "enums": [],
-    "choices": []
-  },
-  {
-    "name": "vignette_x",
-    "label": "Vig X",
-    "kind": "DCTLUI_SLIDER_FLOAT",
-    "values": [
-      "0.0",
-      "-1.0",
-      "1.0",
-      "0.01"
-    ],
-    "enums": [],
-    "choices": []
-  },
-  {
-    "name": "vignette_y",
-    "label": "Vig Y",
-    "kind": "DCTLUI_SLIDER_FLOAT",
-    "values": [
-      "0.0",
-      "-1.0",
-      "1.0",
-      "0.01"
-    ],
-    "enums": [],
-    "choices": []
-  },
-  {
-    "name": "output_gray",
-    "label": "Output Gray",
-    "kind": "DCTLUI_SLIDER_FLOAT",
-    "values": [
-      "0.42",
-      "0.25",
-      "0.65",
-      "0.005"
-    ],
-    "enums": [],
-    "choices": []
-  },
-  {
-    "name": "gamut_on",
-    "label": "Gamut Map",
-    "kind": "DCTLUI_CHECK_BOX",
-    "values": [
-      "1"
-    ],
-    "enums": [],
-    "choices": []
-  },
-  {
-    "name": "gamut_knee",
-    "label": "Gamut Knee",
-    "kind": "DCTLUI_SLIDER_FLOAT",
-    "values": [
-      "0.8",
-      "0.1",
-      "0.95",
-      "0.01"
-    ],
-    "enums": [],
-    "choices": []
-  },
-  {
-    "name": "diag_mode",
-    "label": "Diagnostics",
-    "kind": "DCTLUI_COMBO_BOX",
-    "values": [
-      "0"
-    ],
-    "enums": [
-      "D_OFF",
-      "D_FALSE",
-      "D_EVGRAY",
-      "D_ZONE",
-      "D_EVMATTE",
-      "D_EVOVER",
-      "D_RGBEV",
-      "D_YPRIME",
-      "D_YFALSE",
-      "D_LIN_Y",
-      "D_HUE",
-      "D_SAT",
-      "D_CHROMA",
-      "D_COLMATTE",
-      "D_COLISO",
-      "D_SKIN",
-      "D_SKINEV",
-      "D_NEUTRAL",
-      "D_LOW",
-      "D_HIGH",
-      "D_CHROMATICITY",
-      "D_VOLUME",
-      "D_COMPRESSION",
-      "D_BEFORE",
-      "D_DIFF",
-      "D_STAGE",
-      "D_INVALID",
-      "D_TARGET_GAMUT",
-      "D_GAMUT_OCC",
-      "D_RGB_HEADROOM",
-      "D_CAL_EV",
-      "D_CAL_NEUTRAL",
-      "D_CAL_COMBINED",
-      "D_QC_PRE",
-      "D_QC_FINAL",
-      "D_QC_MASTER"
-    ],
-    "choices": [
-      "Off",
-      "Scene False Color",
-      "Scene EV Gray",
-      "Scene Zones",
-      "EV Matte",
-      "EV Overlay",
-      "Scene RGB EV",
-      "Output Y Prime",
-      "Output Luma Color",
-      "Output Linear Y",
-      "Hue Map",
-      "HSV Saturation",
-      "RGB Chroma",
-      "Color Matte",
-      "Color Isolate",
-      "Skin Matte",
-      "Skin EV",
-      "Neutral Bias",
-      "Nonpositive RGB",
-      "Pre Gamut Limits",
-      "709 Chromaticity",
-      "SDR Volume",
-      "Gamut Amount",
-      "Before After",
-      "Difference",
-      "Stage View",
-      "Invalid Input",
-      "Target Gamut",
-      "Gamut Occupancy",
-      "RGB Headroom",
-      "Cal Exposure",
-      "Cal Neutral",
-      "Cal Combined",
-      "QC Pre Gamut",
-      "QC Final Range",
-      "QC Master"
-    ]
-  },
-  {
-    "name": "diag_tap",
-    "label": "Measure",
-    "kind": "DCTLUI_COMBO_BOX",
-    "values": [
-      "0"
-    ],
-    "enums": [
-      "TAP_SOURCE",
-      "TAP_BALANCE"
-    ],
-    "choices": [
-      "Source",
-      "Balanced"
-    ]
-  },
-  {
-    "name": "inspect_stage",
-    "label": "Stage",
-    "kind": "DCTLUI_COMBO_BOX",
-    "values": [
-      "0"
-    ],
-    "enums": [
-      "ST_SOURCE",
-      "ST_BALANCE",
-      "ST_NEG",
-      "ST_LOOK",
-      "ST_PRINT",
-      "ST_LENS",
-      "ST_PRE",
-      "ST_OUT"
-    ],
-    "choices": [
-      "Source",
-      "Balance",
-      "Negative",
-      "Look",
-      "Print",
-      "Vignette",
-      "Pre Gamut",
-      "Final"
-    ]
-  },
-  {
-    "name": "reference_gray",
-    "label": "Ref Gray",
-    "kind": "DCTLUI_SLIDER_FLOAT",
-    "values": [
-      "0.18",
-      "0.01",
-      "0.5",
-      "0.005"
-    ],
-    "enums": [],
-    "choices": []
-  },
-  {
-    "name": "ev_span",
-    "label": "EV Span",
-    "kind": "DCTLUI_SLIDER_INT",
-    "values": [
-      "6",
-      "2",
-      "12",
-      "1"
-    ],
-    "enums": [],
-    "choices": []
-  },
-  {
-    "name": "ev_step",
-    "label": "EV Steps",
-    "kind": "DCTLUI_COMBO_BOX",
-    "values": [
-      "1"
-    ],
-    "enums": [
-      "EV_CONT",
-      "EV_ONE",
-      "EV_HALF",
-      "EV_THIRD"
-    ],
-    "choices": [
-      "Continuous",
-      "One Stop",
-      "Half Stop",
-      "Third Stop"
-    ]
-  },
-  {
-    "name": "ev_low",
-    "label": "EV Min",
-    "kind": "DCTLUI_SLIDER_FLOAT",
-    "values": [
-      "-2.0",
-      "-16.0",
-      "16.0",
-      "0.1"
-    ],
-    "enums": [],
-    "choices": []
-  },
-  {
-    "name": "ev_high",
-    "label": "EV Max",
-    "kind": "DCTLUI_SLIDER_FLOAT",
-    "values": [
-      "2.0",
-      "-16.0",
-      "16.0",
-      "0.1"
-    ],
-    "enums": [],
-    "choices": []
-  },
-  {
-    "name": "ev_soft",
-    "label": "EV Softness",
-    "kind": "DCTLUI_SLIDER_FLOAT",
-    "values": [
-      "0.25",
-      "0.0",
-      "2.0",
-      "0.05"
-    ],
-    "enums": [],
-    "choices": []
-  },
-  {
-    "name": "range_hue",
-    "label": "Range Hue",
-    "kind": "DCTLUI_SLIDER_FLOAT",
-    "values": [
-      "28.0",
-      "0.0",
-      "360.0",
-      "1.0"
-    ],
-    "enums": [],
-    "choices": []
-  },
-  {
-    "name": "range_width",
-    "label": "Range Width",
-    "kind": "DCTLUI_SLIDER_FLOAT",
-    "values": [
-      "20.0",
-      "1.0",
-      "180.0",
-      "1.0"
-    ],
-    "enums": [],
-    "choices": []
-  },
-  {
-    "name": "range_soft",
-    "label": "Range Softness",
-    "kind": "DCTLUI_SLIDER_FLOAT",
-    "values": [
-      "8.0",
-      "0.0",
-      "45.0",
-      "1.0"
-    ],
-    "enums": [],
-    "choices": []
-  },
-  {
-    "name": "range_smin",
-    "label": "Range Sat Min",
-    "kind": "DCTLUI_SLIDER_FLOAT",
-    "values": [
-      "0.05",
-      "0.0",
-      "1.0",
-      "0.01"
-    ],
-    "enums": [],
-    "choices": []
-  },
-  {
-    "name": "range_smax",
-    "label": "Range Sat Max",
-    "kind": "DCTLUI_SLIDER_FLOAT",
-    "values": [
-      "1.0",
-      "0.0",
-      "1.0",
-      "0.01"
-    ],
-    "enums": [],
-    "choices": []
-  },
-  {
-    "name": "range_ymin",
-    "label": "Range Luma Min",
-    "kind": "DCTLUI_SLIDER_FLOAT",
-    "values": [
-      "0.0",
-      "0.0",
-      "1.0",
-      "0.01"
-    ],
-    "enums": [],
-    "choices": []
-  },
-  {
-    "name": "range_ymax",
-    "label": "Range Luma Max",
-    "kind": "DCTLUI_SLIDER_FLOAT",
-    "values": [
-      "1.0",
-      "0.0",
-      "1.0",
-      "0.01"
-    ],
-    "enums": [],
-    "choices": []
-  },
-  {
-    "name": "neutral_tol",
-    "label": "Neutral Limit",
-    "kind": "DCTLUI_SLIDER_FLOAT",
-    "values": [
-      "0.12",
-      "0.01",
-      "0.5",
-      "0.01"
-    ],
-    "enums": [],
-    "choices": []
-  },
-  {
-    "name": "diag_gain",
-    "label": "Diag Gain",
-    "kind": "DCTLUI_SLIDER_FLOAT",
-    "values": [
-      "4.0",
-      "1.0",
-      "20.0",
-      "0.5"
-    ],
-    "enums": [],
-    "choices": []
-  },
-  {
-    "name": "diag_overlay",
-    "label": "Overlay",
-    "kind": "DCTLUI_SLIDER_FLOAT",
-    "values": [
-      "0.65",
-      "0.0",
-      "1.0",
-      "0.01"
-    ],
-    "enums": [],
-    "choices": []
-  },
-  {
-    "name": "split_pos",
-    "label": "Split",
-    "kind": "DCTLUI_SLIDER_FLOAT",
-    "values": [
-      "0.5",
-      "0.0",
-      "1.0",
-      "0.01"
-    ],
-    "enums": [],
-    "choices": []
-  },
-  {
-    "name": "diag_legend",
-    "label": "EV Legend",
-    "kind": "DCTLUI_CHECK_BOX",
-    "values": [
-      "1"
-    ],
-    "enums": [],
-    "choices": []
-  },
-  {
-    "name": "range_pick",
-    "label": "Range Color",
-    "kind": "DCTLUI_COLOR_PICKER",
-    "values": [
-      "0.70",
-      "0.42",
-      "0.175"
-    ],
-    "enums": [],
-    "choices": []
-  },
-  {
-    "name": "skin_pick",
-    "label": "Skin Color",
-    "kind": "DCTLUI_COLOR_PICKER",
-    "values": [
-      "0.70",
-      "0.42",
-      "0.175"
-    ],
-    "enums": [],
-    "choices": []
-  },
-  {
-    "name": "range_pick_on",
-    "label": "Pick Range Hue",
-    "kind": "DCTLUI_CHECK_BOX",
-    "values": [
-      "0"
-    ],
-    "enums": [],
-    "choices": []
-  },
-  {
-    "name": "skin_pick_on",
-    "label": "Pick Skin Hue",
-    "kind": "DCTLUI_CHECK_BOX",
-    "values": [
-      "0"
-    ],
-    "enums": [],
-    "choices": []
-  },
-  {
-    "name": "guide_mode",
-    "label": "Visual Guide",
-    "kind": "DCTLUI_COMBO_BOX",
-    "values": [
-      "0"
-    ],
-    "enums": [
-      "G_NONE",
-      "G_TONE",
-      "G_EXPOSURE",
-      "G_COLOR",
-      "G_SKIN",
-      "G_VIGNETTE"
-    ],
-    "choices": [
-      "Off",
-      "Tone Curve",
-      "Exposure Band",
-      "Color Range",
-      "Skin Range",
-      "Vignette"
-    ]
-  },
-  {
-    "name": "guide_opacity",
-    "label": "Guide Opacity",
-    "kind": "DCTLUI_SLIDER_FLOAT",
-    "values": [
-      "0.95",
-      "0.25",
-      "1.0",
-      "0.01"
-    ],
-    "enums": [],
-    "choices": []
-  },
-  {
-    "name": "wb_mode",
-    "label": "WB Method",
-    "kind": "DCTLUI_COMBO_BOX",
-    "values": [
-      "0"
-    ],
-    "enums": [
-      "WB_LEGACY",
-      "WB_CAT02",
-      "WB_OFF"
-    ],
-    "choices": [
-      "Legacy",
-      "CAT02",
-      "Off"
-    ]
-  },
-  {
-    "name": "wb_temp",
-    "label": "WB Temp K",
-    "kind": "DCTLUI_SLIDER_FLOAT",
-    "values": [
-      "6504.0",
-      "1667.0",
-      "25000.0",
-      "1.0"
-    ],
-    "enums": [],
-    "choices": []
-  },
-  {
-    "name": "wb_duv",
-    "label": "WB Duv",
-    "kind": "DCTLUI_SLIDER_FLOAT",
-    "values": [
-      "0.0",
-      "-0.05",
-      "0.05",
-      "0.0005"
-    ],
-    "enums": [],
-    "choices": []
-  },
-  {
-    "name": "wb_strength",
-    "label": "WB Strength",
-    "kind": "DCTLUI_SLIDER_FLOAT",
-    "values": [
-      "1.0",
-      "0.0",
-      "1.0",
-      "0.01"
-    ],
-    "enums": [],
-    "choices": []
-  },
-  {
-    "name": "film_model",
-    "label": "Film Model",
-    "kind": "DCTLUI_COMBO_BOX",
-    "values": [
-      "0"
-    ],
-    "enums": [
-      "FILM_LEGACY",
-      "FILM_YS_ADV"
-    ],
-    "choices": [
-      "Legacy",
-      "YS Advanced"
-    ]
-  },
-  {
-    "name": "adv_neg_density",
-    "label": "Neg Density",
-    "kind": "DCTLUI_SLIDER_FLOAT",
-    "values": [
-      "0.0",
-      "-0.30",
-      "0.30",
-      "0.005"
-    ],
-    "enums": [],
-    "choices": []
-  },
-  {
-    "name": "adv_neg_color",
-    "label": "Neg Color",
-    "kind": "DCTLUI_SLIDER_FLOAT",
-    "values": [
-      "1.0",
-      "0.0",
-      "1.5",
-      "0.01"
-    ],
-    "enums": [],
-    "choices": []
-  },
-  {
-    "name": "adv_neg_sep",
-    "label": "Neg Sep",
-    "kind": "DCTLUI_SLIDER_FLOAT",
-    "values": [
-      "0.32",
-      "0.0",
-      "1.0",
-      "0.01"
-    ],
-    "enums": [],
-    "choices": []
-  },
-  {
-    "name": "adv_neg_shadow",
-    "label": "Neg Shadow Sat",
-    "kind": "DCTLUI_SLIDER_FLOAT",
-    "values": [
-      "0.82",
-      "0.0",
-      "1.25",
-      "0.01"
-    ],
-    "enums": [],
-    "choices": []
-  },
-  {
-    "name": "adv_neg_high",
-    "label": "Neg High Sat",
-    "kind": "DCTLUI_SLIDER_FLOAT",
-    "values": [
-      "0.72",
-      "0.0",
-      "1.25",
-      "0.01"
-    ],
-    "enums": [],
-    "choices": []
-  },
-  {
-    "name": "adv_neg_warm",
-    "label": "Neg Warm",
-    "kind": "DCTLUI_SLIDER_FLOAT",
-    "values": [
-      "0.0",
-      "-1.0",
-      "1.0",
-      "0.01"
-    ],
-    "enums": [],
-    "choices": []
-  },
-  {
-    "name": "adv_neg_green",
-    "label": "Neg Green",
-    "kind": "DCTLUI_SLIDER_FLOAT",
-    "values": [
-      "0.0",
-      "-1.0",
-      "1.0",
-      "0.01"
-    ],
-    "enums": [],
-    "choices": []
-  },
-  {
-    "name": "adv_neg_cool",
-    "label": "Neg Cool",
-    "kind": "DCTLUI_SLIDER_FLOAT",
-    "values": [
-      "0.0",
-      "-1.0",
-      "1.0",
       "0.01"
     ],
     "enums": [],
@@ -1641,6 +1084,423 @@
     ]
   },
   {
+    "name": "vignette_stops",
+    "label": "Vignette",
+    "kind": "DCTLUI_SLIDER_FLOAT",
+    "values": [
+      "0.0",
+      "0.0",
+      "3.0",
+      "0.01"
+    ],
+    "enums": [],
+    "choices": []
+  },
+  {
+    "name": "vignette_radius",
+    "label": "Vig Radius",
+    "kind": "DCTLUI_SLIDER_FLOAT",
+    "values": [
+      "0.7",
+      "0.0",
+      "2.0",
+      "0.01"
+    ],
+    "enums": [],
+    "choices": []
+  },
+  {
+    "name": "vignette_soft",
+    "label": "Vig Softness",
+    "kind": "DCTLUI_SLIDER_FLOAT",
+    "values": [
+      "0.7",
+      "0.01",
+      "2.0",
+      "0.01"
+    ],
+    "enums": [],
+    "choices": []
+  },
+  {
+    "name": "vignette_round",
+    "label": "Vig Shape",
+    "kind": "DCTLUI_SLIDER_FLOAT",
+    "values": [
+      "0.0",
+      "0.0",
+      "1.0",
+      "0.01"
+    ],
+    "enums": [],
+    "choices": []
+  },
+  {
+    "name": "vignette_x",
+    "label": "Vig X",
+    "kind": "DCTLUI_SLIDER_FLOAT",
+    "values": [
+      "0.0",
+      "-1.0",
+      "1.0",
+      "0.01"
+    ],
+    "enums": [],
+    "choices": []
+  },
+  {
+    "name": "vignette_y",
+    "label": "Vig Y",
+    "kind": "DCTLUI_SLIDER_FLOAT",
+    "values": [
+      "0.0",
+      "-1.0",
+      "1.0",
+      "0.01"
+    ],
+    "enums": [],
+    "choices": []
+  },
+  {
+    "name": "diag_mode",
+    "label": "Diagnostics",
+    "kind": "DCTLUI_COMBO_BOX",
+    "values": [
+      "0"
+    ],
+    "enums": [
+      "D_OFF",
+      "D_FALSE",
+      "D_EVGRAY",
+      "D_ZONE",
+      "D_EVMATTE",
+      "D_EVOVER",
+      "D_RGBEV",
+      "D_YPRIME",
+      "D_YFALSE",
+      "D_LIN_Y",
+      "D_HUE",
+      "D_SAT",
+      "D_CHROMA",
+      "D_COLMATTE",
+      "D_COLISO",
+      "D_SKIN",
+      "D_SKINEV",
+      "D_NEUTRAL",
+      "D_LOW",
+      "D_HIGH",
+      "D_CHROMATICITY",
+      "D_VOLUME",
+      "D_COMPRESSION",
+      "D_BEFORE",
+      "D_DIFF",
+      "D_STAGE",
+      "D_INVALID",
+      "D_TARGET_GAMUT",
+      "D_GAMUT_OCC",
+      "D_RGB_HEADROOM",
+      "D_CAL_EV",
+      "D_CAL_NEUTRAL",
+      "D_CAL_COMBINED",
+      "D_QC_PRE",
+      "D_QC_FINAL",
+      "D_QC_MASTER"
+    ],
+    "choices": [
+      "Off",
+      "Scene False Color",
+      "Scene EV Gray",
+      "Scene Zones",
+      "EV Matte",
+      "EV Overlay",
+      "Scene RGB EV",
+      "Output Y Prime",
+      "Output Luma Color",
+      "Output Linear Y",
+      "Hue Map",
+      "HSV Saturation",
+      "RGB Chroma",
+      "Color Matte",
+      "Color Isolate",
+      "Skin Matte",
+      "Skin EV",
+      "Neutral Bias",
+      "Nonpositive RGB",
+      "Pre Gamut Limits",
+      "709 Chromaticity",
+      "SDR Volume",
+      "Gamut Amount",
+      "Before After",
+      "Difference",
+      "Stage View",
+      "Invalid Input",
+      "Target Gamut",
+      "Gamut Occupancy",
+      "RGB Headroom",
+      "Cal Exposure",
+      "Cal Neutral",
+      "Cal Combined",
+      "QC Pre Gamut",
+      "QC Final Range",
+      "QC Master"
+    ]
+  },
+  {
+    "name": "diag_tap",
+    "label": "Measure",
+    "kind": "DCTLUI_COMBO_BOX",
+    "values": [
+      "0"
+    ],
+    "enums": [
+      "TAP_SOURCE",
+      "TAP_BALANCE"
+    ],
+    "choices": [
+      "Source",
+      "Balanced"
+    ]
+  },
+  {
+    "name": "inspect_stage",
+    "label": "Stage",
+    "kind": "DCTLUI_COMBO_BOX",
+    "values": [
+      "0"
+    ],
+    "enums": [
+      "ST_SOURCE",
+      "ST_BALANCE",
+      "ST_NEG",
+      "ST_LOOK",
+      "ST_PRINT",
+      "ST_LENS",
+      "ST_PRE",
+      "ST_OUT"
+    ],
+    "choices": [
+      "Source",
+      "Balance",
+      "Negative",
+      "Look",
+      "Print",
+      "Vignette",
+      "Pre Gamut",
+      "Final"
+    ]
+  },
+  {
+    "name": "reference_gray",
+    "label": "Ref Gray",
+    "kind": "DCTLUI_SLIDER_FLOAT",
+    "values": [
+      "0.18",
+      "0.01",
+      "0.5",
+      "0.005"
+    ],
+    "enums": [],
+    "choices": []
+  },
+  {
+    "name": "ev_span",
+    "label": "EV Span",
+    "kind": "DCTLUI_SLIDER_INT",
+    "values": [
+      "6",
+      "2",
+      "12",
+      "1"
+    ],
+    "enums": [],
+    "choices": []
+  },
+  {
+    "name": "ev_step",
+    "label": "EV Steps",
+    "kind": "DCTLUI_COMBO_BOX",
+    "values": [
+      "1"
+    ],
+    "enums": [
+      "EV_CONT",
+      "EV_ONE",
+      "EV_HALF",
+      "EV_THIRD"
+    ],
+    "choices": [
+      "Continuous",
+      "One Stop",
+      "Half Stop",
+      "Third Stop"
+    ]
+  },
+  {
+    "name": "ev_low",
+    "label": "EV Min",
+    "kind": "DCTLUI_SLIDER_FLOAT",
+    "values": [
+      "-2.0",
+      "-16.0",
+      "16.0",
+      "0.1"
+    ],
+    "enums": [],
+    "choices": []
+  },
+  {
+    "name": "ev_high",
+    "label": "EV Max",
+    "kind": "DCTLUI_SLIDER_FLOAT",
+    "values": [
+      "2.0",
+      "-16.0",
+      "16.0",
+      "0.1"
+    ],
+    "enums": [],
+    "choices": []
+  },
+  {
+    "name": "ev_soft",
+    "label": "EV Softness",
+    "kind": "DCTLUI_SLIDER_FLOAT",
+    "values": [
+      "0.25",
+      "0.0",
+      "2.0",
+      "0.05"
+    ],
+    "enums": [],
+    "choices": []
+  },
+  {
+    "name": "range_pick",
+    "label": "Range Color",
+    "kind": "DCTLUI_COLOR_PICKER",
+    "values": [
+      "0.70",
+      "0.42",
+      "0.175"
+    ],
+    "enums": [],
+    "choices": []
+  },
+  {
+    "name": "range_pick_on",
+    "label": "Pick Range Hue",
+    "kind": "DCTLUI_CHECK_BOX",
+    "values": [
+      "0"
+    ],
+    "enums": [],
+    "choices": []
+  },
+  {
+    "name": "range_hue",
+    "label": "Range Hue",
+    "kind": "DCTLUI_SLIDER_FLOAT",
+    "values": [
+      "28.0",
+      "0.0",
+      "360.0",
+      "1.0"
+    ],
+    "enums": [],
+    "choices": []
+  },
+  {
+    "name": "range_width",
+    "label": "Range Width",
+    "kind": "DCTLUI_SLIDER_FLOAT",
+    "values": [
+      "20.0",
+      "1.0",
+      "180.0",
+      "1.0"
+    ],
+    "enums": [],
+    "choices": []
+  },
+  {
+    "name": "range_soft",
+    "label": "Range Softness",
+    "kind": "DCTLUI_SLIDER_FLOAT",
+    "values": [
+      "8.0",
+      "0.0",
+      "45.0",
+      "1.0"
+    ],
+    "enums": [],
+    "choices": []
+  },
+  {
+    "name": "range_smin",
+    "label": "Range Sat Min",
+    "kind": "DCTLUI_SLIDER_FLOAT",
+    "values": [
+      "0.05",
+      "0.0",
+      "1.0",
+      "0.01"
+    ],
+    "enums": [],
+    "choices": []
+  },
+  {
+    "name": "range_smax",
+    "label": "Range Sat Max",
+    "kind": "DCTLUI_SLIDER_FLOAT",
+    "values": [
+      "1.0",
+      "0.0",
+      "1.0",
+      "0.01"
+    ],
+    "enums": [],
+    "choices": []
+  },
+  {
+    "name": "range_ymin",
+    "label": "Range Luma Min",
+    "kind": "DCTLUI_SLIDER_FLOAT",
+    "values": [
+      "0.0",
+      "0.0",
+      "1.0",
+      "0.01"
+    ],
+    "enums": [],
+    "choices": []
+  },
+  {
+    "name": "range_ymax",
+    "label": "Range Luma Max",
+    "kind": "DCTLUI_SLIDER_FLOAT",
+    "values": [
+      "1.0",
+      "0.0",
+      "1.0",
+      "0.01"
+    ],
+    "enums": [],
+    "choices": []
+  },
+  {
+    "name": "neutral_tol",
+    "label": "Neutral Limit",
+    "kind": "DCTLUI_SLIDER_FLOAT",
+    "values": [
+      "0.12",
+      "0.01",
+      "0.5",
+      "0.01"
+    ],
+    "enums": [],
+    "choices": []
+  },
+  {
     "name": "diag_gamut",
     "label": "Diag Gamut",
     "kind": "DCTLUI_COMBO_BOX",
@@ -1755,5 +1615,145 @@
     ],
     "enums": [],
     "choices": []
+  },
+  {
+    "name": "diag_gain",
+    "label": "Diag Gain",
+    "kind": "DCTLUI_SLIDER_FLOAT",
+    "values": [
+      "4.0",
+      "1.0",
+      "20.0",
+      "0.5"
+    ],
+    "enums": [],
+    "choices": []
+  },
+  {
+    "name": "diag_overlay",
+    "label": "Overlay",
+    "kind": "DCTLUI_SLIDER_FLOAT",
+    "values": [
+      "0.65",
+      "0.0",
+      "1.0",
+      "0.01"
+    ],
+    "enums": [],
+    "choices": []
+  },
+  {
+    "name": "split_pos",
+    "label": "Split",
+    "kind": "DCTLUI_SLIDER_FLOAT",
+    "values": [
+      "0.5",
+      "0.0",
+      "1.0",
+      "0.01"
+    ],
+    "enums": [],
+    "choices": []
+  },
+  {
+    "name": "diag_legend",
+    "label": "EV Legend",
+    "kind": "DCTLUI_CHECK_BOX",
+    "values": [
+      "1"
+    ],
+    "enums": [],
+    "choices": []
+  },
+  {
+    "name": "guide_mode",
+    "label": "Visual Guide",
+    "kind": "DCTLUI_COMBO_BOX",
+    "values": [
+      "0"
+    ],
+    "enums": [
+      "G_NONE",
+      "G_TONE",
+      "G_EXPOSURE",
+      "G_COLOR",
+      "G_SKIN",
+      "G_VIGNETTE"
+    ],
+    "choices": [
+      "Off",
+      "Tone Curve",
+      "Exposure Band",
+      "Color Range",
+      "Skin Range",
+      "Vignette"
+    ]
+  },
+  {
+    "name": "guide_opacity",
+    "label": "Guide Opacity",
+    "kind": "DCTLUI_SLIDER_FLOAT",
+    "values": [
+      "0.95",
+      "0.25",
+      "1.0",
+      "0.01"
+    ],
+    "enums": [],
+    "choices": []
+  },
+  {
+    "name": "output_gray",
+    "label": "Output Gray",
+    "kind": "DCTLUI_SLIDER_FLOAT",
+    "values": [
+      "0.42",
+      "0.25",
+      "0.65",
+      "0.005"
+    ],
+    "enums": [],
+    "choices": []
+  },
+  {
+    "name": "gamut_on",
+    "label": "Gamut Map",
+    "kind": "DCTLUI_CHECK_BOX",
+    "values": [
+      "1"
+    ],
+    "enums": [],
+    "choices": []
+  },
+  {
+    "name": "gamut_knee",
+    "label": "Gamut Knee",
+    "kind": "DCTLUI_SLIDER_FLOAT",
+    "values": [
+      "0.8",
+      "0.1",
+      "0.95",
+      "0.01"
+    ],
+    "enums": [],
+    "choices": []
+  },
+  {
+    "name": "output_mode",
+    "label": "Output",
+    "kind": "DCTLUI_COMBO_BOX",
+    "values": [
+      "2"
+    ],
+    "enums": [
+      "OUT_DI",
+      "OUT_DWG",
+      "OUT_709"
+    ],
+    "choices": [
+      "DWG Intermediate",
+      "DWG Linear",
+      "709 Gamma 2.4"
+    ]
   }
 ]

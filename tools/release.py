@@ -19,7 +19,7 @@ from shot_match import load_json, validate_tolerances
 
 PACKAGE_NAME=f"YSEW_Film_Lab_{VERSION}"
 REQUIRED=[
-    Path('dist/YSEW_Film_Lab_M7.dctl'),
+    Path('dist/YSEW_Film_Lab_M7_A3.dctl'),
     Path('README.md'),
     Path('docs/RESOLVE_SETUP.md'),
     Path('docs/DIAGNOSTICS.md'),
@@ -37,7 +37,7 @@ def sha(data:bytes): return hashlib.sha256(data).hexdigest()
 def validate_inputs():
     for path,data in outputs().items():
         if not path.exists() or path.read_bytes()!=data: raise ValueError(f'stale distribution: {path}')
-    if (ROOT/'dist/YSEW_Film_Lab_M7.dctl').read_bytes()!=SOURCE.read_bytes():
+    if (ROOT/'dist/YSEW_Film_Lab_M7_A3.dctl').read_bytes()!=SOURCE.read_bytes():
         raise ValueError('M7 alias must be byte-identical to canonical source')
     controls={c.name:c for c in parse_ui(SOURCE.read_text())}
     for name,expected in DEBUG_DEFAULTS.items():
