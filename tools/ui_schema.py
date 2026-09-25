@@ -11,7 +11,7 @@ import json
 import math
 import re
 
-KINDS = {'DCTLUI_SLIDER_FLOAT', 'DCTLUI_SLIDER_INT', 'DCTLUI_CHECK_BOX',
+KINDS = {'DCTLUI_SLIDER_FLOAT', 'DCTLUI_SLIDER_INT', 'DCTLUI_VALUE_BOX', 'DCTLUI_CHECK_BOX',
          'DCTLUI_COMBO_BOX', 'DCTLUI_COLOR_PICKER'}
 IDENTIFIER = re.compile(r'[A-Za-z_]\w*\Z', re.ASCII)
 NUMBER = re.compile(r'[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?\Z')

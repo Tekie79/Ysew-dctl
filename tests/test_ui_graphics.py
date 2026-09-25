@@ -63,6 +63,12 @@ class UISchemaTests(unittest.TestCase):
         with self.assertRaises(ValueError):parse_ui(line+'DEFINE_UI_TOOLTIP(Unknown, "Description")')
         with self.assertRaises(ValueError):parse_ui(line+'DEFINE_UI_TOOLTIP(Gain, Unquoted description)')
 
+    def test_value_box_is_supported(self):
+        ui=parse_ui('DEFINE_UI_PARAMS(value, Value Box, DCTLUI_VALUE_BOX, 1.0)\n')
+        self.assertEqual(len(ui),1)
+        self.assertEqual(ui[0].kind,'DCTLUI_VALUE_BOX')
+        self.assertEqual(ui[0].default,'1.0')
+
     def test_reject_duplicate_controls(self):
         line='DEFINE_UI_PARAMS(enabled, Enabled, DCTLUI_CHECK_BOX, 1)\n'
         with self.assertRaises(ValueError):parse_ui(line+line)

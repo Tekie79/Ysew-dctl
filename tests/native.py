@@ -70,7 +70,7 @@ class Shader:
             if kind == 'DCTLUI_COLOR_PICKER':
                 pickers.append(f'case {i}: {name}=UIPicker{{r,g,b}}; break;')
             else:
-                native_type = 'float' if kind == 'DCTLUI_SLIDER_FLOAT' else 'int'
+                native_type = 'float' if kind in ('DCTLUI_SLIDER_FLOAT','DCTLUI_VALUE_BOX') else 'int'
                 setters.append(f'case {i}: {name}=({native_type})value; break;')
         more = MATH_EXPORTS if helpers else ''
         if helpers:

@@ -37,6 +37,7 @@ inline float ys_tex2d(YSTexture tex,int x,int y) {
 #define _atan2f std::atan2
 #define UI_DCTLUI_SLIDER_FLOAT(name,label,initial,...) float name = initial;
 #define UI_DCTLUI_SLIDER_INT(name,label,initial,...) int name = initial;
+#define UI_DCTLUI_VALUE_BOX(name,label,initial) float name = initial;
 #define UI_DCTLUI_COMBO_BOX(name,label,initial,...) int name = initial;
 #define UI_DCTLUI_CHECK_BOX(name,label,initial,...) int name = initial;
 #define UI_DCTLUI_COLOR_PICKER(name,label,r,g,b) UIPicker name = {r,g,b};
